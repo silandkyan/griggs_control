@@ -1,0 +1,1367 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="420mm"
+   height="297mm"
+   viewBox="0 0 420 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2 (1:1.2.1+202207142221+cd75a1ee6d)"
+   sodipodi:docname="Interface.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.64161458"
+     inkscape:cx="312.4929"
+     inkscape:cy="650.70217"
+     inkscape:window-width="2560"
+     inkscape:window-height="1383"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1326" />
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible"
+       id="TriangleStart"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="TriangleStart-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-6" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="mainpage"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:none">
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="24.15366"
+       y="41.306019"
+       id="text7246"><tspan
+         sodipodi:role="line"
+         id="tspan7244"
+         style="font-weight:bold;font-size:11.2889px;stroke-width:0.264583"
+         x="24.15366"
+         y="41.306019">main</tspan></text>
+    <rect
+       style="display:inline;fill:none;stroke:#808000;stroke-width:0.740194;stroke-linejoin:bevel"
+       id="rect7240"
+       width="58.332325"
+       height="13.94624"
+       x="9.8802309"
+       y="31.338053" />
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="12.252727"
+       y="25.2845"
+       id="text7196"><tspan
+         sodipodi:role="line"
+         id="tspan7194"
+         style="font-weight:bold;font-size:11.2889px;stroke-width:0.264583"
+         x="12.252727"
+         y="25.2845">Motor control: </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="129.1395"
+       y="24.472361"
+       id="text7202"><tspan
+         sodipodi:role="line"
+         id="tspan7200"
+         style="font-weight:bold;stroke-width:0.264583"
+         x="129.1395"
+         y="24.472361">motor:                      current position: <tspan
+   style="fill:#ff0000"
+   id="tspan7198">*****</tspan></tspan></text>
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect7204"
+       width="12.543184"
+       height="11.517289"
+       x="164.54372"
+       y="16.813879" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect7206"
+       width="12.543184"
+       height="11.517289"
+       x="180.2227"
+       y="16.813879" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect7208"
+       width="12.543184"
+       height="11.517289"
+       x="195.90169"
+       y="16.813879" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="168.58009"
+       y="25.343847"
+       id="text7212"><tspan
+         sodipodi:role="line"
+         id="tspan7210"
+         style="stroke-width:0.264583"
+         x="168.58009"
+         y="25.343847">x    y    R</tspan></text>
+    <rect
+       style="display:inline;fill:none;stroke:#808000;stroke-width:0.740194;stroke-linejoin:bevel"
+       id="rect7170"
+       width="388.52542"
+       height="249.0331"
+       x="9.8214054"
+       y="45.17247" />
+    <rect
+       style="fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1058"
+       width="86.599007"
+       height="9.1069794"
+       x="17.849707"
+       y="49.329712" />
+    <rect
+       style="fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1060"
+       width="86.599007"
+       height="9.1069794"
+       x="17.849707"
+       y="129.70535" />
+    <rect
+       style="fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1062"
+       width="86.599007"
+       height="9.1069794"
+       x="194.40721"
+       y="129.32698" />
+    <rect
+       style="fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect736-6-9"
+       width="86.599007"
+       height="9.1069794"
+       x="17.849707"
+       y="203.99455" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect734"
+       width="34.260857"
+       height="9.1069813"
+       x="259.21405"
+       y="141.58153" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect736"
+       width="34.260857"
+       height="9.1069813"
+       x="259.35413"
+       y="152.38101" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:1.1535;stroke-linejoin:bevel"
+       id="rect650-7"
+       width="33.930859"
+       height="18.042023"
+       x="124.11342"
+       y="141.38924" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="107.22323"
+       y="68.987747"
+       id="text288"><tspan
+         sodipodi:role="line"
+         id="tspan286"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="107.22323"
+         y="68.987747">Revolutions / </tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="107.22323"
+         y="79.571083"
+         id="tspan619">deg / mm on axis</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="107.22323"
+         y="90.154419"
+         id="tspan648" /><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="107.22323"
+         y="100.73776"
+         id="tspan470">RPM</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="27.111547"
+       y="41.956421"
+       id="text292"><tspan
+         sodipodi:role="line"
+         id="tspan290"
+         style="stroke-width:0.264583"
+         x="27.111547"
+         y="41.956421" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="108.98302"
+       y="147.74954"
+       id="text346"><tspan
+         sodipodi:role="line"
+         id="tspan344"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="108.98302"
+         y="147.74954">forward</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="108.98302"
+         y="158.33289"
+         id="tspan348">back</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="108.98302"
+         y="168.91621"
+         id="tspan358" /><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="108.98302"
+         y="179.49956"
+         id="tspan360">RPM</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="128.81288"
+       y="153.60829"
+       id="text352"><tspan
+         sodipodi:role="line"
+         id="tspan350"
+         style="stroke-width:0.264583"
+         x="128.81288"
+         y="153.60829">STOP</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="292.53064"
+       y="149.38457"
+       id="text346-3"><tspan
+         sodipodi:role="line"
+         id="tspan344-6"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="292.53064"
+         y="149.38457">forward</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="292.53064"
+         y="159.96791"
+         id="tspan348-7">back</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="292.53064"
+         y="170.55124"
+         id="tspan358-5" /><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="292.53064"
+         y="181.13458"
+         id="tspan360-3">RPM</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="22.789606"
+       y="137.37794"
+       id="text516"><tspan
+         sodipodi:role="line"
+         id="tspan514"
+         style="stroke-width:0.264583"
+         x="22.789606"
+         y="137.37794">2. Permanent</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="245.38496"
+       y="56.500984"
+       id="text516-6"><tspan
+         sodipodi:role="line"
+         id="tspan514-1"
+         style="stroke-width:0.264583"
+         x="245.38496"
+         y="56.500984">rev.       mm</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="206.60875"
+       y="136.76241"
+       id="text516-5"><tspan
+         sodipodi:role="line"
+         id="tspan514-6"
+         style="stroke-width:0.264583"
+         x="206.60875"
+         y="136.76241">3. When pushed</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="20.331141"
+       y="57.115837"
+       id="text516-2"><tspan
+         sodipodi:role="line"
+         id="tspan514-9"
+         style="stroke-width:0.264583"
+         x="20.331141"
+         y="57.115837">1. Position control</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="202.77759"
+       y="56.030804"
+       id="text516-2-8"><tspan
+         sodipodi:role="line"
+         id="tspan514-9-7"
+         style="stroke-width:0.264583"
+         x="202.77759"
+         y="56.030804">go to:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="323.58368"
+       y="78.52282"
+       id="text516-2-8-2"><tspan
+         sodipodi:role="line"
+         id="tspan514-9-7-8"
+         style="stroke-width:0.264583"
+         x="323.58368"
+         y="78.52282">overwrite with </tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="323.58368"
+         y="89.106155"
+         id="tspan1030">current position</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="20.847906"
+       y="212.09676"
+       id="text516-5-1"><tspan
+         sodipodi:role="line"
+         id="tspan514-6-2"
+         style="stroke-width:0.264583"
+         x="20.847906"
+         y="212.09676">4. Keyboard control</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="48.076797"
+       y="223.78212"
+       id="text516-5-1-7"><tspan
+         sodipodi:role="line"
+         id="tspan514-6-2-3"
+         style="stroke-width:0.264583"
+         x="48.076797"
+         y="223.78212">Used for small adjustments. </tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="48.076797"
+         y="234.36546"
+         id="tspan1093">Hold / click keyboard arrow produces a defined motion distance.</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="48.076797"
+         y="244.94879"
+         id="tspan1091">Keyboard arrows control number of steps. Check settings page for details.</tspan></text>
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect704"
+       width="28.696886"
+       height="7.9812398"
+       x="113.9019"
+       y="93.914223" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect706"
+       width="28.696886"
+       height="7.9812398"
+       x="114.09132"
+       y="73.331841" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect708"
+       width="28.696886"
+       height="7.9812398"
+       x="114.12811"
+       y="62.112465" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect710"
+       width="28.696886"
+       height="7.9812398"
+       x="113.82781"
+       y="171.59462" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect650"
+       width="28.696886"
+       height="7.9812398"
+       x="297.1918"
+       y="173.14235" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle995"
+       cx="115.45989"
+       cy="144.91417"
+       r="3.594111" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle1998"
+       cx="308.46201"
+       cy="64.685272"
+       r="3.594111" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle792"
+       cx="308.86041"
+       cy="87.252853"
+       r="3.594111" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle997"
+       cx="115.46124"
+       cy="155.9422"
+       r="3.594111" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle1001"
+       cx="308.46335"
+       cy="75.713303"
+       r="3.594111" />
+    <circle
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="path790"
+       cx="308.86176"
+       cy="98.280884"
+       r="3.594111" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect734-0"
+       width="34.260857"
+       height="9.1069813"
+       x="192.54825"
+       y="60.217873" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect736-9"
+       width="34.260857"
+       height="9.1069813"
+       x="192.68831"
+       y="71.017357" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect734-3"
+       width="34.260857"
+       height="9.1069813"
+       x="192.40634"
+       y="82.040298" />
+    <rect
+       style="fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect736-6"
+       width="34.260857"
+       height="9.1069813"
+       x="192.5464"
+       y="92.839783" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="223.03279"
+       y="68.266678"
+       id="text346-3-0"><tspan
+         sodipodi:role="line"
+         id="tspan344-6-6"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="223.03279"
+         y="68.266678">Pos. A</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="223.03279"
+         y="78.850014"
+         id="tspan348-7-2">Pos. B</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="223.03279"
+         y="89.43335"
+         id="tspan358-5-6">Pos. C</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="223.03279"
+         y="100.01669"
+         id="tspan360-3-1">Pos. D</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="266.43976"
+       y="69.096207"
+       id="text346-3-0-3"><tspan
+         sodipodi:role="line"
+         id="tspan344-6-6-7"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="266.43976"
+         y="69.096207">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="266.43976"
+         y="79.679543"
+         id="tspan348-7-2-5">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="266.43976"
+         y="90.262878"
+         id="tspan358-5-6-9">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="266.43976"
+         y="100.84622"
+         id="tspan360-3-1-2">******</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24.4039px;line-height:1.25;font-family:sans-serif;stroke-width:0.762621"
+       x="603.57806"
+       y="49.842113"
+       id="text1034"
+       transform="scale(0.52218765,1.9150204)"><tspan
+         sodipodi:role="line"
+         id="tspan1032"
+         style="stroke-width:0.762621"
+         x="603.57806"
+         y="49.842113">}</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="20.847906"
+       y="270.30499"
+       id="text6353"><tspan
+         sodipodi:role="line"
+         id="tspan6351"
+         style="stroke-width:0.264583"
+         x="20.847906"
+         y="270.30499">Info:</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="20.847906"
+         y="280.88834"
+         id="tspan6357">   - usually 30-120 RPM is a good choice, at higher RPM, torque decreases</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="20.847906"
+         y="291.47168"
+         id="tspan6359">   - ....</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="20.847906"
+         y="302.05499"
+         id="tspan6355" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="300.83548"
+       y="69.096207"
+       id="text7273"><tspan
+         sodipodi:role="line"
+         id="tspan7265"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="300.83548"
+         y="69.096207">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="300.83548"
+         y="79.679543"
+         id="tspan7267">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="300.83548"
+         y="90.262878"
+         id="tspan7269">******</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;fill:#ff0000;stroke-width:0.264583"
+         x="300.83548"
+         y="100.84622"
+         id="tspan7271">******</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="comments_mainpage"
+     style="display:none">
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-148.21033"
+       y="31.14521"
+       id="text1564"><tspan
+         sodipodi:role="line"
+         id="tspan1562"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-148.21033"
+         y="31.14521">clickable, active status signalled</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-146.96573"
+       y="62.786068"
+       id="text1649"><tspan
+         sodipodi:role="line"
+         id="tspan1647"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-146.96573"
+         y="62.786068">clickable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="119.72011"
+       y="69.524849"
+       id="text1564-3"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="119.72011"
+         y="69.524849">0.01-999.99</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="121.92898"
+       y="80.816696"
+       id="text1564-3-4"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-5"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="121.92898"
+         y="80.816696">0.01-999.99</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="81.929062"
+       y="112.31741"
+       id="text5246"><tspan
+         sodipodi:role="line"
+         id="tspan5244"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="81.929062"
+         y="112.31741">-maxRPM - maxRPM -&gt;sett.</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="82.194603"
+       y="189.95924"
+       id="text5250"><tspan
+         sodipodi:role="line"
+         id="tspan5248"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="82.194603"
+         y="189.95924">-maxRPM - maxRPM -&gt;sett.</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:none;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="263.60159"
+       y="190.11461"
+       id="text1707"><tspan
+         sodipodi:role="line"
+         id="tspan1705"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="0"
+         y="0">-maxRPM - maxRPM -&gt;sett.</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="159.96669"
+       y="148.19421"
+       id="text1723"><tspan
+         sodipodi:role="line"
+         id="tspan1719"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="159.96669"
+         y="148.19421">removes </tspan><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="159.96669"
+         y="158.77756"
+         id="tspan1721">tickbox enable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="296.25955"
+       y="150.27377"
+       id="text1741"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="296.25955"
+         y="150.27377"
+         id="tspan1737">mouse input:</tspan><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="296.25955"
+         y="160.85712"
+         id="tspan1739">on until released</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="244.10266"
+       y="50.062111"
+       id="text1711"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="244.10266"
+         y="50.062111"
+         id="tspan1735">show saved position</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="279.28604"
+       y="32.453465"
+       id="text1711-15"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="279.28604"
+         y="32.453465"
+         id="tspan1735-9">depends on selected motor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="186.65157"
+       y="9.7618923"
+       id="text1711-1"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="186.65157"
+         y="9.7618923"
+         id="tspan1735-7">main window (motor choice (and pos) not tabbed)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-147.06572"
+       y="92.0261"
+       id="text1564-3-9"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-147.06572"
+         y="92.0261">on/off / tickbox</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-148.92982"
+       y="127.03561"
+       id="text1564-3-9-7"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4-8"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-148.92982"
+         y="127.03561">number input (see details)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-148.80566"
+       y="161.20677"
+       id="text1564-3-9-7-4"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4-8-4"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-148.80566"
+         y="161.20677">variable output</tspan></text>
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1186-6"
+       width="86.599007"
+       height="9.1069794"
+       x="-144.59323"
+       y="12.088578" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1274-1"
+       width="28.696886"
+       height="7.9812398"
+       x="-145.70607"
+       y="106.86377" />
+    <circle
+       style="display:inline;fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle1284-2"
+       cx="-142.89217"
+       cy="77.656868"
+       r="3.594111" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1294-9"
+       width="34.260857"
+       height="9.1069813"
+       x="-147.05946"
+       y="42.036388" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="-147.96591"
+       y="149.92453"
+       id="text4632"><tspan
+         sodipodi:role="line"
+         id="tspan4630"
+         style="fill:#ff0000;stroke-width:0.264583"
+         x="-147.96591"
+         y="149.92453">******</tspan></text>
+  </g>
+  <g
+     inkscape:label="settings page"
+     inkscape:groupmode="layer"
+     id="g1326"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;stroke-width:0.264583"
+       x="167.83652"
+       y="202.85025"
+       id="text1208"><tspan
+         sodipodi:role="line"
+         id="tspan1200"
+         style="text-align:end;text-anchor:end;display:inline;stroke-width:0.264583"
+         x="167.83652"
+         y="202.85025">Motor: steps per revolution</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="167.83652"
+         y="213.43359"
+         id="tspan2286">Motor: max. RPM</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="167.83652"
+         y="224.01692"
+         id="tspan5506" /><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="167.83652"
+         y="234.60027"
+         id="tspan5502">invert motor direction</tspan><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="167.83652"
+         y="245.18359"
+         id="tspan5500" /><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="167.83652"
+         y="255.76694"
+         id="tspan1206">Axis: mm / deg per revolution</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="27.111547"
+       y="41.956421"
+       id="text1212"><tspan
+         sodipodi:role="line"
+         id="tspan1210"
+         style="stroke-width:0.264583"
+         x="27.111547"
+         y="41.956421" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="28.362207"
+       y="172.76234"
+       id="text1248-0"><tspan
+         sodipodi:role="line"
+         id="tspan1246-6"
+         style="stroke-width:0.264583"
+         x="28.362207"
+         y="172.76234">Motor / axis settings: </tspan><tspan
+         sodipodi:role="line"
+         style="font-weight:bold;stroke-width:0.264583"
+         x="28.362207"
+         y="183.34569"
+         id="tspan2342">Do not change if you didn't install new hardware!</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="23.545303"
+       y="62.818577"
+       id="text1262"><tspan
+         sodipodi:role="line"
+         id="tspan1260"
+         style="stroke-width:0.264583"
+         x="23.545303"
+         y="62.818577">Keyboard control settings:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="38.580093"
+       y="79.183792"
+       id="text1270"><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="38.580093"
+         y="79.183792"
+         id="tspan1266">Hold / click keyboard arrow produces a defined motion distance.</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="38.580093"
+         y="89.767128"
+         id="tspan1268">Keyboard arrows control number of steps as follows: </tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="38.580093"
+         y="100.35046"
+         id="tspan2346" /><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="38.580093"
+         y="110.93381"
+         id="tspan2348" /></text>
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1272"
+       width="28.696886"
+       height="7.9812398"
+       x="178.32242"
+       y="250.00172" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1274"
+       width="28.696886"
+       height="7.9812398"
+       x="178.51184"
+       y="207.19434" />
+    <rect
+       style="fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1276"
+       width="28.696886"
+       height="7.9812398"
+       x="178.54863"
+       y="195.97496" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1274-6"
+       width="28.696886"
+       height="7.9812398"
+       x="73.843674"
+       y="117.78193" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1276-1"
+       width="28.696886"
+       height="7.9812398"
+       x="73.880463"
+       y="103.9167" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="85.247116"
+       y="110.90466"
+       id="text3710"><tspan
+         sodipodi:role="line"
+         id="tspan3708"
+         style="stroke-width:0.264583"
+         x="85.247116"
+         y="110.90466">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="82.174721"
+       y="124.54803"
+       id="text3714"><tspan
+         sodipodi:role="line"
+         id="tspan3712"
+         style="stroke-width:0.264583"
+         x="82.174721"
+         y="124.54803">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="185.51749"
+       y="203.21776"
+       id="text3718"><tspan
+         sodipodi:role="line"
+         id="tspan3716"
+         style="stroke-width:0.264583"
+         x="185.51749"
+         y="203.21776">400</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="185.83266"
+       y="214.27821"
+       id="text3722"><tspan
+         sodipodi:role="line"
+         id="tspan3720"
+         style="stroke-width:0.264583"
+         x="185.83266"
+         y="214.27821">120</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="189.95982"
+       y="257.02444"
+       id="text3726"><tspan
+         sodipodi:role="line"
+         id="tspan3724"
+         style="stroke-width:0.264583"
+         x="189.95982"
+         y="257.02444">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="12.252727"
+       y="25.2845"
+       id="text516-2-7-5"><tspan
+         sodipodi:role="line"
+         id="tspan514-9-4-2"
+         style="font-weight:bold;font-size:11.2889px;stroke-width:0.264583"
+         x="12.252727"
+         y="25.2845">Motor control: </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="76.541161"
+       y="41.306019"
+       id="text516-2-7-5-0"><tspan
+         sodipodi:role="line"
+         id="tspan514-9-4-2-9"
+         style="font-weight:bold;font-size:11.2889px;stroke-width:0.264583"
+         x="76.541161"
+         y="41.306019">settings</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="129.1395"
+       y="24.472361"
+       id="text516-54-3"><tspan
+         sodipodi:role="line"
+         id="tspan514-7-0"
+         style="font-weight:bold;stroke-width:0.264583"
+         x="129.1395"
+         y="24.472361">motor:                      current position: <tspan
+   style="fill:#ff0000"
+   id="tspan4663-8">*****</tspan></tspan></text>
+    <circle
+       style="display:inline;fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle1001-6"
+       cx="184.30975"
+       cy="231.8616"
+       r="3.594111" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;display:inline;stroke-width:0.264583"
+       x="62.204796"
+       y="139.14377"
+       id="text346-3-8"><tspan
+         sodipodi:role="line"
+         style="text-align:end;text-anchor:end;stroke-width:0.264583"
+         x="62.204796"
+         y="139.14377"
+         id="tspan360-3-2">RPM</tspan></text>
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect650-72"
+       width="28.696886"
+       height="7.9812398"
+       x="73.745132"
+       y="132.20985" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="82.287155"
+       y="139.14877"
+       id="text3714-1"><tspan
+         sodipodi:role="line"
+         id="tspan3712-0"
+         style="stroke-width:0.264583"
+         x="82.287155"
+         y="139.14877">60</tspan></text>
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect6591-1"
+       width="12.543184"
+       height="11.517289"
+       x="164.54372"
+       y="16.813879" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect6593-5"
+       width="12.543184"
+       height="11.517289"
+       x="180.2227"
+       y="16.813879" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1058-6-9"
+       width="12.543184"
+       height="11.517289"
+       x="195.90169"
+       y="16.813879" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="168.58009"
+       y="25.343847"
+       id="text6597-4"><tspan
+         sodipodi:role="line"
+         id="tspan6595-9"
+         style="stroke-width:0.264583"
+         x="168.58009"
+         y="25.343847">x    y    R</tspan></text>
+    <rect
+       style="fill:none;stroke:#808000;stroke-width:0.740194;stroke-linejoin:bevel"
+       id="rect6897"
+       width="388.58841"
+       height="248.9783"
+       x="9.8214054"
+       y="45.227272" />
+    <rect
+       style="fill:none;stroke:#808000;stroke-width:0.740194;stroke-linejoin:bevel"
+       id="rect7236"
+       width="58.332325"
+       height="13.94624"
+       x="73.909401"
+       y="31.338053" />
+    <rect
+       style="fill:none;stroke:#808000;stroke-width:0.740194;stroke-linejoin:bevel"
+       id="rect7238"
+       width="58.332325"
+       height="13.94624"
+       x="73.909401"
+       y="31.338053" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:0.705556;stroke-linejoin:bevel;marker-start:url(#TriangleStart)"
+       d="m 42.151688,108.54618 h 9.839936"
+       id="path7452" />
+    <path
+       style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.705556;stroke-linejoin:bevel;marker-start:url(#TriangleStart-7)"
+       d="m 50.725249,116.50464 v 9.83994"
+       id="path7454" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:0.705556;stroke-linejoin:bevel;marker-start:url(#TriangleStart)"
+       d="M 65.361143,108.54618 H 55.521207"
+       id="path7456" />
+    <path
+       style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.705556;stroke-linejoin:bevel;marker-start:url(#TriangleStart-7)"
+       d="m 56.016916,126.34458 v -9.83994"
+       id="path7458" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g3943"
+     inkscape:label="comments_settings page"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="279.28604"
+       y="32.453465"
+       id="text7368"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="279.28604"
+         y="32.453465"
+         id="tspan7366">depends on selected motor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="109.27238"
+       y="139.44559"
+       id="text1707-2"><tspan
+         sodipodi:role="line"
+         id="tspan1705-6"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="109.27238"
+         y="139.44559">-maxRPM - maxRPM -&gt;sett.</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="105.72091"
+       y="111.48002"
+       id="text4035"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="105.72091"
+         y="111.48002"
+         id="tspan4033">int, 1-32</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="106.35378"
+       y="124.74655"
+       id="text3891"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="106.35378"
+         y="124.74655"
+         id="tspan4027">int, 1-124</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="232.14752"
+       y="260.08231"
+       id="text3903"><tspan
+         sodipodi:role="line"
+         id="tspan3901"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="232.14752"
+         y="260.08231">0.01 - 999.99</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="229.32297"
+       y="201.17296"
+       id="text3909"><tspan
+         sodipodi:role="line"
+         id="tspan3905"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="229.32297"
+         y="201.17296">int. 1 - 51200</tspan><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="229.32297"
+         y="211.7563"
+         id="tspan3907">int. 1 - 1000</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-158.40436"
+       y="54.710545"
+       id="text1564-1"><tspan
+         sodipodi:role="line"
+         id="tspan1562-4"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-158.40436"
+         y="54.710545">clickable, active status signalled</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-157.15976"
+       y="86.351395"
+       id="text1649-9"><tspan
+         sodipodi:role="line"
+         id="tspan1647-2"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-157.15976"
+         y="86.351395">clickable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-157.25975"
+       y="115.59143"
+       id="text1564-3-9-0"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4-6"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-157.25975"
+         y="115.59143">on/off / tickbox</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-159.12386"
+       y="150.60094"
+       id="text1564-3-9-7-8"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4-8-9"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-159.12386"
+         y="150.60094">number input (see details)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="-158.99969"
+       y="184.77211"
+       id="text1564-3-9-7-4-2"><tspan
+         sodipodi:role="line"
+         id="tspan1562-1-4-8-4-6"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="-158.99969"
+         y="184.77211">variable output</tspan></text>
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#ff0000;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1186-6-6"
+       width="86.599007"
+       height="9.1069794"
+       x="-154.78726"
+       y="35.653904" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#00ff00;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="rect1274-1-4"
+       width="28.696886"
+       height="7.9812398"
+       x="-155.9001"
+       y="130.42909" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;fill:#008000;stroke:none;stroke-width:0.264583"
+       x="186.27209"
+       y="10.039607"
+       id="text1711-1-7"><tspan
+         sodipodi:role="line"
+         style="fill:#008000;stroke:none;stroke-width:0.264583"
+         x="186.27209"
+         y="10.039607"
+         id="tspan1735-7-1">main window (motor choice (and pos) not tabbed)</tspan></text>
+    <circle
+       style="display:inline;fill:#e6e6e6;stroke:#0000ff;stroke-width:0.705556;stroke-linejoin:bevel"
+       id="circle1284-2-9"
+       cx="-153.0862"
+       cy="101.2222"
+       r="3.594111" />
+    <rect
+       style="display:inline;fill:#e6e6e6;stroke:#0000ff;stroke-width:0.823503;stroke-linejoin:bevel"
+       id="rect1294-9-5"
+       width="34.260857"
+       height="9.1069813"
+       x="-157.25349"
+       y="65.601715" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="-158.15994"
+       y="173.48985"
+       id="text4632-0"><tspan
+         sodipodi:role="line"
+         id="tspan4630-4"
+         style="fill:#ff0000;stroke-width:0.264583"
+         x="-158.15994"
+         y="173.48985">******</tspan></text>
+  </g>
+</svg>
