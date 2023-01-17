@@ -33,7 +33,7 @@ class Stepper:
     rpm = rotations (or rounds) per minute
     '''
     def __init__(self, ser, motorsteps, enabled, forward, rpm):
-        self.ser = ser # not sure if this will work...
+        self.ser = ser 
         self.motorsteps = motorsteps
         self.enabled = enabled
         self.forward = forward
