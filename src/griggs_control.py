@@ -66,7 +66,7 @@ if False:
             break
         
 # tests with manual control
-if True:
+if False:
     while True:
         try:
             s.manual_control()
@@ -78,10 +78,11 @@ if False:
     s.move_steps(int(motorsteps/2))
 
 # tests with potentiometer
-if False:
+if True:
     while True:
         try:
-           data = ser.readline().decode('utf-8') 
+           #data = ser.readline().decode('utf-8') 
+           data = int(ser.readline().decode('utf-8'))
            print(data) 
         except KeyboardInterrupt:
             break 

@@ -3,8 +3,6 @@ const int dir = 6;  //
 const int en = 7;  // 
 const int step = 4;  // 
 
-int incomingByte;       // a variable to read incoming serial data into
-
 int sensorPin = A0; // the potentiometer is connected to analog pin 0
 int sensorValue; // an integer variable to store the potentiometer reading
 int incomingByte;       // a variable to read incoming serial data into
