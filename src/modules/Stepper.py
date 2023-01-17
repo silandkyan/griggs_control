@@ -81,29 +81,29 @@ class Stepper:
         self.ser.close()
         
     def manual_control(self):
-        while True: # https://stackoverflow.com/questions/24072790/how-to-detect-key-presses/57644349#57644349
-            try:
-                user_input = input('--> ')
-                if user_input == "d":
-                    self.forward = True
-                    self.set_direction()
-                    self.rotate_single_step()
-                if user_input == "a":
-                    self.forward = False
-                    self.set_direction()
-                    self.rotate_single_step() # backwards...
-                if user_input == "w":
-                    for k in range(0,10):
-                        self.forward = True
-                        self.set_direction()
-                        self.rotate_single_step()
-                if user_input == "s":
-                    for k in range(0,10):
-                        self.forward = False
-                        self.set_direction()
-                        self.rotate_single_step() # backwards...
-            except KeyboardInterrupt:
-                break
+        # https://stackoverflow.com/questions/24072790/how-to-detect-key-presses/57644349#57644349
+        # deleted a while True, try and except statement around the following, block;
+        # not sure if needed, depends on use case...
+        user_input = input('--> ')
+        if user_input == "d":
+            self.forward = True
+            self.set_direction()
+            self.rotate_single_step()
+        if user_input == "a":
+            self.forward = False
+            self.set_direction()
+            self.rotate_single_step() # backwards...
+        if user_input == "w":
+            for k in range(0,10):
+                self.forward = True
+                self.set_direction()
+                self.rotate_single_step()
+        if user_input == "s":
+            for k in range(0,10):
+                self.forward = False
+                self.set_direction()
+                self.rotate_single_step() # backwards...
+
             
     def move_steps(self, step_amount):
         for i in range(0, step_amount):

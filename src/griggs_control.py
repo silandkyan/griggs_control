@@ -8,6 +8,7 @@ Created on Thu Jan  5 11:22:32 2023
 
 import serial # must be installed, e.g.: conda install pyserial
 import time
+import matplotlib.pyplot as plt
 
 import modules.Stepper as S
 import modules.Timer as T
@@ -32,12 +33,6 @@ ser = serial.Serial(
 #     print ("connecting Serial. hold on 2 sec")
 time.sleep(2)
 
-# initialize instances of timer for running threads in parallel
-start_time = time.time()
-step = 1 # base rate of commands, in sec
-timer1 = T.Timer(start_time, step)
-timer2 = T.Timer(start_time, step/10)
-
 # initialize one instance of Stepper motor controller
 motorsteps = 450 # approx. number of motor steps...
 enabled = True
@@ -45,23 +40,51 @@ forward = True
 rpm = 10 #120 seems to be  good max value with DM556T driver and old Motors (8-pin, serial wiring)
 s = S.Stepper(ser, motorsteps, enabled, forward, rpm)
 s.open_connection()
+start_time = time.time()
 
-while True:
-    try:
-        timer1.wait()
-        timer2.wait()
-        if timer1.run == True:
-            print('---> ', timer1.counter)
-        if timer2.run == True:
-            #s.manual_control()
-            print('-> ', timer2.counter)
-    except KeyboardInterrupt:
-        break
+# tests with timing
+if False:
+    # initialize instances of timer for running threads in parallel
+    step = 1 # base rate of commands, in sec
+    timer1 = T.Timer(start_time, step)
+    timer2 = T.Timer(start_time, step/10)
+    time_mem = [0]
+    while True:
+        try:
+            timer1.wait()
+            timer2.wait()
+            if timer1.run == True:
+                print('---> ', timer1.counter)
+                plt.clf()
+                plt.plot(time_mem[-10:])
+                plt.draw()
+                plt.pause(0.001)
+            if timer2.run == True:
+                time_mem.append(timer2.counter)
+                print('-> ', timer2.counter)
+        except KeyboardInterrupt:
+            break
+        
+# tests with manual control
+if True:
+    while True:
+        try:
+            s.manual_control()
+        except KeyboardInterrupt:
+            break
+        
+# tests with finite steps
+if False:
+    s.move_steps(int(motorsteps/2))
 
-#s.manual_control()
-#s.move_steps(int(motorsteps/2))
-#s.rotate_single_step_v2()
-s.rotate_single_step()
+# tests with potentiometer
+if False:
+    while True:
+        try:
+           data = ser.readline().decode('utf-8') 
+           print(data) 
+        except KeyboardInterrupt:
+            break 
 
 s.close_connection()
 
