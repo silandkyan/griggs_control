@@ -64,6 +64,8 @@ Alternatively, merging with main can be performed locally:
 
 `git merge`
 
+after the branch was merged with main in github, the branch can be deleted locally or directly on github.
+
 # Handling pull requests
 
 to test proposed changes locally:
@@ -87,6 +89,6 @@ now do all necessary tests and modifications; when done, push the branch up:
 
 `git push origin BRANCH_NAME`
 
-create new pull request with the branch and merge 
+create new pull request with the branch and merge with main
 
 
