@@ -53,16 +53,17 @@ after some changes were made, add (-a = all) and commit your changes:
 
 publish the modifications in the central remote repo (will be reviewed before merging):
 
-`git push`
-
-(or more generally: `git push -u origin branch-name`)
+`git push -u origin branch-name`
 
 when the branch goal is reached, it can be merged with main in github.
 Alternatively, merging with main can be performed locally:
 
 `git switch main`
 
-`git merge`
+`git merge branch-name`
+
+merged branch can now be deleted if not anymore needed:
+`git branch -d branch-name`
 
 # Handling pull requests
 
