@@ -39,7 +39,10 @@ class Stepper:
         self.forward = forward
         self.rpm = rpm
         self.freq = abs(rpm) * motorsteps / 60 # in Hz
-        self.step_duration = 1 / self.freq # in sec
+        if self.freq > 1:
+            self.step_duration = 1 / self.freq # in sec
+        else:
+            self.step_duration = 1
         
     def set_enable(self):
         # encode enabled variable as byte and send to Arduino
