@@ -72,8 +72,15 @@ class Stepper:
         # send hold signal as one byte to Arduino and wait for half step duration
         self.ser.write(b'H')
         time.sleep(self.step_duration/2)
+            
+    def hold(self):
+        self.ser.write(b'H')
+        
+    def move(self):
+        self.ser.write(b'S')
         
     def open_connection(self):
+        # open serial connection
         self.set_enable()
         self.set_direction()
         

@@ -35,13 +35,13 @@ time.sleep(2)
 motorsteps = 450 # approx. number of motor steps...
 enabled = True
 forward = True
-rpm = 5 #120 seems to be  good max value with DM556T driver and old Motors (8-pin, serial wiring)
-rpm_max = 10 # maybe add this property to stepper class
+rpm = 2 #120 seems to be  good max value with DM556T driver and old Motors (8-pin, serial wiring)
+rpm_max = 5 # maybe add this property to stepper class
 s = S.Stepper(ser, motorsteps, enabled, forward, rpm)
 s.open_connection()
 start_time = time.time()
 
-# tests with timing; use stepper_control.ino
+# test timing with clock
 if False:
     # initialize instances of timer for running threads in parallel
     step = 1 # base rate of commands, in sec
@@ -50,17 +50,41 @@ if False:
     time_mem = [0]
     while True:
         try:
-            timer1.wait()
-            timer2.wait()
+            timer1.clock()
+            timer2.clock()
+            #print(timer1.run, timer2.run)
             if timer1.run == True:
-                print('---> ', timer1.counter)
+                print('---> ', timer1.dt_counter)
                 plt.clf()
                 plt.plot(time_mem[-10:])
                 plt.draw()
                 plt.pause(0.0001)
             if timer2.run == True:
-                time_mem.append(timer2.counter)
-                print('-> ', timer2.counter)
+                time_mem.append(timer2.dt_counter)
+                print('-> ', timer2.dt_counter)
+            #time.sleep(0.01)
+        except KeyboardInterrupt:
+            break
+        
+# test timing with wait
+if False:
+    # initialize instances of timer for running threads in parallel
+    step = 1 # base rate of commands, in sec
+    timer1 = T.Timer(time.time(), step)
+    timer2 = T.Timer(time.time(), step/10)
+    while True:
+        try:
+            timer1.wait()
+            timer2.wait()
+            if timer1.run == True:
+                print('---> ', timer1.dt_counter[-1])
+                plt.clf()
+                plt.plot(timer2.dt_counter[-10:],'o-')
+                plt.draw()
+                plt.pause(0.0001)
+            if timer2.run == True:
+                print('-> ', timer2.dt_counter[-1])
+            #time.sleep(0.01)
         except KeyboardInterrupt:
             break
         
@@ -106,30 +130,82 @@ if False:
         except KeyboardInterrupt or UnicodeDecodeError:
             break
      
-# test of motor control via potentiometer
-if True:
-    step = 0.1 # base rate of commands, in sec
-    mem = [0]
-    counter = [0]
-    plot_interval = 20
+if False:
+    timer = T.Timer(time.time(), 0.2)
     while True:
         try:
-            print(counter[-1], '  ', mem[-1], '  ', s.rpm)
-            data = ser.readline().decode('utf-8').strip()
-            if data != '': # important to check for data integrity
-                data = int(data)
-                mem.append(data)
-                counter.append(counter[-1]+1)
-                s.rpm = (data - 512) / 512 * rpm_max # update rpm based on poti value
-                s.set_direction_from_rpm() # update stepper direction
-                if len(mem) > plot_interval:
-                    plt.clf()
-                    plt.plot(counter[-plot_interval:], mem[-plot_interval:])
-                    plt.ylim((0, 1025))
-                    plt.show()
-                    plt.pause(0.001)
-                    #time.sleep(0.1) # do not sleep in this loop, it slows down the code massively!
-            #s.rotate_single_step() # this does not work since the rotation method is blocking...
+            timer.wait()
+            print(timer.dt_counter)
+        except KeyboardInterrupt:
+            break
+
+# test
+if False:
+    #step = s.step_duration # base rate of commands, in sec
+    step = 1 # base rate of commands, in sec
+    timer = T.Timer(time.time(), step)
+    while True:
+        try:
+            timer.wait()
+            if timer.run == True:
+                #print('---> ', timer.dt_counter[-1])
+                print('move')
+                s.move()
+                plt.clf()
+                plt.plot(timer.dt_counter[-10:],'o-')
+                plt.draw()
+                plt.pause(0.0001)
+            elif timer.run == False:
+                s.hold()
+                print('. . .')
+            time.sleep(0.01) # here, sleeping is necessary to give the serial connection some time...
+        except KeyboardInterrupt:
+            break
+
+# test of motor control via potentiometer
+if True:
+    mem = [0]
+    step_counter = [0]
+    time_counter = [0]
+    #t_ini = time.time()
+    plot_interval = 20
+    timer1 = T.Timer(time.time(), 0.5)#s.step_duration)
+    timer2 = T.Timer(time.time(), 0.01)
+    #print(step_counter[-1], '  ', time_counter[-1], '  ', mem[-1])
+    while True:
+        try:
+            timer1.wait()
+            timer2.clock()
+            if timer1.run == True:
+                pass
+                #print('move')
+                #s.move()
+            elif timer1.run == False:
+                pass
+                #print('. . .')
+                #s.hold()
+            #time.sleep(0.01) # here, sleeping is necessary to give the serial connection some time...
+            if timer2.run == True:
+                print('-------')
+                #pass
+                dt = time.time() - start_time
+                data = ser.readline().decode('utf-8').strip()
+                if data != '': # important to check for data integrity
+                    data = int(data)
+                    mem.append(data)
+                    step_counter.append(step_counter[-1]+1)
+                    time_counter.append(dt)
+                    #s.rpm = round((data - 512) / 512 * rpm_max, 3) # update rpm based on poti value
+                    #s.set_direction_from_rpm() # update stepper direction
+                    if len(mem) > plot_interval:
+                        plt.clf()
+                        plt.plot(time_counter[-plot_interval:], mem[-plot_interval:])
+                        plt.ylim((0, 1025))
+                        plt.show()
+                        plt.pause(0.001)
+                        #time.sleep(0.1) # do not sleep in this loop, it slows down the code massively!
+            #print(timer1.dt_counter[-1])
+            time.sleep(0.01) # here, sleeping is necessary to give the serial connection some time...
         except KeyboardInterrupt or UnicodeDecodeError:
             break
 
