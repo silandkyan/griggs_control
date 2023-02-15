@@ -51,7 +51,7 @@ void loop() { // this loop runs repeatedly after setup() finishes
    
     sensorValue = analogRead(sensorPin); // read the sensor
     Serial.println(sensorValue, DEC); // output reading to the serial line
-    //delay (100); // Pause in milliseconds before next reading
+    //delay (10); // Pause in milliseconds before next reading
   }
 }
 

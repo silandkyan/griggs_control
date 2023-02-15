@@ -14,8 +14,10 @@ import modules.Stepper as S
 import modules.Timer as T
 
 # initialize serial connection to Arduino, address must be corrected after reconnection
+# to verify serial adress:                  sudo dmesg | grep tty
+# to give access to serial connection:      sudo chmod a+rw /dev/ttyACM0
 ser = serial.Serial(
-    port = '/dev/ttyACM1',
+    port = '/dev/ttyACM0',
     baudrate = 115200,
     timeout = None,# wait for data to arrive
     parity = serial.PARITY_NONE,# no extra bit is sent for checking data integrity
@@ -35,7 +37,7 @@ time.sleep(2)
 motorsteps = 450 # approx. number of motor steps...
 enabled = True
 forward = True
-rpm = 2 #120 seems to be  good max value with DM556T driver and old Motors (8-pin, serial wiring)
+rpm = 5 #120 seems to be  good max value with DM556T driver and old Motors (8-pin, serial wiring)
 rpm_max = 5 # maybe add this property to stepper class
 s = S.Stepper(ser, motorsteps, enabled, forward, rpm)
 s.open_connection()
@@ -88,18 +90,19 @@ if False:
         except KeyboardInterrupt:
             break
         
-# tests with manual control; use stepper_control.ino
-if False:
+# tests with manual control
+if True:
     while True:
         try:
             s.manual_control()
         except KeyboardInterrupt:
             break
         
-# tests with finite steps; use stepper_control.ino
+# tests with finite steps
 if False:
     s.move_steps(int(motorsteps/2))
     
+# tests with constant rotation
 if False:
     while True:
         try:
@@ -107,7 +110,7 @@ if False:
         except KeyboardInterrupt:
             break
 
-# tests with potentiometer; use stepper_potentiometer.ino
+# tests with potentiometer
 if False:
     mem = [0]
     counter = [0]
@@ -130,19 +133,10 @@ if False:
         except KeyboardInterrupt or UnicodeDecodeError:
             break
      
-if False:
-    timer = T.Timer(time.time(), 0.2)
-    while True:
-        try:
-            timer.wait()
-            print(timer.dt_counter)
-        except KeyboardInterrupt:
-            break
-
 # test
 if False:
     #step = s.step_duration # base rate of commands, in sec
-    step = 1 # base rate of commands, in sec
+    step = 0.1 # base rate of commands, in sec
     timer = T.Timer(time.time(), step)
     while True:
         try:
@@ -163,14 +157,14 @@ if False:
             break
 
 # test of motor control via potentiometer
-if True:
+if False:
     mem = [0]
     step_counter = [0]
     time_counter = [0]
     #t_ini = time.time()
     plot_interval = 20
     timer1 = T.Timer(time.time(), 0.5)#s.step_duration)
-    timer2 = T.Timer(time.time(), 0.01)
+    timer2 = T.Timer(time.time(), 0.1)
     #print(step_counter[-1], '  ', time_counter[-1], '  ', mem[-1])
     while True:
         try:
