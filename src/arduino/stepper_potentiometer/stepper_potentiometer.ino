@@ -48,12 +48,10 @@ void loop() { // this loop runs repeatedly after setup() finishes
     if (incomingByte == 'H') {
       digitalWrite(step, LOW);
     }
-  }
-
-  if (Serial.availableForWrite() > 0) { 
-  sensorValue = analogRead(sensorPin); // read the sensor
-  Serial.println(sensorValue, DEC); // output reading to the serial line
-  //delay (100); // Pause in milliseconds before next reading
+   
+    sensorValue = analogRead(sensorPin); // read the sensor
+    Serial.println(sensorValue, DEC); // output reading to the serial line
+    //delay (10); // Pause in milliseconds before next reading
   }
 }
 
