@@ -21,7 +21,7 @@ ser = serial.Serial(
     baudrate = 115200,
     timeout = None,# wait for data to arrive
     parity = serial.PARITY_NONE,# no extra bit is sent for checking data integrity
-    stopbits = serial.STOPBITS_ONE,# use one stop bit to signal end of on data byte
+    stopbits = serial.STOPBITS_ONE,# use one stop bit to signal end of one data byte
     bytesize = serial.EIGHTBITS# use data length of 8 bits
     )
 ser.close()

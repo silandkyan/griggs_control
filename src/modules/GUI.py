@@ -7,13 +7,16 @@ Created on Tue Jan 17 10:08:43 2023
 """
 
 import sys
+from PyQt5.QtWidgets import (QMainWindow, QApplication)
+from modules.gui.main_window_ui import Ui_MainWindow
 
-from PyQt5.QtWidgets import (QApplication, QMainWindow)
-from PyQt5.QtCore import QCoreApplication
-
-from gui.main_window_ui import Ui_MainWindow
 
 class Window(QMainWindow, Ui_MainWindow):
+    '''This custom class inherits from QMainWindow class and the custom 
+    Ui_MainWindow class from main_window_ui.py file. That file is created 
+    from main_window.ui using the pyuic5 command line program, e.g.:
+    pyuic5 -x main_window.ui -o main_window_ui.py
+    '''
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
@@ -39,25 +42,30 @@ class Window(QMainWindow, Ui_MainWindow):
         # motor rpm (could also be derived from other params...)
         self.rpm_minBox.setValue(0)         # min rpm value
         self.rpm_maxBox.setValue(300)       # max rpm value
+        # Motor selection radio buttons:
+        self.motor1_radioButton.setChecked(True) # Motor 1 is default
         
         
     def connectSignalsSlots(self):
         '''This function defines the widget behaviour with Qt's 
         signal-and-slot mechanism.'''
-        # Close window:
+        # Close window and end program:
         self.quitButton.clicked.connect(self.close)
         # Single step rotation:
         self.singlelButton.clicked.connect(self.single_step_left)
         self.singlerButton.clicked.connect(self.single_step_right)
-        # Multi step rotation with emergency stop:
+        # Multi step rotation:
         self.multilButton.clicked.connect(self.multi_step_left)
         self.multirButton.clicked.connect(self.multi_step_right)
-        self.multistopButton.clicked.connect(self.stop_motor)
-        # Constant (endless) rotation with emergency stop:
-        self.constlButton.clicked.connect(self.const_rot_left)
-        self.constrButton.clicked.connect(self.const_rot_right)
-        self.conststopButton.clicked.connect(self.stop_motor)
-                
+        # Continuous rotation:
+        self.contlButton.clicked.connect(self.cont_rot_left)
+        self.contrButton.clicked.connect(self.cont_rot_right)
+        # Stop button:
+        self.stopButton.clicked.connect(self.stop_motor)
+        # Motor selection radio buttons:
+        self.motor1_radioButton.pressed.connect(lambda: self.select_motor(1))
+        self.motor2_radioButton.pressed.connect(lambda: self.select_motor(2))
+
     def single_step_left(self):
         # dummy functionality
         print('single step left')
@@ -72,14 +80,17 @@ class Window(QMainWindow, Ui_MainWindow):
     def multi_step_right(self):
         print(str(self.multistep_numberBox.value()), 'steps right with', str(self.rpmBox.value()), 'rpm')
         
-    def const_rot_left(self):
+    def cont_rot_left(self):
         print('Rotating left with', str(self.rpmBox.value()), 'rpm')
         
-    def const_rot_right(self):
+    def cont_rot_right(self):
         print('Rotating right with', str(self.rpmBox.value()), 'rpm')
         
     def stop_motor(self):
         print('Motor stopped!')
+        
+    def select_motor(self, motorID):
+        print('Selected motor:', motorID)
         
             
     def set_allowed_ranges(self):
@@ -106,12 +117,20 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rpm_maxBox.setMaximum(999)
         
 
-#-----#   Main Program starts here   #-----#
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = Window()
-    win.show()
-    
-    # find general solution for the following 2 lines
-    #sys.exit(app.exec()) # use this line with normal console
-    sys.exit(QCoreApplication.quit()) # use this with IPython console
+def run_app():
+    app = 0
+    # Initialize GUI control flow management. Requires passing
+    # argument vector (sys.argv) or empty list [] as arg; the former allows
+    # to pass configuration commands on startup to the program from the
+    # command line, if such commands were implemented.
+    # If app is already open, use that one, otherwise open new app:
+    if not QApplication.instance():
+        app = QApplication(sys.argv)
+    else:
+        app = QApplication.instance()
+    # Create main window (= instance of custom Window Class):
+    main_win = Window()
+    # Open GUI window on screen:
+    main_win.show()
+    # Return an instance of a running QApplication = starts event handling
+    return app.exec()
