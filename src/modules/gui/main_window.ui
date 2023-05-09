@@ -14,27 +14,27 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QRadioButton" name="motor1_radioButton">
+   <widget class="QRadioButton" name="manual_radB">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>10</y>
-      <width>104</width>
+      <y>20</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Motor 1</string>
+     <string>manual control</string>
     </property>
     <attribute name="buttonGroup">
-     <string notr="true">motor_buttonGroup</string>
+     <string notr="true">controlmode_bGrp</string>
     </attribute>
    </widget>
    <widget class="QPushButton" name="singlelButton">
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>147</y>
+      <y>77</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -47,7 +47,7 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>147</y>
+      <y>77</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>210</y>
+      <y>140</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -73,7 +73,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>210</y>
+      <y>140</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -86,7 +86,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>160</y>
+      <y>90</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -99,7 +99,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>220</y>
+      <y>150</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -112,7 +112,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>90</y>
+      <y>20</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -124,9 +124,9 @@
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>400</y>
-      <width>61</width>
+      <x>290</x>
+      <y>370</y>
+      <width>81</width>
       <height>41</height>
      </rect>
     </property>
@@ -145,7 +145,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>220</y>
+      <y>150</y>
       <width>71</width>
       <height>26</height>
      </rect>
@@ -153,12 +153,15 @@
     <property name="maximum">
      <number>999</number>
     </property>
+    <property name="value">
+     <number>10</number>
+    </property>
    </widget>
    <widget class="QSpinBox" name="rpmBox">
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>90</y>
+      <y>20</y>
       <width>71</width>
       <height>26</height>
      </rect>
@@ -168,7 +171,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>405</y>
+      <y>365</y>
       <width>181</width>
       <height>21</height>
      </rect>
@@ -188,17 +191,23 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>440</y>
+      <y>400</y>
       <width>71</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <number>400</number>
+    </property>
+    <property name="value">
+     <number>200</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>440</y>
+      <y>400</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -211,7 +220,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>470</y>
+      <y>430</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -224,53 +233,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>470</y>
-      <width>71</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>500</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>min. RPM</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>530</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>max. RPM</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="rpm_minBox">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>500</y>
-      <width>71</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="rpm_maxBox">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>530</y>
+      <y>430</y>
       <width>71</width>
       <height>26</height>
      </rect>
@@ -280,7 +243,7 @@
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>210</y>
+      <y>140</y>
       <width>51</width>
       <height>101</height>
      </rect>
@@ -293,7 +256,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>270</y>
+      <y>200</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -306,7 +269,7 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>270</y>
+      <y>200</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -319,7 +282,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>280</y>
+      <y>210</y>
       <width>121</width>
       <height>16</height>
      </rect>
@@ -332,7 +295,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
+      <y>60</y>
       <width>121</width>
       <height>21</height>
      </rect>
@@ -348,20 +311,20 @@
      <string>Manual Modes:</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="motor2_radioButton">
+   <widget class="QRadioButton" name="auto_radB">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>30</y>
-      <width>104</width>
+      <x>30</x>
+      <y>280</y>
+      <width>151</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Motor 2</string>
+     <string>automatic control</string>
     </property>
     <attribute name="buttonGroup">
-     <string notr="true">motor_buttonGroup</string>
+     <string notr="true">controlmode_bGrp</string>
     </attribute>
    </widget>
   </widget>
@@ -380,6 +343,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="motor_buttonGroup"/>
+  <buttongroup name="controlmode_bGrp"/>
  </buttongroups>
 </ui>

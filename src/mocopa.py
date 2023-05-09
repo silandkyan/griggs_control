@@ -7,9 +7,18 @@ Created on Thu Feb 16 10:06:33 2023
 """
 #####   Importing Packages   #####
 from modules.GUI import run_app
+from modules.Motor import disconnect_motors
 
 
 #####   Main GUI program starts here   #####
 if __name__ == "__main__":
     # Start main program with event handling loop:
-    app = run_app()
+    try:
+        app = run_app()
+    except Exception:
+        #pass
+        print('ERROR')
+    finally:
+        # This should make a clean disconnect of the USB Serial connection 
+        # after closing the main window or after an error:
+        disconnect_motors()
