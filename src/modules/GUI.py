@@ -8,11 +8,15 @@ Created on Tue Jan 17 10:08:43 2023
 
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
+from PyQt5.QtCore import QTimer
 from modules.gui.main_window_ui import Ui_MainWindow
 
 from .Motor import Motor 
 from pytrinamic.connections import ConnectionManager
 
+import pyqtgraph as pg # must be installed! QWidget must be promoted to plotWidget in QtDesigner!
+
+# from random import randint
 
 ### Module connection ###
 port_list = ConnectionManager().list_connections()
@@ -37,6 +41,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
+        # graphing window:
+        self.graphwindow()
+
         self.show()
         
     def set_default_values(self):
@@ -44,8 +51,10 @@ class Window(QMainWindow, Ui_MainWindow):
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setValue(10)    # default rpm
+        # adjust slider position to match rpmBox value:
+        self.rpmSlider.setValue(self.rpmBox.value())
         # initial calculation of pps:
-        self.pps_calculator()
+        self.pps_calculator(self.rpmBox.value())
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(10)   # amount of single steps
         # set default button values:
@@ -70,14 +79,71 @@ class Window(QMainWindow, Ui_MainWindow):
         # Stop button:
         self.stopButton.clicked.connect(self.stop_motor)
         # refresh rpm when value is changed:
-        self.rpmBox.valueChanged.connect(self.pps_calculator)
+        self.rpmBox.valueChanged.connect(self.rpmBox_changed)
+        # update rpm by slider movement:
+        self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
+        # Drive profile:
+        self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        self.stopprofile_pushB.clicked.connect(self.stop_profile)
+
+
+
+    ###   GRAPH WINDOW   ###
+    
+    def plot(self, x, y, plotname, color):
+        pen = pg.mkPen(color=color)
+        line = self.graphWidget.plot(x, y, name=plotname, pen=pen)
+        return line
+    
+    def graphwindow(self):
+        self.timer = QTimer()
+        self.timer.setInterval(100)
+        self.timer.timeout.connect(self.update_plot_data)
+        self.timer.start()
+        # self.graphWidget = pg.PlotWidget()
+        # self.setCentralWidget(self.graphWidget)
+  
+        # self.x = list(range(100))  # 100 time points
+        # self.y = [randint(0,100) for _ in range(100)]  # 100 data points
+        self.x = [0]
+        self.y1 = [self.motor.actual_velocity] # convert both here and below to rpm
+        self.y2 = [self.module.pps]
+  
+        self.graphWidget.setBackground('w')
+        
+        self.line1 = self.plot(self.x, self.y1, 'actual velocity', 'r')
+        self.line2 = self.plot(self.x, self.y2, 'set velocity', 'b')
+  
+        # pen = pg.mkPen(color=(255, 0, 0))
+        # self.data_line =  self.graphWidget.plot(self.x, self.y, pen=pen)
+        
+    def update_plot_data(self):
+        # self.x = self.x[1:]  # Remove the first y element.
+        self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+
+        # self.y = self.y[1:]  # Remove the first
+        self.y1.append(self.motor.actual_velocity)
+        self.y2.append(self.module.pps)
+
+        self.line1.setData(self.x, self.y1)  # Update the data.
+        self.line2.setData(self.x, self.y2)  # Update the data.
 
 
 
     ###   CALCULATORS (for unit conversion to pps)   ###
     
-    def pps_calculator(self):
-        self.module.rpm = self.rpmBox.value()
+    def rpmSlider_changed(self):
+        rpm = self.rpmSlider.value()
+        self.rpmBox.setValue(rpm)
+        self.pps_calculator(rpm)
+        
+    def rpmBox_changed(self):
+        rpm = self.rpmBox.value()
+        self.rpmSlider.setValue(rpm)
+        self.pps_calculator(rpm)
+    
+    def pps_calculator(self, rpm_value):
+        self.module.rpm = rpm_value
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
             
         
@@ -89,8 +155,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.motor.stop()
         # do not use time.sleep here!
         # set target_position to actual_position for the multi_control loop:
-        act_pos = self.motor.get_axis_parameter(self.motor.AP.ActualPosition)
-        self.motor.set_axis_parameter(self.motor.AP.TargetPosition, act_pos)
+        # act_pos = self.motor.get_axis_parameter(self.motor.AP.ActualPosition)
+        # self.motor.set_axis_parameter(self.motor.AP.TargetPosition, act_pos)
         # print status message
         print('Motor', self.module.moduleID, 'stopped!')
     
@@ -123,6 +189,23 @@ class Window(QMainWindow, Ui_MainWindow):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
         self.motor.move_by(self.msteps, self.module.pps)
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+        
+    def drive_profile(self, profile):
+        print('Driving profile...')
+        self.drivetimer = QTimer()
+        self.drivetimer.setInterval(100)
+        self.motor.rotate(self.module.pps)
+        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        self.drivetimer.start()
+        self.driveprofile_pushB.setEnabled(False)
+        self.stopprofile_pushB.setEnabled(True)
+        # print('Done!')
+        
+    def stop_profile(self):
+        self.drivetimer.stop()
+        self.stop_motor()
+        self.driveprofile_pushB.setEnabled(True)
+        self.stopprofile_pushB.setEnabled(False)
 
     
 
@@ -133,8 +216,8 @@ class Window(QMainWindow, Ui_MainWindow):
         be changed in the GUI. These should usually be fine...'''
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
-        self.rpmBox.setMinimum(0)
-        self.rpmBox.setMaximum(999)
+        self.rpmBox.setMinimum(-120)
+        self.rpmBox.setMaximum(120)
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(999)
