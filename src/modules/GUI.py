@@ -47,13 +47,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # initial calculation of pps:
         self.pps_calculator()
         # amount of single steps in multistep mode:
-        self.multistep_numberBox.setValue(10)   # amount of single steps 
-        ### Hardware settings values (with allowed min-max ranges)
-        # motor steps:
-        self.stepsBox.setValue(200)         # number of motor steps #TODO remove box
-        # motor microsteps:
-        self.microstepsBox.setValue(4)    # microstep multiplicator #TODO
-        # Motor selection radio buttons:
+        self.multistep_numberBox.setValue(10)   # amount of single steps
+        # set default button values:
         self.manual_radB.setChecked(True) # manual mode is default
         self.auto_radB.setChecked(False)
         
@@ -76,15 +71,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stopButton.clicked.connect(self.stop_motor)
         # refresh rpm when value is changed:
         self.rpmBox.valueChanged.connect(self.pps_calculator)
-        # Motor selection radio buttons:
-        # self.motor1_radioButton.pressed.connect(lambda: self.select_motor(1))
 
 
-    # def select_motor(self, motorID):
-    #     print('Selected motor:', motorID)
-        
-    
-    
+
     ###   CALCULATORS (for unit conversion to pps)   ###
     
     def pps_calculator(self):
@@ -92,7 +81,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
             
         
-        
+    
     ###   MOTOR CONTROL FUNCTIONS   ###
     
     def stop_motor(self):
@@ -135,7 +124,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.motor.move_by(self.msteps, self.module.pps)
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
 
-            
+    
+
+    ###   GENERAL GUI SETTINGS   ###
+    
     def set_allowed_ranges(self):
         '''Specify allowed min-max ranges for values that can 
         be changed in the GUI. These should usually be fine...'''
@@ -146,15 +138,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(999)
-        ### Hardware settings values
-        # motor steps:
-        self.stepsBox.setMinimum(0)
-        self.stepsBox.setMaximum(999)
-        # motor microsteps:
-        self.microstepsBox.setMinimum(0)
-        self.microstepsBox.setMaximum(9999)
         
-        
+    
 
 def run_app():
     app = 0
