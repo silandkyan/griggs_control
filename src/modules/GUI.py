@@ -14,7 +14,11 @@ from modules.gui.main_window_ui import Ui_MainWindow
 from .Motor import Motor 
 from pytrinamic.connections import ConnectionManager
 
-import pyqtgraph as pg # must be installed! QWidget must be promoted to plotWidget in QtDesigner!
+'''
+The following must be installed! 
+Also, QWidget must be promoted to plotWidget in QtDesigner! See here:
+https://www.pythonguis.com/tutorials/embed-pyqtgraph-custom-widgets-qt-app/'''
+import pyqtgraph as pg
 
 # from random import randint
 
@@ -96,20 +100,22 @@ class Window(QMainWindow, Ui_MainWindow):
         return line
     
     def graphwindow(self):
+        # setup window and timer:
         self.timer = QTimer()
         self.timer.setInterval(100)
         self.timer.timeout.connect(self.update_plot_data)
         self.timer.start()
-        # self.graphWidget = pg.PlotWidget()
-        # self.setCentralWidget(self.graphWidget)
+
+        # setup data containers:
+        self.x = [0] # time
+        self.y1 = [self.pps_rpm_converter(self.motor.actual_velocity)]
+        self.y2 = [self.pps_rpm_converter(self.module.pps)]
   
-        # self.x = list(range(100))  # 100 time points
-        # self.y = [randint(0,100) for _ in range(100)]  # 100 data points
-        self.x = [0]
-        self.y1 = [self.motor.actual_velocity] # convert both here and below to rpm
-        self.y2 = [self.module.pps]
-  
+        # figure styling:
         self.graphWidget.setBackground('w')
+        self.graphWidget.addLegend()
+        self.graphWidget.setLabel('left', 'velocity')
+        self.graphWidget.setLabel('bottom', 'time')
         
         self.line1 = self.plot(self.x, self.y1, 'actual velocity', 'r')
         self.line2 = self.plot(self.x, self.y2, 'set velocity', 'b')
@@ -122,8 +128,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
 
         # self.y = self.y[1:]  # Remove the first
-        self.y1.append(self.motor.actual_velocity)
-        self.y2.append(self.module.pps)
+        self.y1.append(self.pps_rpm_converter(self.motor.actual_velocity))
+        self.y2.append(self.pps_rpm_converter(self.module.pps))
 
         self.line1.setData(self.x, self.y1)  # Update the data.
         self.line2.setData(self.x, self.y2)  # Update the data.
@@ -145,6 +151,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def pps_calculator(self, rpm_value):
         self.module.rpm = rpm_value
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
+        
+    def pps_rpm_converter(self, pps):
+        rpm = pps / self.module.msteps_per_rev * 60
+        return round(rpm)
             
         
     
