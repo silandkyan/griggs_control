@@ -114,18 +114,15 @@ class Window(QMainWindow, Ui_MainWindow):
         # figure styling:
         self.graphWidget.setBackground('w')
         self.graphWidget.addLegend()
-        self.graphWidget.setLabel('left', 'velocity')
-        self.graphWidget.setLabel('bottom', 'time')
+        self.graphWidget.setLabel('left', 'velocity (rpm)')
+        self.graphWidget.setLabel('bottom', 'time (s)')
         
         self.line1 = self.plot(self.x, self.y1, 'actual velocity', 'r')
         self.line2 = self.plot(self.x, self.y2, 'set velocity', 'b')
   
-        # pen = pg.mkPen(color=(255, 0, 0))
-        # self.data_line =  self.graphWidget.plot(self.x, self.y, pen=pen)
-        
     def update_plot_data(self):
-        # self.x = self.x[1:]  # Remove the first y element.
-        self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+        # self.x = self.x[1:]  # Remove the first x element
+        self.x.append(self.x[-1] + self.timer.interval() / 1000)  # add new value according to timer interval
 
         # self.y = self.y[1:]  # Remove the first
         self.y1.append(self.pps_rpm_converter(self.motor.actual_velocity))
@@ -136,7 +133,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
 
-    ###   CALCULATORS (for unit conversion to pps)   ###
+    ###   CALCULATORS (for unit conversion)   ###
     
     def rpmSlider_changed(self):
         rpm = self.rpmSlider.value()
@@ -164,9 +161,6 @@ class Window(QMainWindow, Ui_MainWindow):
         '''Stop signal; can always be sent to the motors.'''
         self.motor.stop()
         # do not use time.sleep here!
-        # set target_position to actual_position for the multi_control loop:
-        # act_pos = self.motor.get_axis_parameter(self.motor.AP.ActualPosition)
-        # self.motor.set_axis_parameter(self.motor.AP.TargetPosition, act_pos)
         # print status message
         print('Motor', self.module.moduleID, 'stopped!')
     
