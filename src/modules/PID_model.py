@@ -14,9 +14,10 @@ import matplotlib.pyplot as plt
 
 plt.clf()
 
-def PID_controller(value, setpoint, Kp, Ki, Kd):
-    error = setpoint - value
-    output = ( output[k-1] + a0 * error[k] + a1 * error[k-1] + a2 * error[k-2] ) 
+# def PID_controller(value, setpoint, Kp, Ki, Kd):
+#     error = setpoint - value
+#     output = ( output[k-1] + a0 * error[k] + a1 * error[k-1] + a2 * error[k-2] ) 
+#     return output
 
 
 # parameters

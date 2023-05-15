@@ -4,6 +4,9 @@
 Created on Thu Feb 16 10:06:33 2023
 
 @author: pgross
+
+When running this program with Spyder, make sure that all variables are 
+cleared before execution in the settings.
 """
 #####   Importing Packages   #####
 from modules.GUI import run_app

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
+    <width>452</width>
     <height>607</height>
    </rect>
   </property>
@@ -111,8 +111,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>20</y>
+      <x>260</x>
+      <y>290</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -124,8 +124,8 @@
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>280</y>
+      <x>350</x>
+      <y>490</y>
       <width>81</width>
       <height>41</height>
      </rect>
@@ -160,11 +160,17 @@
    <widget class="QSpinBox" name="rpmBox">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>20</y>
+      <x>310</x>
+      <y>280</y>
       <width>71</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>-120</number>
+    </property>
+    <property name="maximum">
+     <number>120</number>
     </property>
    </widget>
    <widget class="QPushButton" name="stopButton">
@@ -255,19 +261,82 @@
      <string notr="true">controlmode_bGrp</string>
     </attribute>
    </widget>
+   <widget class="QPushButton" name="driveprofile_pushB">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>320</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>drive profile</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="rpmSlider">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>320</y>
+      <width>160</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-120</number>
+    </property>
+    <property name="maximum">
+     <number>120</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="PlotWidget" name="graphWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>379</y>
+      <width>321</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stopprofile_pushB">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>320</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>stop profile</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>382</width>
+     <width>452</width>
      <height>22</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>

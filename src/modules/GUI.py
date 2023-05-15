@@ -8,11 +8,20 @@ Created on Tue Jan 17 10:08:43 2023
 
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
+from PyQt5.QtCore import QTimer
 from modules.gui.main_window_ui import Ui_MainWindow
 
 from .Motor import Motor 
 from pytrinamic.connections import ConnectionManager
+import time
 
+'''
+The following must be installed! 
+Also, QWidget must be promoted to plotWidget in QtDesigner! See here:
+https://www.pythonguis.com/tutorials/embed-pyqtgraph-custom-widgets-qt-app/'''
+import pyqtgraph as pg
+
+# from random import randint
 
 ### Module connection ###
 port_list = ConnectionManager().list_connections()
@@ -37,6 +46,13 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
+        # data containers:
+        self.init_data_containers()
+        # graphing window:
+        self.init_graphwindow()
+        # timers:
+        self.set_timers()
+
         self.show()
         
     def set_default_values(self):
@@ -44,13 +60,30 @@ class Window(QMainWindow, Ui_MainWindow):
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setValue(10)    # default rpm
+        # adjust slider position to match rpmBox value:
+        self.rpmSlider.setValue(self.rpmBox.value())
         # initial calculation of pps:
-        self.pps_calculator()
+        self.pps_calculator(self.rpmBox.value())
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(10)   # amount of single steps
         # set default button values:
         self.manual_radB.setChecked(True) # manual mode is default
         self.auto_radB.setChecked(False)
+        
+    def set_timers(self):
+        self.basetimer = 100 # in ms
+        # data timer:
+        self.datatimer = QTimer()
+        self.data_timerfactor = 1
+        self.datatimer.setInterval(self.basetimer * self.data_timerfactor)
+        self.datatimer.timeout.connect(self.update_data)
+        self.datatimer.start()
+        # graphing timer:
+        self.graphtimer = QTimer()
+        self.graph_timerfactor = 1
+        self.graphtimer.setInterval(self.basetimer * self.graph_timerfactor)
+        self.graphtimer.timeout.connect(self.update_plot)
+        self.graphtimer.start()
         
         
     def connectSignalsSlots(self):
@@ -70,15 +103,117 @@ class Window(QMainWindow, Ui_MainWindow):
         # Stop button:
         self.stopButton.clicked.connect(self.stop_motor)
         # refresh rpm when value is changed:
-        self.rpmBox.valueChanged.connect(self.pps_calculator)
+        self.rpmBox.valueChanged.connect(self.rpmBox_changed)
+        # update rpm by slider movement:
+        self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
+        # Drive profile:
+        self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        self.stopprofile_pushB.clicked.connect(self.stop_profile)
 
 
 
-    ###   CALCULATORS (for unit conversion to pps)   ###
+    ###   DATA MANAGEMENT   ###
     
-    def pps_calculator(self):
-        self.module.rpm = self.rpmBox.value()
+    def init_data_containers(self):
+        self.data_chunk_size = 99
+        self.savecounter = 1 # != 0 because of initialization, etc.
+        self.time = [0] # time
+        self.t0 = time.time()
+        self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
+        self.set_vel = [self.pps_rpm_converter(self.module.pps)]
+        print(self.time, self.act_vel, self.set_vel)
+        self.init_save_files()
+
+        
+    def update_data(self):
+        # add new values
+        self.time.append(time.time()-self.t0)
+        self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
+        self.set_vel.append(self.pps_rpm_converter(self.module.pps))
+        # print('times:', self.time[-1], time.time()-self.t0)
+        
+        # check counter:
+        # print('counter:', self.savecounter)
+        if self.savecounter == self.data_chunk_size:
+            self.save_values()
+            self.savecounter = 0
+        else:
+            self.savecounter += 1
+        # print('counter:', self.savecounter)
+        
+        # print('length:', len(self.time))
+        if len(self.time) == self.data_chunk_size + 1:
+            self.time = self.time[1:]       # remove the first elements
+            self.act_vel = self.act_vel[1:]
+            self.set_vel = self.set_vel[1:]
+        # print('length:', len(self.time))
+            
+    def init_save_files(self):
+        '''Clears files for next run.'''
+        print('overwrite save files')
+        with open('act_vel.txt', 'w') as f:
+            f.write('')
+            # f.write("%s " % int(self.act_vel[0]))
+            # f.write("\n")
+        with open('time.txt', 'w') as f:
+            f.write('')
+            # f.write("%s " % int(self.time[0]))
+            # f.write("\n")
+        
+    def save_values(self):
+        '''Saves values to external files.'''
+        with open('act_vel.txt', 'a') as f:
+            for elem in self.act_vel:
+                f.write("%s " % int(elem))
+                f.write("\n")
+        with open('time.txt', 'a') as f:
+            for elem in self.time:
+                f.write("%s " % round(elem,3))
+                f.write("\n")
+        print('Saved all positions to file!')
+
+
+    ###   GRAPH WINDOW   ###
+    
+    def plot(self, x, y, plotname, color):
+        pen = pg.mkPen(color=color)
+        line = self.graphWidget.plot(x, y, name=plotname, pen=pen)
+        return line
+    
+    def init_graphwindow(self):
+        # figure styling:
+        self.graphWidget.setBackground('w')
+        self.graphWidget.addLegend()
+        self.graphWidget.setLabel('left', 'velocity (rpm)')
+        self.graphWidget.setLabel('bottom', 'time (s)')
+        self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
+        self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+  
+    def update_plot(self):
+        self.line1.setData(self.time, self.act_vel)
+        self.line2.setData(self.time, self.set_vel)
+
+
+
+    ###   CALCULATORS (for unit conversion)   ###
+    
+    def rpmSlider_changed(self):
+        rpm = self.rpmSlider.value()
+        self.rpmBox.setValue(rpm)
+        self.pps_calculator(rpm)
+        
+    def rpmBox_changed(self):
+        rpm = self.rpmBox.value()
+        self.rpmSlider.setValue(rpm)
+        self.pps_calculator(rpm)
+    
+    def pps_calculator(self, rpm_value):
+        self.module.rpm = rpm_value
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
+        
+    def pps_rpm_converter(self, pps):
+        rpm = pps / self.module.msteps_per_rev * 60
+        return round(rpm)
             
         
     
@@ -88,9 +223,6 @@ class Window(QMainWindow, Ui_MainWindow):
         '''Stop signal; can always be sent to the motors.'''
         self.motor.stop()
         # do not use time.sleep here!
-        # set target_position to actual_position for the multi_control loop:
-        act_pos = self.motor.get_axis_parameter(self.motor.AP.ActualPosition)
-        self.motor.set_axis_parameter(self.motor.AP.TargetPosition, act_pos)
         # print status message
         print('Motor', self.module.moduleID, 'stopped!')
     
@@ -123,6 +255,23 @@ class Window(QMainWindow, Ui_MainWindow):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
         self.motor.move_by(self.msteps, self.module.pps)
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+        
+    def drive_profile(self, profile):
+        print('Driving profile...')
+        self.drivetimer = QTimer()
+        self.drivetimer.setInterval(100)
+        self.motor.rotate(self.module.pps)
+        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        self.drivetimer.start()
+        self.driveprofile_pushB.setEnabled(False)
+        self.stopprofile_pushB.setEnabled(True)
+        # print('Done!')
+        
+    def stop_profile(self):
+        self.drivetimer.stop()
+        self.stop_motor()
+        self.driveprofile_pushB.setEnabled(True)
+        self.stopprofile_pushB.setEnabled(False)
 
     
 
@@ -133,13 +282,13 @@ class Window(QMainWindow, Ui_MainWindow):
         be changed in the GUI. These should usually be fine...'''
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
-        self.rpmBox.setMinimum(0)
-        self.rpmBox.setMaximum(999)
+        self.rpmBox.setMinimum(-120)
+        self.rpmBox.setMaximum(120)
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(999)
         
-    
+        
 
 def run_app():
     app = 0
