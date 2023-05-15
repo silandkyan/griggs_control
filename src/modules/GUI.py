@@ -13,6 +13,7 @@ from modules.gui.main_window_ui import Ui_MainWindow
 
 from .Motor import Motor 
 from pytrinamic.connections import ConnectionManager
+import time
 
 '''
 The following must be installed! 
@@ -45,8 +46,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
+        # data containers:
+        self.init_data_containers()
         # graphing window:
-        self.graphwindow()
+        self.init_graphwindow()
+        # timers:
+        self.set_timers()
 
         self.show()
         
@@ -64,6 +69,21 @@ class Window(QMainWindow, Ui_MainWindow):
         # set default button values:
         self.manual_radB.setChecked(True) # manual mode is default
         self.auto_radB.setChecked(False)
+        
+    def set_timers(self):
+        self.basetimer = 100 # in ms
+        # data timer:
+        self.datatimer = QTimer()
+        self.data_timerfactor = 1
+        self.datatimer.setInterval(self.basetimer * self.data_timerfactor)
+        self.datatimer.timeout.connect(self.update_data)
+        self.datatimer.start()
+        # graphing timer:
+        self.graphtimer = QTimer()
+        self.graph_timerfactor = 1
+        self.graphtimer.setInterval(self.basetimer * self.graph_timerfactor)
+        self.graphtimer.timeout.connect(self.update_plot)
+        self.graphtimer.start()
         
         
     def connectSignalsSlots(self):
@@ -92,6 +112,67 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
 
+    ###   DATA MANAGEMENT   ###
+    
+    def init_data_containers(self):
+        self.data_chunk_size = 99
+        self.savecounter = 1 # != 0 because of initialization, etc.
+        self.time = [0] # time
+        self.t0 = time.time()
+        self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
+        self.set_vel = [self.pps_rpm_converter(self.module.pps)]
+        print(self.time, self.act_vel, self.set_vel)
+        self.init_save_files()
+
+        
+    def update_data(self):
+        # add new values
+        self.time.append(time.time()-self.t0)
+        self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
+        self.set_vel.append(self.pps_rpm_converter(self.module.pps))
+        # print('times:', self.time[-1], time.time()-self.t0)
+        
+        # check counter:
+        # print('counter:', self.savecounter)
+        if self.savecounter == self.data_chunk_size:
+            self.save_values()
+            self.savecounter = 0
+        else:
+            self.savecounter += 1
+        # print('counter:', self.savecounter)
+        
+        # print('length:', len(self.time))
+        if len(self.time) == self.data_chunk_size + 1:
+            self.time = self.time[1:]       # remove the first elements
+            self.act_vel = self.act_vel[1:]
+            self.set_vel = self.set_vel[1:]
+        # print('length:', len(self.time))
+            
+    def init_save_files(self):
+        '''Clears files for next run.'''
+        print('overwrite save files')
+        with open('act_vel.txt', 'w') as f:
+            f.write('')
+            # f.write("%s " % int(self.act_vel[0]))
+            # f.write("\n")
+        with open('time.txt', 'w') as f:
+            f.write('')
+            # f.write("%s " % int(self.time[0]))
+            # f.write("\n")
+        
+    def save_values(self):
+        '''Saves values to external files.'''
+        with open('act_vel.txt', 'a') as f:
+            for elem in self.act_vel:
+                f.write("%s " % int(elem))
+                f.write("\n")
+        with open('time.txt', 'a') as f:
+            for elem in self.time:
+                f.write("%s " % round(elem,3))
+                f.write("\n")
+        print('Saved all positions to file!')
+
+
     ###   GRAPH WINDOW   ###
     
     def plot(self, x, y, plotname, color):
@@ -99,37 +180,18 @@ class Window(QMainWindow, Ui_MainWindow):
         line = self.graphWidget.plot(x, y, name=plotname, pen=pen)
         return line
     
-    def graphwindow(self):
-        # setup window and timer:
-        self.timer = QTimer()
-        self.timer.setInterval(100)
-        self.timer.timeout.connect(self.update_plot_data)
-        self.timer.start()
-
-        # setup data containers:
-        self.x = [0] # time
-        self.y1 = [self.pps_rpm_converter(self.motor.actual_velocity)]
-        self.y2 = [self.pps_rpm_converter(self.module.pps)]
-  
+    def init_graphwindow(self):
         # figure styling:
         self.graphWidget.setBackground('w')
         self.graphWidget.addLegend()
         self.graphWidget.setLabel('left', 'velocity (rpm)')
         self.graphWidget.setLabel('bottom', 'time (s)')
-        
-        self.line1 = self.plot(self.x, self.y1, 'actual velocity', 'r')
-        self.line2 = self.plot(self.x, self.y2, 'set velocity', 'b')
+        self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
+        self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
   
-    def update_plot_data(self):
-        # self.x = self.x[1:]  # Remove the first x element
-        self.x.append(self.x[-1] + self.timer.interval() / 1000)  # add new value according to timer interval
-
-        # self.y = self.y[1:]  # Remove the first
-        self.y1.append(self.pps_rpm_converter(self.motor.actual_velocity))
-        self.y2.append(self.pps_rpm_converter(self.module.pps))
-
-        self.line1.setData(self.x, self.y1)  # Update the data.
-        self.line2.setData(self.x, self.y2)  # Update the data.
+    def update_plot(self):
+        self.line1.setData(self.time, self.act_vel)
+        self.line2.setData(self.time, self.set_vel)
 
 
 
@@ -226,7 +288,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(999)
         
-    
+        
 
 def run_app():
     app = 0
