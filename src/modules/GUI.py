@@ -107,7 +107,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # update rpm by slider movement:
         self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
         # Drive profile:
-        self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        # self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
 
 
@@ -121,6 +122,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.t0 = time.time()
         self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
+        self.SP = [self.setpointSlider.value()]
+        self.PV = [self.procvarSlider.value()]
+        self.error = [0, 0, 0]
         print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
 
@@ -130,6 +134,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.time.append(time.time()-self.t0)
         self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
+        self.SP.append(self.setpointSlider.value())
+        self.PV.append(self.procvarSlider.value())
         # print('times:', self.time[-1], time.time()-self.t0)
         
         # check counter:
@@ -143,9 +149,11 @@ class Window(QMainWindow, Ui_MainWindow):
         
         # print('length:', len(self.time))
         if len(self.time) == self.data_chunk_size + 1:
-            self.time = self.time[1:]       # remove the first elements
-            self.act_vel = self.act_vel[1:]
-            self.set_vel = self.set_vel[1:]
+            self.time.pop(0)       # remove the first elements
+            self.act_vel.pop(0)
+            self.set_vel.pop(0)
+            self.SP.pop(0)
+            self.PV.pop(0)
         # print('length:', len(self.time))
             
     def init_save_files(self):
@@ -153,12 +161,8 @@ class Window(QMainWindow, Ui_MainWindow):
         print('overwrite save files')
         with open('act_vel.txt', 'w') as f:
             f.write('')
-            # f.write("%s " % int(self.act_vel[0]))
-            # f.write("\n")
         with open('time.txt', 'w') as f:
             f.write('')
-            # f.write("%s " % int(self.time[0]))
-            # f.write("\n")
         
     def save_values(self):
         '''Saves values to external files.'''
@@ -188,10 +192,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('bottom', 'time (s)')
         self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+        self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
+        self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
+        self.line3.setData(self.time, self.SP)
+        self.line4.setData(self.time, self.PV)
 
 
 
@@ -211,10 +219,30 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.rpm = rpm_value
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
         
+    def rpm_pps_converter(self, rpm):
+        pps = rpm * self.module.msteps_per_rev / 60
+        return pps
+        
     def pps_rpm_converter(self, pps):
         rpm = pps / self.module.msteps_per_rev * 60
         return round(rpm)
-            
+    
+    def PID_setup(self, dt, Kp, Ki, Kd):
+        a0 = Kp + Ki*dt + Kd/dt
+        a1 = - Kp - 2*Kd/dt
+        a2 = Kd/dt
+        print(a0, a1, a2)
+        return a0, a1, a2
+    
+    # TODO: implementation of PID_controller does not work, gets into runaway mode;
+    # try do decouple with a new slider to simulate the procvar instead of reading it...
+    # maybe build a controller class
+    def PID_controller(self, procvar, contvar, setpoint, error, a0, a1, a2):
+        print(error)
+        error.pop(0)
+        error.append(setpoint - procvar)
+        self.contvar = ( contvar + a0 * error[-1] + a1 * error[-2] + a2 * error[-3] )
+        print(procvar, self.contvar, setpoint, error)
         
     
     ###   MOTOR CONTROL FUNCTIONS   ###
@@ -267,8 +295,29 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stopprofile_pushB.setEnabled(True)
         # print('Done!')
         
+    def drive_PID(self):
+        interval = 100
+        self.drivetimer = QTimer()
+        self.drivetimer.setInterval(interval)
+        
+    #     # TODO: something with the pid implementation is wrong...
+    #     a0, a1, a2 = self.PID_setup(interval, 0.8, 0.9, 0.001)
+    #     self.drivetimer.timeout.connect(
+    #         lambda: self.PID_controller(self.motor.actual_velocity, 
+    #                                     self.motor.actual_velocity, 
+    #                                     self.rpm_pps_converter(self.set_vel[-1]), 
+    #                                     self.error, 
+    #                                     a0, a1, a2))
+    #     self.drivetimer.timeout.connect(lambda: self.pps_calculator(self.contvar))
+    #     self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        
+        self.drivetimer.start()
+        self.driveprofile_pushB.setEnabled(False)
+        self.stopprofile_pushB.setEnabled(True)
+        
     def stop_profile(self):
-        self.drivetimer.stop()
+        if hasattr(self, 'drivetimer'):
+            self.drivetimer.stop()
         self.stop_motor()
         self.driveprofile_pushB.setEnabled(True)
         self.stopprofile_pushB.setEnabled(False)
