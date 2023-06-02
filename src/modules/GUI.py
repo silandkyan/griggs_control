@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from PyQt5.QtCore import QTimer
 from modules.gui.main_window_ui import Ui_MainWindow
 
-from .Motor import Motor 
+from .Motor import Motor
+from .Controller import Controller 
 from pytrinamic.connections import ConnectionManager
 import time
 
@@ -26,7 +27,6 @@ import pyqtgraph as pg
 ### Module connection ###
 port_list = ConnectionManager().list_connections()
 m = Motor(port_list[0])
-
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -124,8 +124,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
         self.SP = [self.setpointSlider.value()]
         self.PV = [self.procvarSlider.value()]
-        self.error = [0, 0, 0]
-        print(self.time, self.act_vel, self.set_vel)
+        # self.CV = [0]
+        # self.error = [0, 0, 0]
+        # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
 
         
@@ -136,6 +137,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
         self.SP.append(self.setpointSlider.value())
         self.PV.append(self.procvarSlider.value())
+        # self.CV.append(self.CV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
         
         # check counter:
@@ -154,6 +156,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.set_vel.pop(0)
             self.SP.pop(0)
             self.PV.pop(0)
+            # self.CV.pop(0)
         # print('length:', len(self.time))
             
     def init_save_files(self):
@@ -194,12 +197,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
+        # self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
+        # self.line5.setData(self.time, self.CV)
 
 
 
@@ -227,22 +232,22 @@ class Window(QMainWindow, Ui_MainWindow):
         rpm = pps / self.module.msteps_per_rev * 60
         return round(rpm)
     
-    def PID_setup(self, dt, Kp, Ki, Kd):
-        a0 = Kp + Ki*dt + Kd/dt
-        a1 = - Kp - 2*Kd/dt
-        a2 = Kd/dt
-        print(a0, a1, a2)
-        return a0, a1, a2
+    # def PID_setup(self, dt, Kp, Ki, Kd):
+    #     a0 = Kp + Ki*dt + Kd/dt
+    #     a1 = - Kp - 2*Kd/dt
+    #     a2 = Kd/dt
+    #     print(a0, a1, a2)
+    #     return a0, a1, a2
     
     # TODO: implementation of PID_controller does not work, gets into runaway mode;
     # try do decouple with a new slider to simulate the procvar instead of reading it...
     # maybe build a controller class
-    def PID_controller(self, procvar, contvar, setpoint, error, a0, a1, a2):
-        print(error)
-        error.pop(0)
-        error.append(setpoint - procvar)
-        self.contvar = ( contvar + a0 * error[-1] + a1 * error[-2] + a2 * error[-3] )
-        print(procvar, self.contvar, setpoint, error)
+    # def PID_controller(self, procvar, contvar, setpoint, error, a0, a1, a2):
+    #     print(error)
+    #     error.pop(0)
+    #     error.append(setpoint - procvar)
+    #     self.contvar = ( contvar + a0 * error[-1] + a1 * error[-2] + a2 * error[-3] )
+    #     print(procvar, self.contvar, setpoint, error)
         
     
     ###   MOTOR CONTROL FUNCTIONS   ###
@@ -296,7 +301,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # print('Done!')
         
     def drive_PID(self):
-        interval = 100
+        interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
         
@@ -310,6 +315,16 @@ class Window(QMainWindow, Ui_MainWindow):
     #                                     a0, a1, a2))
     #     self.drivetimer.timeout.connect(lambda: self.pps_calculator(self.contvar))
     #     self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        
+        c = Controller(interval/1000, 1, 0.01, 0.01)
+        self.drivetimer.timeout.connect(
+            lambda: c.update(self.setpointSlider.value(), 
+                             self.procvarSlider.value(), 
+                             self.pps_rpm_converter(self.motor.actual_velocity)))
+        self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
+        self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
+        # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
+        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
         
         self.drivetimer.start()
         self.driveprofile_pushB.setEnabled(False)
