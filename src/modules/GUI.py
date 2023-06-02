@@ -7,14 +7,23 @@ Created on Tue Jan 17 10:08:43 2023
 """
 
 import sys
+import time
+
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from PyQt5.QtCore import QTimer
-from modules.gui.main_window_ui import Ui_MainWindow
 
+from pytrinamic.connections import ConnectionManager
+
+import time
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+
+from modules.gui.main_window_ui import Ui_MainWindow
 from .Motor import Motor
 from .Controller import Controller 
-from pytrinamic.connections import ConnectionManager
-import time
+
 
 '''
 The following must be installed! 
@@ -48,6 +57,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.connectSignalsSlots()
         # data containers:
         self.init_data_containers()
+        # ADC connection:
+        chan0 = self.init_adc()
         # graphing window:
         self.init_graphwindow()
         # timers:
@@ -128,7 +139,6 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.error = [0, 0, 0]
         # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
-
         
     def update_data(self):
         # add new values
@@ -178,6 +188,32 @@ class Window(QMainWindow, Ui_MainWindow):
                 f.write("%s " % round(elem,3))
                 f.write("\n")
         print('Saved all positions to file!')
+        
+    
+    
+    ###   RASPBERRY PI   ###
+    
+    def init_adc(self):
+        # Create the I2C bus:
+        i2c = busio.I2C(board.SCL, board.SDA)
+        
+        # Create the ADC object using the I2C bus:
+        ads = ADS.ADS1115(i2c)
+        
+        # Create single-ended input on channel 1:
+        chan0 = AnalogIn(ads, ADS.P1)
+        
+        # Create differential input between channel 0 and 1:
+        # currently not working since only one pin is connected
+        # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
+        
+        # print header:
+        print("{:>5}\t{:>5}".format('raw', 'v'))
+        
+        # print first line of data:
+        print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+        
+        return chan0
 
 
     ###   GRAPH WINDOW   ###
@@ -232,23 +268,7 @@ class Window(QMainWindow, Ui_MainWindow):
         rpm = pps / self.module.msteps_per_rev * 60
         return round(rpm)
     
-    # def PID_setup(self, dt, Kp, Ki, Kd):
-    #     a0 = Kp + Ki*dt + Kd/dt
-    #     a1 = - Kp - 2*Kd/dt
-    #     a2 = Kd/dt
-    #     print(a0, a1, a2)
-    #     return a0, a1, a2
-    
-    # TODO: implementation of PID_controller does not work, gets into runaway mode;
-    # try do decouple with a new slider to simulate the procvar instead of reading it...
-    # maybe build a controller class
-    # def PID_controller(self, procvar, contvar, setpoint, error, a0, a1, a2):
-    #     print(error)
-    #     error.pop(0)
-    #     error.append(setpoint - procvar)
-    #     self.contvar = ( contvar + a0 * error[-1] + a1 * error[-2] + a2 * error[-3] )
-    #     print(procvar, self.contvar, setpoint, error)
-        
+ 
     
     ###   MOTOR CONTROL FUNCTIONS   ###
     
@@ -304,25 +324,14 @@ class Window(QMainWindow, Ui_MainWindow):
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
-        
-    #     # TODO: something with the pid implementation is wrong...
-    #     a0, a1, a2 = self.PID_setup(interval, 0.8, 0.9, 0.001)
-    #     self.drivetimer.timeout.connect(
-    #         lambda: self.PID_controller(self.motor.actual_velocity, 
-    #                                     self.motor.actual_velocity, 
-    #                                     self.rpm_pps_converter(self.set_vel[-1]), 
-    #                                     self.error, 
-    #                                     a0, a1, a2))
-    #     self.drivetimer.timeout.connect(lambda: self.pps_calculator(self.contvar))
-    #     self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
-        
-        c = Controller(interval/1000, 1, 0.01, 0.01)
+                
+        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 good?
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
                              self.procvarSlider.value(), 
                              self.pps_rpm_converter(self.motor.actual_velocity)))
         self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
-        self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
+        # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
         # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
         self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
         

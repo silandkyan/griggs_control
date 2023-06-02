@@ -25,7 +25,7 @@ class Controller():
         self.a0 = self.Kp + self.Ki * self.dt + self.Kd / self.dt
         self.a1 = -self.Kp - 2 * self.Kd / self.dt
         self.a2 = self.Kd / self.dt
-        print('a-values:', self.a0, self.a1, self.a2)
+        # print('a-values:', self.a0, self.a1, self.a2)
         
     def update(self, setpoint, procvar, contvar):
         # update values:
@@ -39,4 +39,4 @@ class Controller():
         self.output = (self.contvar + self.a0 * self.error[-1] 
                        + self.a1 * self.error[-2] 
                        + self.a2 * self.error[-3])
-        print('PID values:', self.setpoint, self.procvar, self.contvar, self.error)
+        # print('PID values:', self.setpoint, self.procvar, self.contvar, self.error)
