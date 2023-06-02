@@ -13,3 +13,9 @@ setup of Raspberry Pi:
 7. now switch to the permanent network connection (e.g. disable personal hotspot)
 8. then you can install python packages and clone the needed github repos
 9. after reboot, you need to reconnect to the vpn to have an internet connection
+
+setup of I2C interface:
+for communication with ADC board ADS1115, see e.g.:
+https://wiki.seeedstudio.com/4-Channel_16-Bit_ADC_for_Raspberry_Pi-ADS1115/
+1. "sudo raspi-config", navigate to interface options and enable I2C interface
+2. reboot. I2C should be working now
