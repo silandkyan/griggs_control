@@ -55,10 +55,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
-        # data containers:
-        self.init_data_containers()
         # ADC connection:
         self.chan0 = self.init_adc()
+        # data containers:
+        self.init_data_containers()
         # graphing window:
         self.init_graphwindow()
         # timers:
