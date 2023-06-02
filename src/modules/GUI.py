@@ -7,13 +7,23 @@ Created on Tue Jan 17 10:08:43 2023
 """
 
 import sys
+import time
+
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from PyQt5.QtCore import QTimer
-from modules.gui.main_window_ui import Ui_MainWindow
 
-from .Motor import Motor 
 from pytrinamic.connections import ConnectionManager
+
 import time
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+
+from modules.gui.main_window_ui import Ui_MainWindow
+from .Motor import Motor
+from .Controller import Controller 
+
 
 '''
 The following must be installed! 
@@ -26,7 +36,6 @@ import pyqtgraph as pg
 ### Module connection ###
 port_list = ConnectionManager().list_connections()
 m = Motor(port_list[0])
-
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -48,6 +57,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.connectSignalsSlots()
         # data containers:
         self.init_data_containers()
+        # ADC connection:
+        chan0 = self.init_adc()
         # graphing window:
         self.init_graphwindow()
         # timers:
@@ -107,7 +118,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # update rpm by slider movement:
         self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
         # Drive profile:
-        self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        # self.driveprofile_pushB.clicked.connect(self.drive_profile)
+        self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
 
 
@@ -121,15 +133,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.t0 = time.time()
         self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
-        print(self.time, self.act_vel, self.set_vel)
+        self.SP = [self.setpointSlider.value()]
+        self.PV = [self.procvarSlider.value()]
+        # self.CV = [0]
+        # self.error = [0, 0, 0]
+        # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
-
         
     def update_data(self):
         # add new values
         self.time.append(time.time()-self.t0)
         self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
+        self.SP.append(self.setpointSlider.value())
+        self.PV.append(self.procvarSlider.value())
+        # self.CV.append(self.CV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
         
         # check counter:
@@ -143,9 +161,12 @@ class Window(QMainWindow, Ui_MainWindow):
         
         # print('length:', len(self.time))
         if len(self.time) == self.data_chunk_size + 1:
-            self.time = self.time[1:]       # remove the first elements
-            self.act_vel = self.act_vel[1:]
-            self.set_vel = self.set_vel[1:]
+            self.time.pop(0)       # remove the first elements
+            self.act_vel.pop(0)
+            self.set_vel.pop(0)
+            self.SP.pop(0)
+            self.PV.pop(0)
+            # self.CV.pop(0)
         # print('length:', len(self.time))
             
     def init_save_files(self):
@@ -153,12 +174,8 @@ class Window(QMainWindow, Ui_MainWindow):
         print('overwrite save files')
         with open('act_vel.txt', 'w') as f:
             f.write('')
-            # f.write("%s " % int(self.act_vel[0]))
-            # f.write("\n")
         with open('time.txt', 'w') as f:
             f.write('')
-            # f.write("%s " % int(self.time[0]))
-            # f.write("\n")
         
     def save_values(self):
         '''Saves values to external files.'''
@@ -171,6 +188,32 @@ class Window(QMainWindow, Ui_MainWindow):
                 f.write("%s " % round(elem,3))
                 f.write("\n")
         print('Saved all positions to file!')
+        
+    
+    
+    ###   RASPBERRY PI   ###
+    
+    def init_adc(self):
+        # Create the I2C bus:
+        i2c = busio.I2C(board.SCL, board.SDA)
+        
+        # Create the ADC object using the I2C bus:
+        ads = ADS.ADS1115(i2c)
+        
+        # Create single-ended input on channel 1:
+        chan0 = AnalogIn(ads, ADS.P1)
+        
+        # Create differential input between channel 0 and 1:
+        # currently not working since only one pin is connected
+        # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
+        
+        # print header:
+        print("{:>5}\t{:>5}".format('raw', 'v'))
+        
+        # print first line of data:
+        print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+        
+        return chan0
 
 
     ###   GRAPH WINDOW   ###
@@ -188,10 +231,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('bottom', 'time (s)')
         self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+        self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
+        self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
+        # self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
+        self.line3.setData(self.time, self.SP)
+        self.line4.setData(self.time, self.PV)
+        # self.line5.setData(self.time, self.CV)
 
 
 
@@ -211,11 +260,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.rpm = rpm_value
         self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
         
+    def rpm_pps_converter(self, rpm):
+        pps = rpm * self.module.msteps_per_rev / 60
+        return pps
+        
     def pps_rpm_converter(self, pps):
         rpm = pps / self.module.msteps_per_rev * 60
         return round(rpm)
-            
-        
+    
+ 
     
     ###   MOTOR CONTROL FUNCTIONS   ###
     
@@ -267,8 +320,28 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stopprofile_pushB.setEnabled(True)
         # print('Done!')
         
+    def drive_PID(self):
+        interval = 1000
+        self.drivetimer = QTimer()
+        self.drivetimer.setInterval(interval)
+                
+        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 good?
+        self.drivetimer.timeout.connect(
+            lambda: c.update(self.setpointSlider.value(), 
+                             self.procvarSlider.value(), 
+                             self.pps_rpm_converter(self.motor.actual_velocity)))
+        self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
+        # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
+        # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
+        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        
+        self.drivetimer.start()
+        self.driveprofile_pushB.setEnabled(False)
+        self.stopprofile_pushB.setEnabled(True)
+        
     def stop_profile(self):
-        self.drivetimer.stop()
+        if hasattr(self, 'drivetimer'):
+            self.drivetimer.stop()
         self.stop_motor()
         self.driveprofile_pushB.setEnabled(True)
         self.stopprofile_pushB.setEnabled(False)
