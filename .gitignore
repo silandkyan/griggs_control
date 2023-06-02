@@ -165,3 +165,4 @@ desktop.ini
 # Project-related
 act_vel.txt
 time.txt
+*.pyc
