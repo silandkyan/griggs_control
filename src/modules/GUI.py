@@ -14,7 +14,7 @@ from PyQt5.QtCore import QTimer
 
 from pytrinamic.connections import ConnectionManager
 
-import time
+# import time
 import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
@@ -55,10 +55,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
+        # ADC connection:
+        self.chan0 = self.init_adc()
         # data containers:
         self.init_data_containers()
-        # ADC connection:
-        chan0 = self.init_adc()
         # graphing window:
         self.init_graphwindow()
         # timers:
@@ -134,7 +134,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
         self.SP = [self.setpointSlider.value()]
-        self.PV = [self.procvarSlider.value()]
+        # self.PV = [self.procvarSlider.value()]
+        self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
         # self.CV = [0]
         # self.error = [0, 0, 0]
         # print(self.time, self.act_vel, self.set_vel)
@@ -146,7 +147,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
         self.SP.append(self.setpointSlider.value())
-        self.PV.append(self.procvarSlider.value())
+        # self.PV.append(self.procvarSlider.value())
+        self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
         # self.CV.append(self.CV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
         
@@ -328,7 +330,8 @@ class Window(QMainWindow, Ui_MainWindow):
         c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 good?
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
-                             self.procvarSlider.value(), 
+                             # self.procvarSlider.value(), 
+                             int(self.chan0.voltage/3.3 * 240 - 120), 
                              self.pps_rpm_converter(self.motor.actual_velocity)))
         self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
         # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
