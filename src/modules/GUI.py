@@ -153,7 +153,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
-        print('t:', self.time[-1], 'CV:', self.set_vel[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
+        print('t:', round(self.time[-1], 2), 'CV:', self.set_vel[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
@@ -331,8 +331,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.01)
+        # c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 1, 0.1, 0.1)
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
                              # self.procvarSlider.value(), 
