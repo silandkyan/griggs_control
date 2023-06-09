@@ -138,6 +138,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
         # self.CV = [0]
         # self.error = [0, 0, 0]
+        self.error = [self.SP[-1] - self.PV[-1]]
         # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
         
@@ -150,7 +151,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.PV.append(self.procvarSlider.value())
         self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
         # self.CV.append(self.CV[-1])
+        self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
+        print('t:', self.time[-1], 'CV:', self.[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
@@ -168,6 +171,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.set_vel.pop(0)
             self.SP.pop(0)
             self.PV.pop(0)
+            self.error.pop(0)
             # self.CV.pop(0)
         # print('length:', len(self.time))
             
@@ -235,14 +239,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
-        # self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
+        self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
-        # self.line5.setData(self.time, self.CV)
+        self.line5.setData(self.time, self.CV)
 
 
 
@@ -323,11 +327,12 @@ class Window(QMainWindow, Ui_MainWindow):
         # print('Done!')
         
     def drive_PID(self):
-        interval = 1000
+        interval = 100
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 good?
+        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.01)
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
                              # self.procvarSlider.value(), 
