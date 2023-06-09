@@ -124,8 +124,8 @@
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>530</y>
+      <x>80</x>
+      <y>380</y>
       <width>81</width>
       <height>41</height>
      </rect>
@@ -298,7 +298,7 @@
      <rect>
       <x>10</x>
       <y>440</y>
-      <width>321</width>
+      <width>491</width>
       <height>181</height>
      </rect>
     </property>
