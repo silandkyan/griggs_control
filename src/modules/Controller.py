@@ -33,10 +33,10 @@ class Controller():
         self.procvar = procvar
         self.contvar = contvar
         # update error list:
-        self.error.pop(0)
-        self.error.append(self.setpoint - self.procvar)
+        self.error.pop(0) # delete oldest element in error list
+        self.error.append(self.setpoint - self.procvar) # append current error to list
         # calculate output for new control variable:
         self.output = (self.contvar + self.a0 * self.error[-1] 
                        + self.a1 * self.error[-2] 
-                       + self.a2 * self.error[-3])
+                       + self.a2 * self.error[-3]) 
         # print('PID values:', self.setpoint, self.procvar, self.contvar, self.error)
