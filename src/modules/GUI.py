@@ -153,7 +153,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
-        print('t:', self.time[-1], 'CV:', self.[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
+        print('t:', self.time[-1], 'CV:', self.set_vel[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
