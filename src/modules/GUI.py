@@ -20,7 +20,7 @@ import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
-from modules.gui.main_window_ui import Ui_MainWindow
+from .gui.main_window_ui import Ui_MainWindow
 from .Motor import Motor
 from .Controller import Controller 
 
@@ -141,6 +141,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.error = [self.SP[-1] - self.PV[-1]]
         # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
+        print("data containers and save files initialized")
         
     def update_data(self):
         # add new values
@@ -239,14 +240,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
-        self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
+        #self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
+        print("graph window initialized")
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
-        self.line5.setData(self.time, self.CV)
+        #self.line5.setData(self.time, self.CV)
 
 
 
