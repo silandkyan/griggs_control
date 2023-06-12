@@ -153,7 +153,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
-        print('t:', round(self.time[-1], 2), 'CV:', self.set_vel[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
+        print('t:', self.time[-1], 'CV:', self.[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
@@ -239,14 +239,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
-        self.line5 = self.plot(self.time, self.error, 'error', 'c')
+        self.line5 = self.plot(self.time, self.CV, 'PV', 'c')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
-        self.line5.setData(self.time, self.error)
+        self.line5.setData(self.time, self.CV)
 
 
 
@@ -331,8 +331,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        # c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.1)
+        c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.01)
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
                              # self.procvarSlider.value(), 
