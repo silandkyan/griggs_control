@@ -340,6 +340,10 @@ class Window(QMainWindow, Ui_MainWindow):
                              int(self.chan0.voltage/3.3 * 240 - 120), 
                              self.pps_rpm_converter(self.motor.actual_velocity)))
         
+        # prevent motor to run backwards:
+        if c.output < 0:
+            c.output = 0 # TODO: test if this works
+        
         self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
         # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
         # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
