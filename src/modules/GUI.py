@@ -201,7 +201,15 @@ class Window(QMainWindow, Ui_MainWindow):
         
     
     
-    ###   RASPBERRY PI   ###
+    ###   Breakout board and ADC   ###
+    """
+    prerequisites: https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/linux
+        1. install and configure libusb: 
+        2. verify that pyftdi and blinka are installed
+        3. in case of a langid error, correct the permission settings: "sudo adduser $USER plugdev"
+            see also: https://eblot.github.io/pyftdi/installation.html
+        4. re-plug the device and re-login to a new session!
+    """
     
     def init_adc(self):
         # Create the I2C bus:
