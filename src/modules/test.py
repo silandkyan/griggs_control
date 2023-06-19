@@ -36,7 +36,7 @@ chan = AnalogIn(ads, ADS.P1)
 print("{:>5}\t{:>5}".format('raw', 'v'))
 
 # track time
-t0 = time.time()
+# t0 = time.time()
 
 while True:
     t0 = time.time()

@@ -331,8 +331,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        # c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.1) # these values are problematic...
+        c = Controller(interval/1000, 1, 0, 0) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.1) # these values are problematic...
         
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
