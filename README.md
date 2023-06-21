@@ -17,6 +17,8 @@ Collection of tools to control a Griggs-type apparatus via a computer.
 
 5. install ADS115 driver from adafruit (via Spyder or Python shell): "pip install adafruit-circuitpython-ads1x15"
 
+6. install pyqtgraph (via Spyder or Python shell): "conda install pyqtgraph"
+
 - setup Spyder so that all variables are cleared before execution (in the settings)
 
 - what else?
@@ -49,4 +51,6 @@ https://wiki.seeedstudio.com/4-Channel_16-Bit_ADC_for_Raspberry_Pi-ADS1115/
 1. "sudo raspi-config", navigate to interface options and enable I2C interface
 
 2. reboot. I2C should be working now
+
+TODO: prevent negative output mode of PID controller not working properly...
 
