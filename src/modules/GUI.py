@@ -134,8 +134,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
         self.SP = [self.setpointSlider.value()]
-        # self.PV = [self.procvarSlider.value()]
-        self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
+        self.PV = [self.procvarSlider.value()]
+        # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
         # self.CV = [0]
         # self.error = [0, 0, 0]
         self.error = [self.SP[-1] - self.PV[-1]]
@@ -148,12 +148,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
         self.SP.append(self.setpointSlider.value())
-        # self.PV.append(self.procvarSlider.value())
-        self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
+        self.PV.append(self.procvarSlider.value())
+        # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
-        print('t:', round(self.time[-1], 2), 'CV:', self.set_vel[-1], 'SP:', self.SP[-1], 'PV:', self.PV[-1], 'e:', self.error[-1])
+        print('t:', round(self.time[-1], 2),
+              '  CV:', self.set_vel[-1],
+              '  SP:', self.SP[-1],
+              '  PV:', self.PV[-1],
+              '  e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
@@ -197,7 +201,15 @@ class Window(QMainWindow, Ui_MainWindow):
         
     
     
-    ###   RASPBERRY PI   ###
+    ###   Breakout board and ADC   ###
+    """
+    prerequisites: https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/linux
+        1. install and configure libusb: 
+        2. verify that pyftdi and blinka are installed
+        3. in case of a langid error, correct the permission settings: "sudo adduser $USER plugdev"
+            see also: https://eblot.github.io/pyftdi/installation.html
+        4. re-plug the device and re-login to a new session!
+    """
     
     def init_adc(self):
         # Create the I2C bus:
@@ -236,14 +248,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('left', 'velocity (rpm)')
         self.graphWidget.setLabel('bottom', 'time (s)')
         self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
-        self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+        # self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
         self.line5 = self.plot(self.time, self.error, 'error', 'c')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
-        self.line2.setData(self.time, self.set_vel)
+        # self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
         self.line5.setData(self.time, self.error)
@@ -331,22 +343,19 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        # c = Controller(interval/1000, 1, 0.01, 0.01) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.1) # these values are problematic...
+        c = Controller(interval/1000, 1, 0.1, 0.1, True) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.1) # these values are problematic...
         
         self.drivetimer.timeout.connect(
             lambda: c.update(self.setpointSlider.value(), 
-                             # self.procvarSlider.value(), 
-                             int(self.chan0.voltage/3.3 * 240 - 120), 
+                              self.procvarSlider.value(), 
+                             # int(self.chan0.voltage/3.3 * 240 - 120), 
                              self.pps_rpm_converter(self.motor.actual_velocity)))
-        
-        # prevent motor to run backwards:
-        if c.output < 0:
-            c.output = 0 # TODO: test if this works
         
         self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
         # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
         # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
+                
         self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
         
         self.drivetimer.start()
