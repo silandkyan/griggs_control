@@ -15,6 +15,8 @@ Collection of tools to control a Griggs-type apparatus via a computer.
 
 4. re-plug the device and re-login to a new session!
 
+5. install ADS115 driver from adafruit (via Spyder or Python shell): "pip install adafruit-circuitpython-ads1x15"
+
 - setup Spyder so that all variables are cleared before execution (in the settings)
 
 - what else?
