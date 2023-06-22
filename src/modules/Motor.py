@@ -42,21 +42,21 @@ class Motor(TMCM1260):
     def init_drive_settings(self, motor):
         '''Set initial motor drive settings. Speed values are in pps and are
         now scaled to microstep resolution.'''
-        motor.drive_settings.max_current = 50
-        motor.drive_settings.standby_current = 0
+        motor.drive_settings.max_current = 200
+        motor.drive_settings.standby_current = 100
         motor.drive_settings.boost_current = 0
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
         # set mstep resolution:
-        self.mstep_res_factor = motor.ENUM.MicrostepResolution4Microsteps
+        self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
         # calculate msteps/revolution
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
         self.msteps_per_rev = self.msteps_per_fstep * self.fsteps_per_rev
-        # store pps value:
+        # store pps value (for 1 rpm):
         self.pps = self.msteps_per_rev / 60
         # store rpm value:
-        self.rpm = 20 # default = 20 rpm
+        self.rpm = 20.0 # default = 20 rpm
         # Toggle step interpolation (works only with 16 microsteps):
         motor.set_axis_parameter(motor.AP.Intpol, value=1)
         # Toggle RelativePositioningOption:

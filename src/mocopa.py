@@ -8,6 +8,13 @@ Created on Thu Feb 16 10:06:33 2023
 When running this program with Spyder, make sure that all variables are 
 cleared before execution in the settings.
 """
+
+# TODO: 
+    # - degree rotation (instead of multi-step)
+    # - up / down (based on motor pos.)
+    # - acceleration / break rate
+    # - update speed but keep direction button
+
 #####   Importing Packages   #####
 from modules.GUI import run_app
 from modules.Motor import disconnect_motors

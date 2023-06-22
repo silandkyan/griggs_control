@@ -112,7 +112,7 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>290</y>
+      <y>280</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -155,22 +155,6 @@
     </property>
     <property name="value">
      <number>10</number>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="rpmBox">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>280</y>
-      <width>71</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>-120</number>
-    </property>
-    <property name="maximum">
-     <number>120</number>
     </property>
    </widget>
    <widget class="QPushButton" name="stopButton">
@@ -393,6 +377,19 @@
      <string>procvar</string>
     </property>
    </widget>
+   <widget class="QDoubleSpinBox" name="rpmBox">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>270</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="decimals">
+     <number>4</number>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -400,7 +397,7 @@
      <x>0</x>
      <y>0</y>
      <width>505</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
