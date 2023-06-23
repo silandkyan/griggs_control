@@ -72,7 +72,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setValue(10)    # default rpm
         # adjust slider position to match rpmBox value:
-        self.rpmSlider.setValue(self.rpmBox.value())
+        self.rpmSlider.setValue(int(round(self.rpmBox.value() * self.module.msteps_per_rev/60)))
         # initial calculation of pps:
         self.pps_calculator(self.rpmBox.value())
         # amount of single steps in multistep mode:
@@ -153,11 +153,11 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
-        print('t:', round(self.time[-1], 2),
-              '  CV:', self.set_vel[-1],
-              '  SP:', self.SP[-1],
-              '  PV:', self.PV[-1],
-              '  e:', self.error[-1])
+        # print('t:', round(self.time[-1], 2),
+        #       '  CV:', self.set_vel[-1],
+        #       '  SP:', self.SP[-1],
+        #       '  PV:', self.PV[-1],
+        #       '  e:', self.error[-1])
         
         # check counter:
         # print('counter:', self.savecounter)
@@ -265,18 +265,16 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   CALCULATORS (for unit conversion)   ###
     
     def rpmSlider_changed(self):
-        rpm = self.rpmSlider.value()
-        self.rpmBox.setValue(rpm)
-        self.pps_calculator(rpm)
+        self.module.pps = self.rpmSlider.value()
+        self.rpmBox.setValue(self.module.pps / self.module.msteps_per_rev * 60)
         
     def rpmBox_changed(self):
-        rpm = self.rpmBox.value()
-        self.rpmSlider.setValue(rpm)
-        self.pps_calculator(rpm)
+        self.pps_calculator(self.rpmBox.value())
+        self.rpmSlider.setValue(self.module.pps)
     
     def pps_calculator(self, rpm_value):
         self.module.rpm = rpm_value
-        self.module.pps = round(self.module.rpm * self.module.msteps_per_rev/60)
+        self.module.pps = int(round(self.module.rpm * self.module.msteps_per_rev/60))
         
     def rpm_pps_converter(self, rpm):
         pps = rpm * self.module.msteps_per_rev / 60
@@ -284,7 +282,7 @@ class Window(QMainWindow, Ui_MainWindow):
         
     def pps_rpm_converter(self, pps):
         rpm = pps / self.module.msteps_per_rev * 60
-        return round(rpm)
+        return round(rpm, 4)
     
  
     
@@ -380,6 +378,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setMinimum(-120)
         self.rpmBox.setMaximum(120)
+        # set slider limits and position
+        self.rpmSlider.setMinimum(int(round(self.rpmBox.minimum() * self.module.msteps_per_rev / 60)))
+        self.rpmSlider.setMaximum(int(round(self.rpmBox.maximum() * self.module.msteps_per_rev / 60)))
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(999)
