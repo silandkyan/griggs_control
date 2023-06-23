@@ -15,10 +15,6 @@ from PyQt5.QtCore import QTimer
 from pytrinamic.connections import ConnectionManager
 
 # import time
-import board
-import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
 
 from modules.gui.main_window_ui import Ui_MainWindow
 from .Motor import Motor
@@ -56,7 +52,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_default_values()
         self.connectSignalsSlots()
         # ADC connection:
-        self.chan0 = self.init_adc()
+        self.chan0 = None#self.init_adc()
         # data containers:
         self.init_data_containers()
         # graphing window:
@@ -77,9 +73,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pps_calculator(self.rpmBox.value())
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(10)   # amount of single steps
-        # set default button values:
-        self.manual_radB.setChecked(True) # manual mode is default
-        self.auto_radB.setChecked(False)
+        # set ADC_box:
+        self.initADC_box.setChecked(False)
+
         
     def set_timers(self):
         self.basetimer = 100 # in ms
@@ -121,6 +117,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.driveprofile_pushB.clicked.connect(self.drive_profile)
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
+        # start ADC connection:
+        self.initADC_box.stateChanged.connect(self.init_adc)
 
 
 
@@ -134,8 +132,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
         self.set_vel = [self.pps_rpm_converter(self.module.pps)]
         self.SP = [self.setpointSlider.value()]
-        self.PV = [self.procvarSlider.value()]
-        # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
+        if self.initADC_box.isChecked() == True:
+            # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
+            self.PV = [self.procvarSlider.value()]
+        else:
+            # self.PV = [0]
+            self.PV = [self.procvarSlider.value()]
         # self.CV = [0]
         # self.error = [0, 0, 0]
         self.error = [self.SP[-1] - self.PV[-1]]
@@ -148,8 +150,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
         self.set_vel.append(self.pps_rpm_converter(self.module.pps))
         self.SP.append(self.setpointSlider.value())
-        self.PV.append(self.procvarSlider.value())
-        # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
+        if self.initADC_box.isChecked() == True:
+            # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
+            self.PV.append(self.procvarSlider.value())
+        else:
+            # self.PV.append(0)
+            self.PV.append(self.procvarSlider.value())
         # self.CV.append(self.CV[-1])
         self.error.append(self.SP[-1] - self.PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
@@ -212,26 +218,31 @@ class Window(QMainWindow, Ui_MainWindow):
     """
     
     def init_adc(self):
-        # Create the I2C bus:
-        i2c = busio.I2C(board.SCL, board.SDA)
-        
-        # Create the ADC object using the I2C bus:
-        ads = ADS.ADS1115(i2c)
-        
-        # Create single-ended input on channel 1:
-        chan0 = AnalogIn(ads, ADS.P1)
-        
-        # Create differential input between channel 0 and 1:
-        # currently not working since only one pin is connected
-        # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
-        
-        # print header:
-        print("{:>5}\t{:>5}".format('raw', 'v'))
-        
-        # print first line of data:
-        print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
-        
-        return chan0
+        if self.initADC_box.isChecked() == True:
+            import board
+            import busio
+            import adafruit_ads1x15.ads1115 as ADS
+            from adafruit_ads1x15.analog_in import AnalogIn
+            # Create the I2C bus:
+            i2c = busio.I2C(board.SCL, board.SDA)
+            
+            # Create the ADC object using the I2C bus:
+            ads = ADS.ADS1115(i2c)
+            
+            # Create single-ended input on channel 1:
+            chan0 = AnalogIn(ads, ADS.P1)
+            
+            # Create differential input between channel 0 and 1:
+            # currently not working since only one pin is connected
+            # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
+            
+            # print header:
+            print("{:>5}\t{:>5}".format('raw', 'v'))
+            
+            # print first line of data:
+            print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+            
+            return chan0
 
 
     ###   GRAPH WINDOW   ###
