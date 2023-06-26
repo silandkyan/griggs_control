@@ -76,7 +76,7 @@
      <widget class="QPushButton" name="multirButton">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>160</x>
         <y>110</y>
         <width>51</width>
         <height>41</height>
@@ -89,7 +89,7 @@
      <widget class="QPushButton" name="singlerButton">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>160</x>
         <y>47</y>
         <width>51</width>
         <height>41</height>
@@ -102,7 +102,7 @@
      <widget class="QPushButton" name="singlelButton">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>280</x>
         <y>47</y>
         <width>51</width>
         <height>41</height>
@@ -115,7 +115,7 @@
      <widget class="QPushButton" name="multilButton">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>280</x>
         <y>110</y>
         <width>51</width>
         <height>41</height>
@@ -161,10 +161,10 @@
        </rect>
       </property>
       <property name="maximum">
-       <number>999</number>
+       <number>360</number>
       </property>
       <property name="value">
-       <number>10</number>
+       <number>90</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_2">
@@ -183,7 +183,7 @@
      <widget class="QPushButton" name="contlButton">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>280</x>
         <y>170</y>
         <width>51</width>
         <height>41</height>
@@ -196,7 +196,7 @@
      <widget class="QPushButton" name="contrButton">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>160</x>
         <y>170</y>
         <width>51</width>
         <height>41</height>
@@ -226,19 +226,6 @@
        <string>Manual Mode</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>300</y>
-        <width>61</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>pos. = up</string>
-      </property>
-     </widget>
      <widget class="QSlider" name="rpmSlider">
       <property name="geometry">
        <rect>
@@ -261,7 +248,7 @@
      <widget class="QDoubleSpinBox" name="rpmBox">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>200</x>
         <y>240</y>
         <width>81</width>
         <height>31</height>
@@ -274,7 +261,7 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>300</x>
         <y>250</y>
         <width>31</width>
         <height>16</height>
@@ -284,17 +271,56 @@
        <string>RPM</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>300</y>
-        <width>71</width>
-        <height>20</height>
+        <x>140</x>
+        <y>20</y>
+        <width>81</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>neg. = down</string>
+       <string>retract piston</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>20</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>shorten sample</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>in deg</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="update_rpm_button">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>240</y>
+        <width>71</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Update</string>
       </property>
      </widget>
     </widget>
@@ -426,6 +452,19 @@
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QCheckBox" name="invert_checkBox">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>390</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>invert direction</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
