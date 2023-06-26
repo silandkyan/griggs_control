@@ -345,7 +345,8 @@ class Window(QMainWindow, Ui_MainWindow):
         print('Fine step left with Module', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_left(self):
-        self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
+        # self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
+        self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
         self.last_motor_command = self.coarse_step_left
@@ -359,7 +360,8 @@ class Window(QMainWindow, Ui_MainWindow):
         print('Fine step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_right(self):
-        self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
+        # self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
+        self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
         self.last_motor_command = self.coarse_step_right
