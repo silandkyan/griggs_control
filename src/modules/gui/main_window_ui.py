@@ -95,9 +95,6 @@ class Ui_MainWindow(object):
         self.label_12 = QtWidgets.QLabel(self.tab)
         self.label_12.setGeometry(QtCore.QRect(260, 20, 91, 21))
         self.label_12.setObjectName("label_12")
-        self.invert_checkBox = QtWidgets.QCheckBox(self.tab)
-        self.invert_checkBox.setGeometry(QtCore.QRect(40, 240, 121, 21))
-        self.invert_checkBox.setObjectName("invert_checkBox")
         self.label_4 = QtWidgets.QLabel(self.tab)
         self.label_4.setGeometry(QtCore.QRect(10, 140, 71, 16))
         self.label_4.setObjectName("label_4")
@@ -140,6 +137,9 @@ class Ui_MainWindow(object):
         self.initADC_box.setGeometry(QtCore.QRect(210, 20, 111, 21))
         self.initADC_box.setObjectName("initADC_box")
         self.tabWidget.addTab(self.tab_2, "")
+        self.invert_checkBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.invert_checkBox.setGeometry(QtCore.QRect(170, 390, 121, 21))
+        self.invert_checkBox.setObjectName("invert_checkBox")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 696, 22))
@@ -171,7 +171,6 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "RPM"))
         self.label_8.setText(_translate("MainWindow", "retract piston"))
         self.label_12.setText(_translate("MainWindow", "shorten sample"))
-        self.invert_checkBox.setText(_translate("MainWindow", "invert direction"))
         self.label_4.setText(_translate("MainWindow", "in deg"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Manual"))
         self.driveprofile_pushB.setText(_translate("MainWindow", "START"))
@@ -181,6 +180,7 @@ class Ui_MainWindow(object):
         self.label_11.setText(_translate("MainWindow", "Const Stress Mode"))
         self.initADC_box.setText(_translate("MainWindow", "Initialize ADC"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Const Stress"))
+        self.invert_checkBox.setText(_translate("MainWindow", "invert direction"))
 from pyqtgraph import PlotWidget
 
 

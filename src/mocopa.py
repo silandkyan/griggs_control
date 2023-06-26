@@ -15,8 +15,6 @@ cleared before execution in the settings.
     # - acceleration / break rate
     # - update speed but keep direction button
     # - display pressed button
-    # - only positive speed values, also in box and slider
-    # - switch up and down button pos.
 
 #####   Importing Packages   #####
 from modules.GUI import run_app

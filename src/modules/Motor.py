@@ -47,6 +47,8 @@ class Motor(TMCM1260):
         motor.drive_settings.boost_current = 0
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
+        # direction inversion modifier:
+        self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
@@ -54,7 +56,7 @@ class Motor(TMCM1260):
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
         self.msteps_per_rev = self.msteps_per_fstep * self.fsteps_per_rev
         # store pps value (for 1 rpm):
-        self.pps = self.msteps_per_rev / 60 # TODO: add var that inverts dir (*-1)
+        self.pps = self.msteps_per_rev / 60 * self.dir_inv_mod
         # store rpm value:
         self.rpm = 20.0 # default = 20 rpm
         # Toggle step interpolation (works only with 16 microsteps):
@@ -62,6 +64,12 @@ class Motor(TMCM1260):
         # Toggle RelativePositioningOption:
         motor.set_axis_parameter(motor.AP.RelativePositioningOption, 1)
         #print(motor, motor.drive_settings)
+        
+    def update_pps(self, rpm_value):
+        self.rpm = rpm_value
+        print(self.dir_inv_mod)
+        self.pps = int(round(self.rpm * self.msteps_per_rev/60) * self.dir_inv_mod)
+        print(self.rpm, self.pps)
 
     def init_ramp_settings(self, motor):
         '''Set initial motor ramp settings. Values are in pps and are now scaled 

@@ -113,7 +113,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rpmBox.valueChanged.connect(self.rpmBox_changed)
         # update rpm by slider movement:
         self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
-        # Drive profile:
+        # direction inversion:
+        self.invert_checkBox.stateChanged.connect(self.invert_direction)
+        ### PID:
         # self.driveprofile_pushB.clicked.connect(self.drive_profile)
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
@@ -299,6 +301,14 @@ class Window(QMainWindow, Ui_MainWindow):
     
     ###   MOTOR CONTROL FUNCTIONS   ###
     
+    def invert_direction(self):
+        if self.invert_checkBox.isChecked() == True:
+            self.module.dir_inv_mod = -1
+        if self.invert_checkBox.isChecked() == False:
+            self.module.dir_inv_mod = 1
+        self.module.update_pps(self.rpmBox.value())
+        print(self.module.rpm, self.module.pps)
+    
     def stop_motor(self):
         '''Stop signal; can always be sent to the motors.'''
         self.motor.stop()
@@ -315,25 +325,27 @@ class Window(QMainWindow, Ui_MainWindow):
         print('Rotating right with', str(self.rpmBox.value()), 'rpm')
             
     def fine_step_left(self):
-        self.msteps = self.module.msteps_per_fstep #* self.spinB_fine.value()
-        # self.motor.move_by(-self.msteps, self.pps)
-        self.motor.move_by(-self.msteps, self.module.pps)
+        self.msteps = self.module.msteps_per_fstep
+        # dir_inv_mod is needed because move_by does not take negative pps values
+        self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
         print('Fine step left with Module', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_left(self):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
-        # self.motor.move_by(-self.msteps, self.pps)
-        self.motor.move_by(-self.msteps, self.module.pps)
+        # dir_inv_mod is needed because move_by does not take negative pps values
+        self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
         print('Coarse step left with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def fine_step_right(self):
-        self.msteps = self.module.msteps_per_fstep #* self.spinB_fine.value()
-        self.motor.move_by(self.msteps, self.module.pps)
+        self.msteps = self.module.msteps_per_fstep
+        # dir_inv_mod is needed because move_by does not take negative pps values
+        self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
         print('Fine step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_right(self):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
-        self.motor.move_by(self.msteps, self.module.pps)
+        # dir_inv_mod is needed because move_by does not take negative pps values
+        self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def drive_profile(self, profile):

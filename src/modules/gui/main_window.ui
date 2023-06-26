@@ -297,19 +297,6 @@
        <string>shorten sample</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="invert_checkBox">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>240</y>
-        <width>121</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>invert direction</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
@@ -452,6 +439,19 @@
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QCheckBox" name="invert_checkBox">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>390</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>invert direction</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
