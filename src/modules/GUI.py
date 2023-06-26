@@ -72,7 +72,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # initial calculation of pps:
         self.pps_calculator(self.rpmBox.value())
         # amount of single steps in multistep mode:
-        self.multistep_numberBox.setValue(10)   # amount of single steps
+        self.multistep_numberBox.setValue(90)   # degrees
         # set ADC_box:
         self.initADC_box.setChecked(False)
 
@@ -387,14 +387,14 @@ class Window(QMainWindow, Ui_MainWindow):
         be changed in the GUI. These should usually be fine...'''
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
-        self.rpmBox.setMinimum(-120)
+        self.rpmBox.setMinimum(0)
         self.rpmBox.setMaximum(120)
         # set slider limits and position
         self.rpmSlider.setMinimum(int(round(self.rpmBox.minimum() * self.module.msteps_per_rev / 60)))
         self.rpmSlider.setMaximum(int(round(self.rpmBox.maximum() * self.module.msteps_per_rev / 60)))
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
-        self.multistep_numberBox.setMaximum(999)
+        self.multistep_numberBox.setMaximum(360)
         
         
 
