@@ -13,7 +13,6 @@ cleared before execution in the settings.
     # - degree rotation (instead of multi-step) 90°
     # - up / down (based on motor pos.)
     # - acceleration / break rate
-    # - update speed but keep direction button
     # - display pressed button
 
 #####   Importing Packages   #####

@@ -310,6 +310,19 @@
        <string>in deg</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="update_rpm_button">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>240</y>
+        <width>71</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Update</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">

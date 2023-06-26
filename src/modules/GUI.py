@@ -47,6 +47,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # motor interface
         self.module = m
         self.motor = self.module.motor
+        self.last_motor_command = None
         # setup functions:
         self.set_allowed_ranges()
         self.set_default_values()
@@ -115,6 +116,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
         # direction inversion:
         self.invert_checkBox.stateChanged.connect(self.invert_direction)
+        # update velocity button:
+        self.update_rpm_button.clicked.connect(self.update_rpm)
         ### PID:
         # self.driveprofile_pushB.clicked.connect(self.drive_profile)
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
@@ -301,51 +304,65 @@ class Window(QMainWindow, Ui_MainWindow):
     
     ###   MOTOR CONTROL FUNCTIONS   ###
     
+    def update_rpm(self):
+        '''This function first updates the module pps value from the rpmBox value
+        and then executes the last command send to the motor, which is stored
+        explicitly in a variable when the respective functions are called.'''
+        self.module.update_pps(self.rpmBox.value())
+        self.last_motor_command()
+    
     def invert_direction(self):
         if self.invert_checkBox.isChecked() == True:
             self.module.dir_inv_mod = -1
         if self.invert_checkBox.isChecked() == False:
             self.module.dir_inv_mod = 1
         self.module.update_pps(self.rpmBox.value())
-        print(self.module.rpm, self.module.pps)
+        # print(self.module.rpm, self.module.pps)
     
     def stop_motor(self):
         '''Stop signal; can always be sent to the motors.'''
         self.motor.stop()
+        self.last_motor_command = self.stop_motor
         # do not use time.sleep here!
         # print status message
         print('Motor', self.module.moduleID, 'stopped!')
     
     def permanent_left(self):
         self.motor.rotate(-self.module.pps)
+        self.last_motor_command = self.permanent_left
         print('Rotating left with', str(self.rpmBox.value()), 'rpm')
     
     def permanent_right(self):
         self.motor.rotate(self.module.pps)
+        self.last_motor_command = self.permanent_right
         print('Rotating right with', str(self.rpmBox.value()), 'rpm')
             
     def fine_step_left(self):
         self.msteps = self.module.msteps_per_fstep
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
+        self.last_motor_command = self.fine_step_left
         print('Fine step left with Module', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_left(self):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
+        self.last_motor_command = self.coarse_step_left
         print('Coarse step left with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def fine_step_right(self):
         self.msteps = self.module.msteps_per_fstep
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
+        self.last_motor_command = self.fine_step_right
         print('Fine step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_right(self):
         self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
+        self.last_motor_command = self.coarse_step_right
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def drive_profile(self, profile):
