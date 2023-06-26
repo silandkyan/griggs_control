@@ -54,7 +54,7 @@ class Motor(TMCM1260):
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
         self.msteps_per_rev = self.msteps_per_fstep * self.fsteps_per_rev
         # store pps value (for 1 rpm):
-        self.pps = self.msteps_per_rev / 60
+        self.pps = self.msteps_per_rev / 60 # TODO: add var that inverts dir (*-1)
         # store rpm value:
         self.rpm = 20.0 # default = 20 rpm
         # Toggle step interpolation (works only with 16 microsteps):
