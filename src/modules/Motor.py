@@ -67,16 +67,16 @@ class Motor(TMCM1260):
         
     def update_pps(self, rpm_value):
         self.rpm = rpm_value
-        print(self.dir_inv_mod)
         self.pps = int(round(self.rpm * self.msteps_per_rev/60) * self.dir_inv_mod)
-        print(self.rpm, self.pps)
 
     def init_ramp_settings(self, motor):
         '''Set initial motor ramp settings. Values are in pps and are now scaled 
         to microstep resolution.'''
         # set max values for ramp. trailing factors were tested for 16 msteps.
-        motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
-        motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
+        # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
+        # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
+        motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
+        motor.linear_ramp.max_acceleration = 50000 # this works and seems like a good value
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):

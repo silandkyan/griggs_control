@@ -341,7 +341,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.msteps = self.module.msteps_per_fstep
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
-        self.last_motor_command = self.fine_step_left
+        # self.last_motor_command = self.fine_step_left
         print('Fine step left with Module', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_left(self):
@@ -349,14 +349,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
-        self.last_motor_command = self.coarse_step_left
+        # self.last_motor_command = self.coarse_step_left
         print('Coarse step left with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def fine_step_right(self):
         self.msteps = self.module.msteps_per_fstep
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
-        self.last_motor_command = self.fine_step_right
+        # self.last_motor_command = self.fine_step_right
         print('Fine step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def coarse_step_right(self):
@@ -364,7 +364,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
-        self.last_motor_command = self.coarse_step_right
+        # self.last_motor_command = self.coarse_step_right
         print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
     def drive_profile(self, profile):

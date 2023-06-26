@@ -10,7 +10,6 @@ cleared before execution in the settings.
 """
 
 # TODO: 
-    # - degree rotation (instead of multi-step) 90°
     # - up / down (based on motor pos.)
     # - acceleration / break rate
     # - display pressed button
