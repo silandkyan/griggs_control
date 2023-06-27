@@ -263,11 +263,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.addLegend()
         self.graphWidget.setLabel('left', 'velocity (rpm)')
         self.graphWidget.setLabel('bottom', 'time (s)')
-        self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'r')
+        self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'k')
         # self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
-        self.line3 = self.plot(self.time, self.SP, 'SP', 'k')
+        self.line3 = self.plot(self.time, self.SP, 'SP', 'c')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
-        self.line5 = self.plot(self.time, self.error, 'error', 'c')
+        self.line5 = self.plot(self.time, self.error, 'error', 'r')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
@@ -384,24 +384,24 @@ class Window(QMainWindow, Ui_MainWindow):
         # print('Done!')
         
     def drive_PID(self):
-        interval = 100
+        interval = 500
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
-        c = Controller(interval/1000, 1, 0.1, 0.1, True) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.1) # these values are problematic...
+        # c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 1, 0.3, 0.0, True)
         
-        self.drivetimer.timeout.connect(
-            lambda: c.update(self.setpointSlider.value(), 
-                              self.procvarSlider.value(), 
-                             # int(self.chan0.voltage/3.3 * 240 - 120), 
-                             self.pps_rpm_converter(self.motor.actual_velocity)))
-        
-        self.drivetimer.timeout.connect(lambda: self.pps_calculator(int(c.output)))
-        # self.drivetimer.timeout.connect(lambda: print('pps:', self.module.pps))
-        # self.drivetimer.timeout.connect(lambda: self.CV.append(int(c.output)))
-                
-        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
+        def on_timeout():
+            c.controller_update(self.setpointSlider.value(),
+                                        self.procvarSlider.value(),
+                                        # int(self.chan0.voltage/3.3 * 240 - 120),
+                                        self.pps_rpm_converter(self.motor.actual_velocity))
+            self.pps_calculator(int(c.output))
+            # print('pps:', self.module.pps)
+            # self.CV.append(int(c.output))
+            self.motor.rotate(self.module.pps)
+            
+        self.drivetimer.timeout.connect(on_timeout)
         
         self.drivetimer.start()
         self.driveprofile_pushB.setEnabled(False)

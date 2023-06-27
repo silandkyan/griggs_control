@@ -5,6 +5,13 @@ Created on Fri Jun  2 10:39:55 2023
 
 @author: pgross
 """
+# controller works in...
+# P-mode, negative output allowed
+# P-mode, negative output prevented
+# PI-mode, negative output allowed, but params need tuning
+# PI-mode, negative output prevented, but params need tuning
+# PID-mode, negative output allowed, but params need tuning
+# PID-mode, negative output prevented, but params need tuning
 
 ##### Controller class definition #####
 
@@ -26,9 +33,9 @@ class Controller():
         self.a0 = self.Kp + self.Ki * self.dt + self.Kd / self.dt
         self.a1 = -self.Kp - 2 * self.Kd / self.dt
         self.a2 = self.Kd / self.dt
-        # print('a-values:', self.a0, self.a1, self.a2)
+        print('a-values:', self.a0, self.a1, self.a2)
         
-    def update(self, setpoint, procvar, contvar):
+    def controller_update(self, setpoint, procvar, contvar):
         # update values:
         self.setpoint = setpoint
         self.procvar = procvar
@@ -49,9 +56,10 @@ class Controller():
             temp = (self.contvar + self.a0 * self.error[-1] 
                            + self.a1 * self.error[-2] 
                            + self.a2 * self.error[-3])
-            if temp >= 0:
+            # if temp >= 0: # this does not work!
+            if self.error[-1] > 0:
                 self.output = temp
             else:
                 self.output = 0
                 
-        # print('PID values:', self.setpoint, self.procvar, self.contvar, self.error)
+        print('PID values:', self.setpoint, self.procvar, self.contvar, self.error[-1], self.output)
