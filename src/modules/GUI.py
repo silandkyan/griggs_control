@@ -330,14 +330,14 @@ class Window(QMainWindow, Ui_MainWindow):
     
     def permanent_left(self):
         self.clear_button_colors()
-        self.contlButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0, 150);}")
+        self.contlButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
         self.motor.rotate(-self.module.pps)
         self.last_motor_command = self.permanent_left
         print('Rotating left with', str(self.rpmBox.value()), 'rpm')
     
     def permanent_right(self):
         self.clear_button_colors()
-        self.contrButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0, 150);}")
+        self.contrButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
         self.motor.rotate(self.module.pps)
         self.last_motor_command = self.permanent_right
         print('Rotating right with', str(self.rpmBox.value()), 'rpm')

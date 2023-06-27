@@ -11,8 +11,7 @@ cleared before execution in the settings.
 
 # TODO: 
     # - up / down (based on motor pos.)
-    # - acceleration / break rate
-    # - display pressed button
+
 
 #####   Importing Packages   #####
 from modules.GUI import run_app
