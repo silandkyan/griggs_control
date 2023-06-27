@@ -321,6 +321,7 @@ class Window(QMainWindow, Ui_MainWindow):
     
     def stop_motor(self):
         '''Stop signal; can always be sent to the motors.'''
+        self.clear_button_colors()
         self.motor.stop()
         self.last_motor_command = self.stop_motor
         # do not use time.sleep here!
@@ -328,11 +329,15 @@ class Window(QMainWindow, Ui_MainWindow):
         print('Motor', self.module.moduleID, 'stopped!')
     
     def permanent_left(self):
+        self.clear_button_colors()
+        self.contlButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0, 150);}")
         self.motor.rotate(-self.module.pps)
         self.last_motor_command = self.permanent_left
         print('Rotating left with', str(self.rpmBox.value()), 'rpm')
     
     def permanent_right(self):
+        self.clear_button_colors()
+        self.contrButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0, 150);}")
         self.motor.rotate(self.module.pps)
         self.last_motor_command = self.permanent_right
         print('Rotating right with', str(self.rpmBox.value()), 'rpm')
@@ -426,6 +431,10 @@ class Window(QMainWindow, Ui_MainWindow):
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(360)
+        
+    def clear_button_colors(self):
+        self.contlButton.setStyleSheet("")
+        self.contrButton.setStyleSheet("")
         
         
 
