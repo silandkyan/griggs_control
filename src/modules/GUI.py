@@ -45,7 +45,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Motor Control Panel -- MoCoPa')
         # motor interface
-        self.module = m
+        self.module = m # TODO: maybe change back to m in the entire file...
         self.motor = self.module.motor
         self.last_motor_command = None
         # setup functions:
@@ -71,11 +71,13 @@ class Window(QMainWindow, Ui_MainWindow):
         # adjust slider position to match rpmBox value:
         self.rpmSlider.setValue(int(round(self.rpmBox.value() * self.module.msteps_per_rev/60)))
         # initial calculation of pps:
-        self.pps_calculator(self.rpmBox.value())
+        self.module.rpm = self.rpmBox.value()
+        self.module.update_pps()
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(90)   # degrees
         # set ADC_box:
         self.initADC_box.setChecked(False)
+        self.invert_checkBox.setChecked(False)
 
         
     def set_timers(self):
@@ -99,15 +101,12 @@ class Window(QMainWindow, Ui_MainWindow):
         signal-and-slot mechanism.'''
         # Close window and end program:
         self.quitButton.clicked.connect(self.close)
-        # Single step rotation:
-        self.singlelButton.clicked.connect(self.fine_step_left)
-        self.singlerButton.clicked.connect(self.fine_step_right)
         # Multi step rotation:
-        self.multilButton.clicked.connect(self.coarse_step_left)
-        self.multirButton.clicked.connect(self.coarse_step_right)
+        self.multi_down_Button.clicked.connect(self.multi_step_down)
+        self.multi_up_Button.clicked.connect(self.multi_step_up)
         # Continuous rotation:
-        self.contlButton.clicked.connect(self.permanent_left)
-        self.contrButton.clicked.connect(self.permanent_right)
+        self.perm_down_Button.clicked.connect(self.permanent_down)
+        self.perm_up_Button.clicked.connect(self.permanent_up)
         # Stop button:
         self.stopButton.clicked.connect(self.stop_motor)
         # refresh rpm when value is changed:
@@ -134,8 +133,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.savecounter = 1 # != 0 because of initialization, etc.
         self.time = [0] # time
         self.t0 = time.time()
-        self.act_vel = [self.pps_rpm_converter(self.motor.actual_velocity)]
-        self.set_vel = [self.pps_rpm_converter(self.module.pps)]
+        self.act_vel = [self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)]
+        self.set_vel = [self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir)]
         self.SP = [self.setpointSlider.value()]
         if self.initADC_box.isChecked() == True:
             # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
@@ -152,8 +151,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def update_data(self):
         # add new values
         self.time.append(time.time()-self.t0)
-        self.act_vel.append(self.pps_rpm_converter(self.motor.actual_velocity))
-        self.set_vel.append(self.pps_rpm_converter(self.module.pps))
+        self.act_vel.append(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir))
+        self.set_vel.append(self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir))
         self.SP.append(self.setpointSlider.value())
         if self.initADC_box.isChecked() == True:
             # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
@@ -264,14 +263,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('left', 'velocity (rpm)')
         self.graphWidget.setLabel('bottom', 'time (s)')
         self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'k')
-        # self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+        self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
         self.line3 = self.plot(self.time, self.SP, 'SP', 'c')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
         self.line5 = self.plot(self.time, self.error, 'error', 'r')
   
     def update_plot(self):
         self.line1.setData(self.time, self.act_vel)
-        # self.line2.setData(self.time, self.set_vel)
+        self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
         self.line5.setData(self.time, self.error)
@@ -285,12 +284,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rpmBox.setValue(self.module.pps / self.module.msteps_per_rev * 60)
         
     def rpmBox_changed(self):
-        self.pps_calculator(self.rpmBox.value())
+        self.module.rpm = self.rpmBox.value()
+        self.module.update_pps()
         self.rpmSlider.setValue(self.module.pps)
     
     def pps_calculator(self, rpm_value):
         self.module.rpm = rpm_value
         self.module.pps = int(round(self.module.rpm * self.module.msteps_per_rev/60))
+        print('pps_calculator', self.module.rpm, self.module.pps)
+
         
     def rpm_pps_converter(self, rpm):
         pps = rpm * self.module.msteps_per_rev / 60
@@ -308,15 +310,20 @@ class Window(QMainWindow, Ui_MainWindow):
         '''This function first updates the module pps value from the rpmBox value
         and then executes the last command send to the motor, which is stored
         explicitly in a variable when the respective functions are called.'''
-        self.module.update_pps(self.rpmBox.value())
-        self.last_motor_command()
+        if not self.last_motor_command == None:
+            self.module.rpm = self.rpmBox.value()
+            self.module.update_pps()
+            self.last_motor_command()
+        else:
+            print('no command given yet...')
     
     def invert_direction(self):
         if self.invert_checkBox.isChecked() == True:
             self.module.dir_inv_mod = -1
         if self.invert_checkBox.isChecked() == False:
             self.module.dir_inv_mod = 1
-        self.module.update_pps(self.rpmBox.value())
+        self.module.rpm = self.rpmBox.value()
+        self.module.update_pps()
         # print(self.module.rpm, self.module.pps)
     
     def stop_motor(self):
@@ -328,50 +335,42 @@ class Window(QMainWindow, Ui_MainWindow):
         # print status message
         print('Motor', self.module.moduleID, 'stopped!')
     
-    def permanent_left(self):
+    def permanent_down(self):
         self.clear_button_colors()
-        self.contlButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
-        self.motor.rotate(-self.module.pps)
-        self.last_motor_command = self.permanent_left
-        print('Rotating left with', str(self.rpmBox.value()), 'rpm')
-    
-    def permanent_right(self):
-        self.clear_button_colors()
-        self.contrButton.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
+        self.perm_down_Button.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
+        self.module.dir = -1
+        self.module.update_pps()
         self.motor.rotate(self.module.pps)
-        self.last_motor_command = self.permanent_right
-        print('Rotating right with', str(self.rpmBox.value()), 'rpm')
-            
-    def fine_step_left(self):
-        self.msteps = self.module.msteps_per_fstep
-        # dir_inv_mod is needed because move_by does not take negative pps values
-        self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
-        # self.last_motor_command = self.fine_step_left
-        print('Fine step left with Module', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+        self.last_motor_command = self.permanent_down
+        print('Rotating down with', str(self.rpmBox.value()), 'rpm')
+    
+    def permanent_up(self):
+        self.clear_button_colors()
+        self.perm_up_Button.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
+        self.module.dir = 1
+        self.module.update_pps()
+        self.motor.rotate(self.module.pps)
+        self.last_motor_command = self.permanent_up
+        print('Rotating up with', str(self.rpmBox.value()), 'rpm')
+     
+    def multi_step_down(self):
+        self.module.dir = -1
+        self.multi_step()
+        print('Coarse step down with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+   
+    def multi_step_up(self):
+        self.module.dir = 1
+        self.multi_step()
+        print('Coarse step up with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
         
-    def coarse_step_left(self):
+    def multi_step(self):
         # self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
         self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
+        self.module.update_pps()
         # dir_inv_mod is needed because move_by does not take negative pps values
-        self.motor.move_by(-self.msteps * self.module.dir_inv_mod, self.module.pps)
-        # self.last_motor_command = self.coarse_step_left
-        print('Coarse step left with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
-        
-    def fine_step_right(self):
-        self.msteps = self.module.msteps_per_fstep
-        # dir_inv_mod is needed because move_by does not take negative pps values
-        self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
-        # self.last_motor_command = self.fine_step_right
-        print('Fine step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
-        
-    def coarse_step_right(self):
-        # self.msteps = self.module.msteps_per_fstep * self.multistep_numberBox.value()
-        self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
-        # dir_inv_mod is needed because move_by does not take negative pps values
-        self.motor.move_by(self.msteps * self.module.dir_inv_mod, self.module.pps)
-        # self.last_motor_command = self.coarse_step_right
-        print('Coarse step right with Module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
-        
+        self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
+
+    
     def drive_profile(self, profile):
         print('Driving profile...')
         self.drivetimer = QTimer()
@@ -396,7 +395,7 @@ class Window(QMainWindow, Ui_MainWindow):
                                         self.procvarSlider.value(),
                                         # int(self.chan0.voltage/3.3 * 240 - 120),
                                         self.pps_rpm_converter(self.motor.actual_velocity))
-            self.pps_calculator(int(c.output))
+            self.pps_calculator(int(c.output)) # TODO: change to update_pps
             # print('pps:', self.module.pps)
             # self.CV.append(int(c.output))
             self.motor.rotate(self.module.pps)
@@ -433,8 +432,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.multistep_numberBox.setMaximum(360)
         
     def clear_button_colors(self):
-        self.contlButton.setStyleSheet("")
-        self.contrButton.setStyleSheet("")
+        self.perm_down_Button.setStyleSheet("")
+        self.perm_up_Button.setStyleSheet("")
         
         
 

@@ -10,7 +10,8 @@ cleared before execution in the settings.
 """
 
 # TODO: 
-    # - up / down (based on motor pos.)
+    # up / down (based on motor pos.)
+    # lcd display with act_vel
 
 
 #####   Importing Packages   #####
