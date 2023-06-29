@@ -43,7 +43,7 @@ class Motor(TMCM1260):
         '''Set initial motor drive settings. Speed values are in pps and are
         now scaled to microstep resolution.'''
         motor.drive_settings.max_current = 200
-        motor.drive_settings.standby_current = 100
+        motor.drive_settings.standby_current = 50
         motor.drive_settings.boost_current = 0
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
