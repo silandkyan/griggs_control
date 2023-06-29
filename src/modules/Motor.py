@@ -45,6 +45,8 @@ class Motor(TMCM1260):
         motor.drive_settings.max_current = 200
         motor.drive_settings.standby_current = 50
         motor.drive_settings.boost_current = 0
+        # maximum velocity:
+        self.maxvel = 120
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
         # direction and inversion modifier:
