@@ -130,6 +130,12 @@ class Ui_MainWindow(object):
         self.initADC_box = QtWidgets.QCheckBox(self.tab_2)
         self.initADC_box.setGeometry(QtCore.QRect(210, 20, 111, 21))
         self.initADC_box.setObjectName("initADC_box")
+        self.maxvel_spinBox = QtWidgets.QSpinBox(self.tab_2)
+        self.maxvel_spinBox.setGeometry(QtCore.QRect(85, 240, 61, 31))
+        self.maxvel_spinBox.setObjectName("maxvel_spinBox")
+        self.label_7 = QtWidgets.QLabel(self.tab_2)
+        self.label_7.setGeometry(QtCore.QRect(160, 250, 81, 16))
+        self.label_7.setObjectName("label_7")
         self.tabWidget.addTab(self.tab_2, "")
         self.invert_checkBox = QtWidgets.QCheckBox(self.centralwidget)
         self.invert_checkBox.setGeometry(QtCore.QRect(160, 390, 191, 21))
@@ -144,7 +150,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -171,6 +177,7 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "setpoint"))
         self.label_11.setText(_translate("MainWindow", "Const Stress Mode"))
         self.initADC_box.setText(_translate("MainWindow", "Initialize ADC"))
+        self.label_7.setText(_translate("MainWindow", "max. velocity"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Const Stress"))
         self.invert_checkBox.setText(_translate("MainWindow", "invert direction: pos 2 / 4"))
 from pyqtgraph import PlotWidget

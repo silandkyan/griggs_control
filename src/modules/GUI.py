@@ -78,6 +78,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # set ADC_box:
         self.initADC_box.setChecked(False)
         self.invert_checkBox.setChecked(False)
+        # set initial maxvel value:
+        self.maxvel_spinBox.setValue(120)
+        self.module.maxvel = self.maxvel_spinBox.value()
 
         
     def set_timers(self):
@@ -123,6 +126,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
         # start ADC connection:
         self.initADC_box.stateChanged.connect(self.init_adc)
+        # refresh maxvel when value is changed:
+        self.maxvel_spinBox.valueChanged.connect(self.maxvel_changed)
 
 
 
@@ -288,6 +293,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.update_pps()
         self.rpmSlider.setValue(-self.module.pps) # - to get positiv slider values
         
+    def maxvel_changed(self):
+        self.module.maxvel = self.maxvel_spinBox.value()
+        
     def pps_calculator(self, rpm_value):
         self.module.rpm = rpm_value
         self.module.pps = int(round(self.module.rpm * self.module.msteps_per_rev/60))
@@ -386,6 +394,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
+        # init controller instance:
         # c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 1, 0.1, 0.1, True)
         
@@ -393,7 +402,8 @@ class Window(QMainWindow, Ui_MainWindow):
             c.controller_update(self.setpointSlider.value(),
                                         self.procvarSlider.value(),
                                         # int(self.chan0.voltage/3.3 * 240 - 120),
-                                        self.pps_rpm_converter(self.motor.actual_velocity))
+                                        self.pps_rpm_converter(self.motor.actual_velocity),
+                                        self.module.maxvel)
             self.pps_calculator(int(c.output)) # TODO: change to update_pps
             # print('pps:', self.module.pps)
             # self.CV.append(int(c.output))
@@ -429,6 +439,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(360)
+        # set maxvel spinBox:
+        self.maxvel_spinBox.setMinimum(0)
+        self.maxvel_spinBox.setMaximum(180)
         
     def clear_button_colors(self):
         self.perm_down_Button.setStyleSheet("")

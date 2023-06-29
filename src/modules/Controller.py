@@ -37,7 +37,7 @@ class Controller():
         self.a2 = self.Kd / self.dt
         # print('a-values:', self.a0, self.a1, self.a2)
         
-    def controller_update(self, setpoint, procvar, contvar):
+    def controller_update(self, setpoint, procvar, contvar, out_max):
         # update values:
         self.setpoint = setpoint
         self.procvar = procvar
@@ -63,10 +63,10 @@ class Controller():
                 temp = 0
                 
         # prevent too large output values:
-        if temp <= 120:
+        if temp <= out_max:
             self.output = temp
         else:
-            self.output = 120
+            self.output = out_max
             
         print('PID values:', self.setpoint, self.procvar, round(self.contvar, 1),
               '--', self.error[-1], round(self.output, 1))
