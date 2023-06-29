@@ -286,7 +286,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def rpmBox_changed(self):
         self.module.rpm = self.rpmBox.value()
         self.module.update_pps()
-        self.rpmSlider.setValue(self.module.pps)
+        self.rpmSlider.setValue(-self.module.pps) # - to get positiv slider values
     
     def pps_calculator(self, rpm_value):
         self.module.rpm = rpm_value
@@ -424,9 +424,11 @@ class Window(QMainWindow, Ui_MainWindow):
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setMinimum(0)
         self.rpmBox.setMaximum(120)
+        print('box: ', self.rpmBox.minimum(), self.rpmBox.maximum())
         # set slider limits and position
         self.rpmSlider.setMinimum(int(round(self.rpmBox.minimum() * self.module.msteps_per_rev / 60)))
         self.rpmSlider.setMaximum(int(round(self.rpmBox.maximum() * self.module.msteps_per_rev / 60)))
+        print('slider: ', self.rpmSlider.minimum(), self.rpmSlider.maximum())
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setMinimum(0)
         self.multistep_numberBox.setMaximum(360)
