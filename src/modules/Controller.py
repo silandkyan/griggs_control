@@ -13,6 +13,8 @@ Created on Fri Jun  2 10:39:55 2023
 # PID-mode, negative output allowed, but params need tuning
 # PID-mode, negative output prevented, but params need tuning
 
+# controller is sensitive of update interval, some real-world testing is needed here...
+
 ##### Controller class definition #####
 
 class Controller():
@@ -33,7 +35,7 @@ class Controller():
         self.a0 = self.Kp + self.Ki * self.dt + self.Kd / self.dt
         self.a1 = -self.Kp - 2 * self.Kd / self.dt
         self.a2 = self.Kd / self.dt
-        print('a-values:', self.a0, self.a1, self.a2)
+        # print('a-values:', self.a0, self.a1, self.a2)
         
     def controller_update(self, setpoint, procvar, contvar):
         # update values:
@@ -47,7 +49,7 @@ class Controller():
         # check for prevent_negative_output:
         if self.prevent_negative_output == False:
             # calculate output for new control variable:
-            self.output = (self.contvar + self.a0 * self.error[-1] 
+            temp = (self.contvar + self.a0 * self.error[-1] 
                            + self.a1 * self.error[-2] 
                            + self.a2 * self.error[-3])
             
@@ -57,9 +59,14 @@ class Controller():
                            + self.a1 * self.error[-2] 
                            + self.a2 * self.error[-3])
             # if temp >= 0: # this does not work!
-            if self.error[-1] > 0:
-                self.output = temp
-            else:
-                self.output = 0
+            if self.error[-1] <= 0:
+                temp = 0
                 
-        print('PID values:', self.setpoint, self.procvar, self.contvar, self.error[-1], self.output)
+        # prevent too large output values:
+        if temp <= 120:
+            self.output = temp
+        else:
+            self.output = 120
+            
+        print('PID values:', self.setpoint, self.procvar, round(self.contvar, 1),
+              '--', self.error[-1], round(self.output, 1))
