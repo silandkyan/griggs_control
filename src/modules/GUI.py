@@ -272,13 +272,18 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line3 = self.plot(self.time, self.SP, 'SP', 'c')
         self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
         self.line5 = self.plot(self.time, self.error, 'error', 'r')
+        # LCDs:
+        self.lcd_actvel.display(round(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)))
   
     def update_plot(self):
+        # plot lines:
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
         self.line3.setData(self.time, self.SP)
         self.line4.setData(self.time, self.PV)
         self.line5.setData(self.time, self.error)
+        # LCDs:
+        self.lcd_actvel.display(round(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)))
 
 
 
@@ -378,7 +383,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
 
     
-    def drive_profile(self, profile):
+    def drive_profile(self, profile): # TODO: function not used anymore...
         print('Driving profile...')
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(100)
@@ -395,8 +400,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer.setInterval(interval)
                 
         # init controller instance:
-        # c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.1, True)
+        c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.1, True)
         
         def on_timeout():
             c.controller_update(self.setpointSlider.value(),
@@ -404,7 +409,9 @@ class Window(QMainWindow, Ui_MainWindow):
                                         # int(self.chan0.voltage/3.3 * 240 - 120),
                                         self.pps_rpm_converter(self.motor.actual_velocity),
                                         self.module.maxvel)
-            self.pps_calculator(int(c.output)) # TODO: change to update_pps
+            self.module.rpm = int(c.output)
+            self.module.update_pps()
+            # self.pps_calculator(int(c.output)) # TODO: change to update_pps
             # print('pps:', self.module.pps)
             # self.CV.append(int(c.output))
             self.motor.rotate(self.module.pps)

@@ -54,7 +54,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -440,7 +440,7 @@
    <widget class="QCheckBox" name="invert_checkBox">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>130</x>
       <y>390</y>
       <width>191</width>
       <height>21</height>
@@ -448,6 +448,29 @@
     </property>
     <property name="text">
      <string>invert direction: pos 2 / 4</string>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcd_actvel">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>390</y>
+      <width>64</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>390</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>actual velocity</string>
     </property>
    </widget>
   </widget>

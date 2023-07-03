@@ -11,8 +11,6 @@ cleared before execution in the settings.
 
 # TODO: 
     # up / down (based on motor pos.)
-    # lcd display with act_vel
-
 
 #####   Importing Packages   #####
 from modules.GUI import run_app

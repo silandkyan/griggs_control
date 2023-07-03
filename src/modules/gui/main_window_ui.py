@@ -138,8 +138,14 @@ class Ui_MainWindow(object):
         self.label_7.setObjectName("label_7")
         self.tabWidget.addTab(self.tab_2, "")
         self.invert_checkBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.invert_checkBox.setGeometry(QtCore.QRect(160, 390, 191, 21))
+        self.invert_checkBox.setGeometry(QtCore.QRect(130, 390, 191, 21))
         self.invert_checkBox.setObjectName("invert_checkBox")
+        self.lcd_actvel = QtWidgets.QLCDNumber(self.centralwidget)
+        self.lcd_actvel.setGeometry(QtCore.QRect(570, 390, 64, 23))
+        self.lcd_actvel.setObjectName("lcd_actvel")
+        self.label_13 = QtWidgets.QLabel(self.centralwidget)
+        self.label_13.setGeometry(QtCore.QRect(470, 390, 91, 21))
+        self.label_13.setObjectName("label_13")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 696, 22))
@@ -150,7 +156,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -180,6 +186,7 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "max. velocity"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Const Stress"))
         self.invert_checkBox.setText(_translate("MainWindow", "invert direction: pos 2 / 4"))
+        self.label_13.setText(_translate("MainWindow", "actual velocity"))
 from pyqtgraph import PlotWidget
 
 
