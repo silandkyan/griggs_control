@@ -401,7 +401,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 
         # init controller instance:
         c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.1, True)
+        # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
             c.controller_update(self.setpointSlider.value(),
@@ -411,8 +411,6 @@ class Window(QMainWindow, Ui_MainWindow):
                                         self.module.maxvel)
             self.module.rpm = c.output
             self.module.update_pps()
-            # self.pps_calculator(int(c.output)) # TODO: change to update_pps
-            # print('pps:', self.module.pps)
             # self.CV.append(int(c.output))
             self.motor.rotate(self.module.pps)
             
