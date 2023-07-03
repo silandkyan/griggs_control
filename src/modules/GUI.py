@@ -352,7 +352,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.perm_down_Button.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
         self.module.dir = -1
         self.module.update_pps()
-        self.motor.rotate(self.module.pps)
+        self.motor.rotate(self.module.pps) # positive pps -> clockwise
         self.last_motor_command = self.permanent_down
         print('Rotating down with', str(self.rpmBox.value()), 'rpm')
     
@@ -407,9 +407,9 @@ class Window(QMainWindow, Ui_MainWindow):
             c.controller_update(self.setpointSlider.value(),
                                         self.procvarSlider.value(),
                                         # int(self.chan0.voltage/3.3 * 240 - 120),
-                                        self.pps_rpm_converter(self.motor.actual_velocity),
+                                        self.pps_rpm_converter(abs(self.motor.actual_velocity)),
                                         self.module.maxvel)
-            self.module.rpm = int(c.output)
+            self.module.rpm = c.output
             self.module.update_pps()
             # self.pps_calculator(int(c.output)) # TODO: change to update_pps
             # print('pps:', self.module.pps)
