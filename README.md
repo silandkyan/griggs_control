@@ -5,19 +5,14 @@ Collection of tools to control a Griggs-type apparatus via a computer.
 
 - install Anaconda, PyTrinamic, PyQt5
 
-- prepare breakout board and adc: https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/linux
+- prepare breakout board and adc: [https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/](https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/running-circuitpython-code-without-circuitpython)
 
-1. install and configure libusb: 
-
-2. verify that pyftdi and blinka are installed
-
-3. in case of a langid error, correct the permission settings: "sudo adduser $USER plugdev"; see also: https://eblot.github.io/pyftdi/installation.html
-
-4. re-plug the device and re-login to a new session!
-
-5. install ADS115 driver from adafruit (via Spyder or Python shell): "pip install adafruit-circuitpython-ads1x15"
-
-6. install pyqtgraph (via Spyder or Python shell): "conda install pyqtgraph"
+    1. install and configure libusb driver (or libusbk on Windows, with zadig), setup udev rules on linux
+    2. verify that pyftdi and blinka are installed
+    3. in case of a langid error, correct the permission settings: "sudo adduser $USER plugdev"; see also: https://eblot.github.io/pyftdi/installation.html
+    4. re-plug the device and re-login to a new session!
+    5. install ADS115 driver from adafruit (via Spyder or Python shell): "pip install adafruit-circuitpython-ads1x15"
+    6. install pyqtgraph (via Spyder or Python shell): "conda install pyqtgraph"
 
 - setup Spyder so that all variables are cleared before execution (in the settings)
 
