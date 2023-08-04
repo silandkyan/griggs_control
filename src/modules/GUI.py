@@ -48,12 +48,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module = m # TODO: maybe change back to m in the entire file...
         self.motor = self.module.motor
         self.last_motor_command = None
+        # PID
+        self.PID_max_vel_scale = 2
         # setup functions:
         self.set_allowed_ranges()
         self.set_default_values()
         self.connectSignalsSlots()
         # ADC connection:
         self.chan0 = None#self.init_adc()
+        self.adc_force_scaling = 114.2
         # data containers:
         self.init_data_containers()
         # graphing window:
@@ -143,7 +146,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.SP = [self.setpointSlider.value()]
         if self.initADC_box.isChecked() == True:
             # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
-            self.PV = [self.procvarSlider.value()]
+            self.PV = [int(self.chan0.value/self.adc_force_scaling)]
+            # self.PV = [self.procvarSlider.value()]
         else:
             # self.PV = [0]
             self.PV = [self.procvarSlider.value()]
@@ -161,7 +165,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.SP.append(self.setpointSlider.value())
         if self.initADC_box.isChecked() == True:
             # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
-            self.PV.append(self.procvarSlider.value())
+            self.PV.append(int(self.chan0.value/self.adc_force_scaling))
+            # self.PV.append(self.procvarSlider.value())
         else:
             # self.PV.append(0)
             self.PV.append(self.procvarSlider.value())
@@ -177,7 +182,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # check counter:
         # print('counter:', self.savecounter)
         if self.savecounter == self.data_chunk_size:
-            self.save_values()
+            # self.save_values() # uncomment this function if you want to save values continuously to a file
             self.savecounter = 0
         else:
             self.savecounter += 1
@@ -239,7 +244,7 @@ class Window(QMainWindow, Ui_MainWindow):
             ads = ADS.ADS1115(i2c)
             
             # Create single-ended input on channel 1:
-            chan0 = AnalogIn(ads, ADS.P1)
+            chan0 = AnalogIn(ads, ADS.P0)
             
             # Create differential input between channel 0 and 1:
             # currently not working since only one pin is connected
@@ -250,6 +255,8 @@ class Window(QMainWindow, Ui_MainWindow):
             
             # print first line of data:
             print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+            
+            self.chan0 = chan0
             
             return chan0
 
@@ -395,20 +402,32 @@ class Window(QMainWindow, Ui_MainWindow):
         # print('Done!')
         
     def drive_PID(self):
-        interval = 200
+        interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
         # init controller instance:
-        c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        # c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 0.5, 0.1, 0.5, True)
         
-        def on_timeout():
+        def on_timeout_dummy():
             c.controller_update(self.setpointSlider.value(),
                                         self.procvarSlider.value(),
                                         # int(self.chan0.voltage/3.3 * 240 - 120),
                                         self.pps_rpm_converter(abs(self.motor.actual_velocity)),
                                         self.module.maxvel)
+            self.module.rpm = c.output
+            self.module.update_pps()
+            # self.CV.append(int(c.output))
+            self.motor.rotate(self.module.pps)
+            
+        def on_timeout():
+            c.controller_update(self.setpointSlider.value(),
+                                        # self.PV[-1],
+                                        self.chan0.value/self.adc_force_scaling,
+                                        # int(self.chan0.voltage/3.3 * 240 - 120),
+                                        self.pps_rpm_converter(abs(self.motor.actual_velocity)),
+                                        self.module.maxvel/self.PID_max_vel_scale)
             self.module.rpm = c.output
             self.module.update_pps()
             # self.CV.append(int(c.output))
