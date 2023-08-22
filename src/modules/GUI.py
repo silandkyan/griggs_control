@@ -303,7 +303,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def rpmBox_changed(self):
         self.module.rpm = self.rpmBox.value()
         self.module.update_pps()
-        self.rpmSlider.setValue(-self.module.pps) # - to get positiv slider values
+        self.rpmSlider.setValue(abs(self.module.pps)) # - to get positiv slider values
         
     def maxvel_changed(self):
         self.module.maxvel = self.maxvel_spinBox.value()
@@ -408,7 +408,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 
         # init controller instance:
         # c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 0.5, 0.1, 0.5, True)
+        c = Controller(interval/1000, 20, 1, 0, True)
         
         def on_timeout_dummy():
             c.controller_update(self.setpointSlider.value(),
