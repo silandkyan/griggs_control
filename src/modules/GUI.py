@@ -328,7 +328,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def rpmBox_changed(self):
         self.module.rpm = self.rpmBox.value()
         self.module.update_pps()
-        self.rpmSlider.setValue(-self.module.pps) # - to get positiv slider values
+        self.rpmSlider.setValue(abs(self.module.pps)) # - to get positiv slider values
         
     def maxvel_changed(self):
         self.module.maxvel = self.maxvel_spinBox.value()
