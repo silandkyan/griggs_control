@@ -42,8 +42,8 @@ class Motor(TMCM1260):
     def init_drive_settings(self, motor):
         '''Set initial motor drive settings. Speed values are in pps and are
         now scaled to microstep resolution.'''
-        motor.drive_settings.max_current = 200
-        motor.drive_settings.standby_current = 50
+        motor.drive_settings.max_current = 60
+        motor.drive_settings.standby_current = 40
         motor.drive_settings.boost_current = 0
         # maximum velocity:
         self.maxvel = 120
@@ -54,6 +54,7 @@ class Motor(TMCM1260):
         self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
+        print(self.mstep_res_factor)
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
         # calculate msteps/revolution
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
@@ -71,7 +72,7 @@ class Motor(TMCM1260):
     def update_pps(self):
         # self.rpm = rpm_value
         self.pps = int(round(self.rpm * self.msteps_per_rev/60) * self.dir * self.dir_inv_mod)
-        print('update_pps', self.rpm, self.pps)
+        # print('update_pps', self.rpm, self.pps)
 
     def init_ramp_settings(self, motor):
         '''Set initial motor ramp settings. Values are in pps and are now scaled 
@@ -80,7 +81,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 50000 # this works and seems like a good value
+        motor.linear_ramp.max_acceleration = 300 # this works and seems like a good value
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):
