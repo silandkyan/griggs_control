@@ -252,7 +252,7 @@ class Window(QMainWindow, Ui_MainWindow):
     """
     
     def init_adc(self, checkbox, sigma):
-        if self.checkbox.isChecked() == True: # TODO: this method might not work to remove the connection...
+        if checkbox.isChecked() == True: # TODO: this method might not work to remove the connection...
             import board
             import busio
             import adafruit_ads1x15.ads1115 as ADS
@@ -262,13 +262,16 @@ class Window(QMainWindow, Ui_MainWindow):
             
             # Create the ADC object using the I2C bus:
             ads = ADS.ADS1115(i2c)
+            print(ads)
             
             # Create single-ended input on channel:
-            if self.sigma == 's1':
+            if sigma == 's1':
                 self.chan_s1 = AnalogIn(ads, ADS.P0)
+                channel = self.chan_s1
                 
-            elif self.sigma == 's1':
+            elif sigma == 's3':
                 self.chan_s3 = AnalogIn(ads, ADS.P1)
+                channel = self.chan_s3
             
             # Create differential input between channel 0 and 1:
             # currently not working since only one pin is connected
@@ -278,7 +281,7 @@ class Window(QMainWindow, Ui_MainWindow):
             # print("{:>5}\t{:>5}".format('raw', 'v'))
             
             # print first line of data:
-            # print("{:>5}\t{:>5.3f}".format(self.channel.value, self.channel.voltage))
+            print("{:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
             
             # return self.chan_s1, self.chan_s3
 
