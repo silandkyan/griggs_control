@@ -53,7 +53,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_default_values()
         self.connectSignalsSlots()
         # ADC connection:
-        self.chan0 = None#self.init_adc()
+        self.chan_s1 = None
+        self.chan_s3 = None
+        self.adc_sigma1_scaling = 114.2
+        self.adc_sigma3_scaling = 99 # TODO: add correct value here
         # data containers:
         self.init_data_containers()
         # graphing window:
@@ -76,8 +79,12 @@ class Window(QMainWindow, Ui_MainWindow):
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(90)   # degrees
         # set ADC_box:
-        self.initADC_box.setChecked(False)
+        self.initADC_s1.setChecked(False)
+        self.initADC_s3.setChecked(False)
         self.invert_checkBox.setChecked(False)
+        # set initial stress setpoint value:
+        self.sigma1_SP_spinBox.setValue(0)
+        self.dsigma_SP_spinBox.setValue(0)
         # set initial maxvel value:
         self.maxvel_spinBox.setValue(120)
         self.module.maxvel = self.maxvel_spinBox.value()
@@ -124,8 +131,11 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.driveprofile_pushB.clicked.connect(self.drive_profile)
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
+        self.quench_start_pushB.clicked.connect(self.quench_PID)
+        self.stopprofile_pushB_2.clicked.connect(self.stop_profile)
         # start ADC connection:
-        self.initADC_box.stateChanged.connect(self.init_adc)
+        self.initADC_s1.stateChanged.connect(lambda: self.init_adc(self.initADC_s1, 's1'))
+        self.initADC_s3.stateChanged.connect(lambda: self.init_adc(self.initADC_s3, 's3'))
         # refresh maxvel when value is changed:
         self.maxvel_spinBox.valueChanged.connect(self.maxvel_changed)
 
@@ -140,16 +150,27 @@ class Window(QMainWindow, Ui_MainWindow):
         self.t0 = time.time()
         self.act_vel = [self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)]
         self.set_vel = [self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir)]
-        self.SP = [self.setpointSlider.value()]
-        if self.initADC_box.isChecked() == True:
-            # self.PV = [int(self.chan0.voltage/3.3 * 240 - 120)]
-            self.PV = [self.procvarSlider.value()]
+        # self.SP = [self.setpointSlider.value()]
+        self.sigma1_SP = [self.sigma1_SP_spinBox.value()]
+        self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
+        if self.initADC_s1.isChecked() == True:
+            self.sigma1_PV = [int(self.chan_s1.voltage/self.adc_sigma1_scaling)]
+            # self.sigma3_PV = [int(self.chan_s3.voltage/self.adc_sigma3_scaling)]
+            # self.PV = [self.procvarSlider.value()]
+            if self.initADC_s3.isChecked() == True:
+                self.sigma3_PV = [int(self.chan_s3.voltage/self.adc_sigma3_scaling)]
+                self.dsigma_PV = [self.sigma1_PV[0] - self.sigma3_PV[0]]
+            else:
+                self.sigma3_PV = [0]
+                self.dsigma_PV = [0]
         else:
-            # self.PV = [0]
-            self.PV = [self.procvarSlider.value()]
+            self.sigma1_PV = [0]
+            self.sigma3_PV = [0]
+            self.dsigma_PV = [0]
+            # self.PV = [self.procvarSlider.value()]
         # self.CV = [0]
         # self.error = [0, 0, 0]
-        self.error = [self.SP[-1] - self.PV[-1]]
+        self.error = [self.sigma1_SP[-1] - self.sigma1_PV[-1]]
         # print(self.time, self.act_vel, self.set_vel)
         self.init_save_files()
         
@@ -158,15 +179,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.time.append(time.time()-self.t0)
         self.act_vel.append(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir))
         self.set_vel.append(self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir))
-        self.SP.append(self.setpointSlider.value())
-        if self.initADC_box.isChecked() == True:
-            # self.PV.append(int(self.chan0.voltage/3.3 * 240 - 120))
-            self.PV.append(self.procvarSlider.value())
+        # self.SP.append(self.setpointSlider.value())
+        self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
+        self.dsigma_SP.append([]) # TODO
+        if self.initADC_s1.isChecked() == True:
+            self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
+            # self.PV.append(self.procvarSlider.value())
         else:
-            # self.PV.append(0)
-            self.PV.append(self.procvarSlider.value())
+            self.sigma1_PV.append(0)
+            # self.PV.append(self.procvarSlider.value())
         # self.CV.append(self.CV[-1])
-        self.error.append(self.SP[-1] - self.PV[-1])
+        self.error.append(self.sigma1_SP[-1] - self.sigma1_PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
         # print('t:', round(self.time[-1], 2),
         #       '  CV:', self.set_vel[-1],
@@ -188,8 +211,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.time.pop(0)       # remove the first elements
             self.act_vel.pop(0)
             self.set_vel.pop(0)
-            self.SP.pop(0)
-            self.PV.pop(0)
+            self.sigma1_SP.pop(0)
+            self.sigma1_PV.pop(0)
             self.error.pop(0)
             # self.CV.pop(0)
         # print('length:', len(self.time))
@@ -226,8 +249,8 @@ class Window(QMainWindow, Ui_MainWindow):
         4. re-plug the device and re-login to a new session!
     """
     
-    def init_adc(self):
-        if self.initADC_box.isChecked() == True:
+    def init_adc(self, checkbox, sigma):
+        if self.checkbox.isChecked() == True: # TODO: this method might not work to remove the connection...
             import board
             import busio
             import adafruit_ads1x15.ads1115 as ADS
@@ -238,20 +261,24 @@ class Window(QMainWindow, Ui_MainWindow):
             # Create the ADC object using the I2C bus:
             ads = ADS.ADS1115(i2c)
             
-            # Create single-ended input on channel 1:
-            chan0 = AnalogIn(ads, ADS.P1)
+            # Create single-ended input on channel:
+            if self.sigma == 's1':
+                self.chan_s1 = AnalogIn(ads, ADS.P0)
+                
+            elif self.sigma == 's1':
+                self.chan_s3 = AnalogIn(ads, ADS.P1)
             
             # Create differential input between channel 0 and 1:
             # currently not working since only one pin is connected
             # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
             
             # print header:
-            print("{:>5}\t{:>5}".format('raw', 'v'))
+            # print("{:>5}\t{:>5}".format('raw', 'v'))
             
             # print first line of data:
-            print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+            # print("{:>5}\t{:>5.3f}".format(self.channel.value, self.channel.voltage))
             
-            return chan0
+            # return self.chan_s1, self.chan_s3
 
 
     ###   GRAPH WINDOW   ###
@@ -269,8 +296,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('bottom', 'time (s)')
         self.line1 = self.plot(self.time, self.act_vel, 'actual velocity', 'k')
         self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
-        self.line3 = self.plot(self.time, self.SP, 'SP', 'c')
-        self.line4 = self.plot(self.time, self.PV, 'PV', 'g')
+        self.line3 = self.plot(self.time, self.sigma1_SP, 'SP', 'c')
+        self.line4 = self.plot(self.time, self.sigma1_PV, 'PV', 'g')
         self.line5 = self.plot(self.time, self.error, 'error', 'r')
         # LCDs:
         self.lcd_actvel.display(round(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)))
@@ -279,8 +306,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # plot lines:
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
-        self.line3.setData(self.time, self.SP)
-        self.line4.setData(self.time, self.PV)
+        self.line3.setData(self.time, self.sigma1_SP)
+        self.line4.setData(self.time, self.sigma1_PV)
         self.line5.setData(self.time, self.error)
         # LCDs:
         self.lcd_actvel.display(round(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)))
@@ -395,24 +422,50 @@ class Window(QMainWindow, Ui_MainWindow):
         # print('Done!')
         
     def drive_PID(self):
-        interval = 200
+        interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
                 
         # init controller instance:
-        c = Controller(interval/1000, 1, 0.0, 0.0, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 0.5, 0.1, 0.5, True) # /1000 for ms->s; good?
         # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
-            c.controller_update(self.setpointSlider.value(),
-                                        self.procvarSlider.value(),
-                                        # int(self.chan0.voltage/3.3 * 240 - 120),
+            c.controller_update(self.sigma1_SP_spinBox.value(),
+                                        # self.procvarSlider.value(),
+                                        self.chan_s1.value/self.adc_sigma1_scaling,
                                         self.pps_rpm_converter(abs(self.motor.actual_velocity)),
                                         self.module.maxvel)
             self.module.rpm = c.output
             self.module.update_pps()
             # self.CV.append(int(c.output))
             self.motor.rotate(self.module.pps)
+            
+        self.drivetimer.timeout.connect(on_timeout)
+        
+        self.drivetimer.start()
+        self.driveprofile_pushB.setEnabled(False)
+        self.stopprofile_pushB.setEnabled(True)
+    
+    def quench_PID(self):
+        interval = 1000
+        self.drivetimer = QTimer()
+        self.drivetimer.setInterval(interval)
+                
+        # init controller instance:
+        c = Controller(interval/1000, 0.5, 0.1, 0.5, True) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        
+        def on_timeout():
+            SP = self.dsigma_SP_spinBox.value()
+            PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
+            c.controller_update(SP, PV,
+                                self.pps_rpm_converter(abs(self.motor.actual_velocity)),
+                                self.module.maxvel)
+            self.module.rpm = c.output
+            self.module.update_pps()
+            # self.CV.append(int(c.output))
+            self.motor.rotate(- self.module.pps) # TODO: correct to set this negative?
             
         self.drivetimer.timeout.connect(on_timeout)
         
