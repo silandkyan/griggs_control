@@ -200,7 +200,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # check counter:
         # print('counter:', self.savecounter)
         if self.savecounter == self.data_chunk_size:
-            self.save_values()
+            # self.save_values()
             self.savecounter = 0
         else:
             self.savecounter += 1
