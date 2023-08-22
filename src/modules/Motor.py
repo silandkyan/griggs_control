@@ -72,7 +72,7 @@ class Motor(TMCM1260):
     def update_pps(self):
         # self.rpm = rpm_value
         self.pps = int(round(self.rpm * self.msteps_per_rev/60) * self.dir * self.dir_inv_mod)
-        print('update_pps', self.rpm, self.pps)
+        # print('update_pps', self.rpm, self.pps)
 
     def init_ramp_settings(self, motor):
         '''Set initial motor ramp settings. Values are in pps and are now scaled 

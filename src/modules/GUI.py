@@ -48,6 +48,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module = m # TODO: maybe change back to m in the entire file...
         self.motor = self.module.motor
         self.last_motor_command = None
+        # PID
+        self.PID_max_vel_scale = 2 # TODO: what is this?
         # setup functions:
         self.set_allowed_ranges()
         self.set_default_values()
@@ -200,7 +202,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # check counter:
         # print('counter:', self.savecounter)
         if self.savecounter == self.data_chunk_size:
-            # self.save_values()
+            # self.save_values() # uncomment this function if you want to save values continuously to a file
             self.savecounter = 0
         else:
             self.savecounter += 1
@@ -432,10 +434,9 @@ class Window(QMainWindow, Ui_MainWindow):
         
         def on_timeout():
             c.controller_update(self.sigma1_SP_spinBox.value(),
-                                        # self.procvarSlider.value(),
                                         self.chan_s1.value/self.adc_sigma1_scaling,
                                         self.pps_rpm_converter(abs(self.motor.actual_velocity)),
-                                        self.module.maxvel)
+                                        self.module.maxvel/self.PID_max_vel_scale)
             self.module.rpm = c.output
             self.module.update_pps()
             # self.CV.append(int(c.output))
@@ -461,7 +462,7 @@ class Window(QMainWindow, Ui_MainWindow):
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
             c.controller_update(SP, PV,
                                 self.pps_rpm_converter(abs(self.motor.actual_velocity)),
-                                self.module.maxvel)
+                                self.module.maxvel/self.PID_max_vel_scale)
             self.module.rpm = c.output
             self.module.update_pps()
             # self.CV.append(int(c.output))
