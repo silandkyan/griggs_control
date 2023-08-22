@@ -49,7 +49,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.motor = self.module.motor
         self.last_motor_command = None
         # PID
-        self.PID_max_vel_scale = 2 # TODO: what is this?
+        self.PID_max_vel_scale = 1#2 # TODO: what is this?
         # setup functions:
         self.set_allowed_ranges()
         self.set_default_values()
@@ -156,11 +156,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sigma1_SP = [self.sigma1_SP_spinBox.value()]
         self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
         if self.initADC_s1.isChecked() == True:
-            self.sigma1_PV = [int(self.chan_s1.voltage/self.adc_sigma1_scaling)]
-            # self.sigma3_PV = [int(self.chan_s3.voltage/self.adc_sigma3_scaling)]
+            self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
+            # self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
             # self.PV = [self.procvarSlider.value()]
             if self.initADC_s3.isChecked() == True:
-                self.sigma3_PV = [int(self.chan_s3.voltage/self.adc_sigma3_scaling)]
+                self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
                 self.dsigma_PV = [self.sigma1_PV[0] - self.sigma3_PV[0]]
             else:
                 self.sigma3_PV = [0]
@@ -432,7 +432,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer.setInterval(interval)
                 
         # init controller instance:
-        c = Controller(interval/1000, 0.5, 0.1, 0.5, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
@@ -457,7 +457,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer.setInterval(interval)
                 
         # init controller instance:
-        c = Controller(interval/1000, 0.5, 0.1, 0.5, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
