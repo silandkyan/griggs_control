@@ -81,7 +81,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 30000
+        motor.linear_ramp.max_acceleration = 30000 # TODO: good value? was 300 before but that was very slow...
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):
