@@ -50,7 +50,7 @@ class Motor(TMCM1260):
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
         # direction and inversion modifier:
-        self.dir = -1 # up/down switch
+        self.dir = -1 # switch up(+1)/down(-1)
         self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
@@ -81,7 +81,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 300 # this works and seems like a good value
+        motor.linear_ramp.max_acceleration = 30000
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):

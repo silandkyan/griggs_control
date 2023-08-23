@@ -157,7 +157,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
         if self.initADC_s1.isChecked() == True:
             self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
-            # self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
             # self.PV = [self.procvarSlider.value()]
             if self.initADC_s3.isChecked() == True:
                 self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
@@ -430,6 +429,7 @@ class Window(QMainWindow, Ui_MainWindow):
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
+        self.module.dir = -1 # ensures correct motor rotation direction
                 
         # init controller instance:
         c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
@@ -455,6 +455,7 @@ class Window(QMainWindow, Ui_MainWindow):
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
+        self.module.dir = 1 # ensures correct motor rotation direction
                 
         # init controller instance:
         c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
