@@ -45,7 +45,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Motor Control Panel -- MoCoPa')
         # motor interface
-        self.module = m # TODO: maybe change back to m in the entire file...
+        self.module = m
         self.motor = self.module.motor
         self.last_motor_command = None
         # PID
@@ -130,7 +130,6 @@ class Window(QMainWindow, Ui_MainWindow):
         # update velocity button:
         self.update_rpm_button.clicked.connect(self.update_rpm)
         ### PID:
-        # self.driveprofile_pushB.clicked.connect(self.drive_profile)
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
         self.quench_start_pushB.clicked.connect(self.quench_PID)
@@ -157,7 +156,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
         if self.initADC_s1.isChecked() == True:
             self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
-            # self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
             # self.PV = [self.procvarSlider.value()]
             if self.initADC_s3.isChecked() == True:
                 self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
@@ -183,10 +181,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_vel.append(self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir))
         # self.SP.append(self.setpointSlider.value())
         self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
-        self.dsigma_SP.append([]) # TODO
+        self.dsigma_SP.append(self.dsigma_SP_spinBox.value())
         if self.initADC_s1.isChecked() == True:
             self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
             # self.PV.append(self.procvarSlider.value())
+            if self.initADC_s3.isChecked() == True:
+                self.dsigma_PV.append(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
         else:
             self.sigma1_PV.append(0)
             # self.PV.append(self.procvarSlider.value())
@@ -413,23 +413,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.update_pps()
         # dir_inv_mod is needed because move_by does not take negative pps values
         self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
-
-    
-    def drive_profile(self, profile): # TODO: function not used anymore...
-        print('Driving profile...')
-        self.drivetimer = QTimer()
-        self.drivetimer.setInterval(100)
-        self.motor.rotate(self.module.pps)
-        self.drivetimer.timeout.connect(lambda: self.motor.rotate(self.module.pps))
-        self.drivetimer.start()
-        self.driveprofile_pushB.setEnabled(False)
-        self.stopprofile_pushB.setEnabled(True)
-        # print('Done!')
         
     def drive_PID(self):
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
+        self.module.dir = -1 # ensures correct motor rotation direction
                 
         # init controller instance:
         c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
@@ -455,6 +444,7 @@ class Window(QMainWindow, Ui_MainWindow):
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
+        self.module.dir = 1 # ensures correct motor rotation direction
                 
         # init controller instance:
         c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
