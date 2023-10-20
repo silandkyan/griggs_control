@@ -4,6 +4,9 @@
 Created on Fri Jun  2 10:39:55 2023
 
 @author: pgross
+
+algorithm from https://en.wikipedia.org/wiki/PID_controller#Pseudocode
+
 """
 # controller works in...
 # P-mode, negative output allowed
