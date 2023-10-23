@@ -9,9 +9,6 @@ When running this program with Spyder, make sure that all variables are
 cleared before execution in the settings.
 """
 
-# TODO: 
-    # up / down (based on motor pos.)
-
 #####   Importing Packages   #####
 from modules.GUI import run_app
 from modules.Motor import disconnect_motors

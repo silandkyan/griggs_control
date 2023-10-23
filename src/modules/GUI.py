@@ -27,6 +27,8 @@ Also, QWidget must be promoted to plotWidget in QtDesigner! See here:
 https://www.pythonguis.com/tutorials/embed-pyqtgraph-custom-widgets-qt-app/'''
 import pyqtgraph as pg
 
+# TODO: the enitre data management is a bit messy and could be cleaned up!
+
 # from random import randint
 
 ### Module connection ###
@@ -73,33 +75,42 @@ class Window(QMainWindow, Ui_MainWindow):
         ### User input values (with allowed min-max ranges)
         # rpm for all constant speed modes (single, multi, constant):
         self.rpmBox.setValue(10)    # default rpm
+        
         # adjust slider position to match rpmBox value:
         self.rpmSlider.setValue(int(round(self.rpmBox.value() * self.module.msteps_per_rev/60)))
+        
         # initial calculation of pps:
         self.module.rpm = self.rpmBox.value()
         self.module.update_pps()
+        
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(90)   # degrees
+        
         # set ADC_box:
         self.initADC_s1.setChecked(False)
         self.initADC_s3.setChecked(False)
         self.invert_checkBox.setChecked(False)
+        
         # set initial stress setpoint value:
         self.sigma1_SP_spinBox.setValue(0)
         self.dsigma_SP_spinBox.setValue(0)
+        
         # set initial maxvel value:
         self.maxvel_spinBox.setValue(120)
         self.module.maxvel = self.maxvel_spinBox.value()
 
         
     def set_timers(self):
+        '''Initialize timers for plotting and data management.'''
         self.basetimer = 100 # in ms
+        
         # data timer:
         self.datatimer = QTimer()
         self.data_timerfactor = 1
         self.datatimer.setInterval(self.basetimer * self.data_timerfactor)
         self.datatimer.timeout.connect(self.update_data)
         self.datatimer.start()
+        
         # graphing timer:
         self.graphtimer = QTimer()
         self.graph_timerfactor = 1
@@ -113,30 +124,40 @@ class Window(QMainWindow, Ui_MainWindow):
         signal-and-slot mechanism.'''
         # Close window and end program:
         self.quitButton.clicked.connect(self.close)
+        
         # Multi step rotation:
         self.multi_down_Button.clicked.connect(self.multi_step_down)
         self.multi_up_Button.clicked.connect(self.multi_step_up)
+        
         # Continuous rotation:
         self.perm_down_Button.clicked.connect(self.permanent_down)
         self.perm_up_Button.clicked.connect(self.permanent_up)
+        
         # Stop button:
         self.stopButton.clicked.connect(self.stop_motor)
+        
         # refresh rpm when value is changed:
         self.rpmBox.valueChanged.connect(self.rpmBox_changed)
+        
         # update rpm by slider movement:
         self.rpmSlider.valueChanged.connect(self.rpmSlider_changed)
+        
         # direction inversion:
         self.invert_checkBox.stateChanged.connect(self.invert_direction)
+        
         # update velocity button:
         self.update_rpm_button.clicked.connect(self.update_rpm)
+        
         ### PID:
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
         self.quench_start_pushB.clicked.connect(self.quench_PID)
         self.stopprofile_pushB_2.clicked.connect(self.stop_profile)
+        
         # start ADC connection:
         self.initADC_s1.stateChanged.connect(lambda: self.init_adc(self.initADC_s1, 's1'))
         self.initADC_s3.stateChanged.connect(lambda: self.init_adc(self.initADC_s3, 's3'))
+        
         # refresh maxvel when value is changed:
         self.maxvel_spinBox.valueChanged.connect(self.maxvel_changed)
 
@@ -145,15 +166,22 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   DATA MANAGEMENT   ###
     
     def init_data_containers(self):
+        '''Initialize data management for plotting and saving.'''
         self.data_chunk_size = 99
         self.savecounter = 1 # != 0 because of initialization, etc.
-        self.time = [0] # time
+        self.time = [0] # time starts at 0 sec
         self.t0 = time.time()
+        
+        # first elements of act_vel and set_vel lists
         self.act_vel = [self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)]
         self.set_vel = [self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir)]
         # self.SP = [self.setpointSlider.value()]
+        
+        # first elements of sigma1 and dsigma lists
         self.sigma1_SP = [self.sigma1_SP_spinBox.value()]
         self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
+        
+        # initialize ADCs if checked (only if the sensors send signals to the computer)
         if self.initADC_s1.isChecked() == True:
             self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
             # self.PV = [self.procvarSlider.value()]
@@ -168,6 +196,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.sigma3_PV = [0]
             self.dsigma_PV = [0]
             # self.PV = [self.procvarSlider.value()]
+        
         # self.CV = [0]
         # self.error = [0, 0, 0]
         self.error = [self.sigma1_SP[-1] - self.sigma1_PV[-1]]
@@ -175,10 +204,13 @@ class Window(QMainWindow, Ui_MainWindow):
         self.init_save_files()
         
     def update_data(self):
-        # add new values
+        '''Handles data management of all sensor values, updates data lists 
+        and saves data to external files.'''
+        # add updated values
         self.time.append(time.time()-self.t0)
         self.act_vel.append(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir))
         self.set_vel.append(self.pps_rpm_converter(abs(self.module.pps) * -self.module.dir))
+        
         # self.SP.append(self.setpointSlider.value())
         self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
         self.dsigma_SP.append(self.dsigma_SP_spinBox.value())
@@ -190,6 +222,7 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.sigma1_PV.append(0)
             # self.PV.append(self.procvarSlider.value())
+        
         # self.CV.append(self.CV[-1])
         self.error.append(self.sigma1_SP[-1] - self.sigma1_PV[-1])
         # print('times:', self.time[-1], time.time()-self.t0)
@@ -252,7 +285,12 @@ class Window(QMainWindow, Ui_MainWindow):
     """
     
     def init_adc(self, checkbox, sigma):
-        if checkbox.isChecked() == True: # TODO: this method might not work to remove the connection...
+        '''Create a new ADC object for data streams from sensors.
+        Input:
+            checkbox: Qt checkbox object that toggles the ADC connection.
+            sigma: 's1' or 's3', depending on which signal is handled.'''
+        if checkbox.isChecked() == True: 
+            # TODO: this method does not remove the connection after unchecking the box!
             import board
             import busio
             import adafruit_ads1x15.ads1115 as ADS
@@ -289,11 +327,13 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   GRAPH WINDOW   ###
     
     def plot(self, x, y, plotname, color):
+        '''Helper function for live plotting.'''
         pen = pg.mkPen(color=color)
         line = self.graphWidget.plot(x, y, name=plotname, pen=pen)
         return line
     
     def init_graphwindow(self):
+        '''Initialize the plotting window.'''
         # figure styling:
         self.graphWidget.setBackground('w')
         self.graphWidget.addLegend()
@@ -308,6 +348,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lcd_actvel.display(round(self.pps_rpm_converter(abs(self.motor.actual_velocity) * -self.module.dir)))
   
     def update_plot(self):
+        '''Update the plotting window; called in each iteration of the plotting timer.'''
         # plot lines:
         self.line1.setData(self.time, self.act_vel)
         self.line2.setData(self.time, self.set_vel)
@@ -322,6 +363,7 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   CALCULATORS (for unit conversion)   ###
     
     def rpmSlider_changed(self):
+        # TODO: the slider behaviour is sometimes messy, maybe remove it completely.
         self.module.pps = self.rpmSlider.value()
         self.rpmBox.setValue(self.module.pps / self.module.msteps_per_rev * 60)
         
@@ -332,15 +374,17 @@ class Window(QMainWindow, Ui_MainWindow):
         
     def maxvel_changed(self):
         self.module.maxvel = self.maxvel_spinBox.value()
-        
-    def pps_calculator(self, rpm_value):
-        self.module.rpm = rpm_value
-        self.module.pps = int(round(self.module.rpm * self.module.msteps_per_rev/60))
+    
+    # TODO: not needed anymore; now handled by the Motor.update_pps() method
+    # def pps_calculator(self, rpm_value):
+    #     self.module.rpm = rpm_value
+    #     self.module.pps = int(round(self.module.rpm * self.module.msteps_per_rev/60))
         # print('pps_calculator', self.module.rpm, self.module.pps)
         
-    def rpm_pps_converter(self, rpm):
-        pps = rpm * self.module.msteps_per_rev / 60
-        return pps
+    # TODO: not needed anymore; now handled by the Motor.update_pps() method
+    # def rpm_pps_converter(self, rpm):
+    #     pps = rpm * self.module.msteps_per_rev / 60
+    #     return pps
         
     def pps_rpm_converter(self, pps):
         rpm = pps / self.module.msteps_per_rev * 60
@@ -351,9 +395,10 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   MOTOR CONTROL FUNCTIONS   ###
     
     def update_rpm(self):
-        '''This function first updates the module pps value from the rpmBox value
-        and then executes the last command send to the motor, which is stored
-        explicitly in a variable when the respective functions are called.'''
+        '''This function first updates the module pps value from the rpmBox value.
+        To have an effect, it then executes the last command send to the motor, 
+        which is stored explicitly in a variable when the respective functions 
+        are called.'''
         if not self.last_motor_command == None:
             self.module.rpm = self.rpmBox.value()
             self.module.update_pps()
@@ -362,6 +407,7 @@ class Window(QMainWindow, Ui_MainWindow):
             print('no command given yet...')
     
     def invert_direction(self):
+        '''Handles motor direction inversion via GUI.'''
         if self.invert_checkBox.isChecked() == True:
             self.module.dir_inv_mod = -1
         if self.invert_checkBox.isChecked() == False:
@@ -415,7 +461,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
         
     def drive_PID(self):
-        interval = 1000
+        '''Normal PID-controlled motor operation.'''
+        # Init PID timer
+        interval = 1000 # timestep duration in ms
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
         self.module.dir = -1 # ensures correct motor rotation direction
@@ -425,15 +473,23 @@ class Window(QMainWindow, Ui_MainWindow):
         # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
+            '''Timer callback function. At each timestep, values controlled and
+            monitored by the PID controller are updated. 
+            See Controller.controller_update() method for details.'''
+            # TODO: This timer callback function could be generalized so that 
+            # it could be used also in the quenching block below. Data handling
+            # is still a bit sloppy...
             c.controller_update(self.sigma1_SP_spinBox.value(),
                                         self.chan_s1.value/self.adc_sigma1_scaling,
                                         self.pps_rpm_converter(abs(self.motor.actual_velocity)),
                                         self.module.maxvel/self.PID_max_vel_scale)
+            # Set and apply new motor speed
             self.module.rpm = c.output
             self.module.update_pps()
             # self.CV.append(int(c.output))
             self.motor.rotate(self.module.pps)
             
+        # timer callback
         self.drivetimer.timeout.connect(on_timeout)
         
         self.drivetimer.start()
@@ -441,6 +497,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stopprofile_pushB.setEnabled(True)
     
     def quench_PID(self):
+        '''PID-controlled quenching mode.'''
         interval = 1000
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
@@ -451,6 +508,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
+            '''Timer callback function. At each timestep, values controlled and
+            monitored by the PID controller are updated. 
+            See Controller.controller_update() method for details.'''
             SP = self.dsigma_SP_spinBox.value()
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
             c.controller_update(SP, PV,
@@ -461,6 +521,7 @@ class Window(QMainWindow, Ui_MainWindow):
             # self.CV.append(int(c.output))
             self.motor.rotate(- self.module.pps) # TODO: correct to set this negative?
             
+        # timer callback
         self.drivetimer.timeout.connect(on_timeout)
         
         self.drivetimer.start()
