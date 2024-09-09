@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
+    <width>835</width>
     <height>700</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
      <rect>
       <x>10</x>
       <y>430</y>
-      <width>661</width>
+      <width>801</width>
       <height>211</height>
      </rect>
     </property>
@@ -47,8 +47,8 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>20</x>
+      <y>-10</y>
       <width>391</width>
       <height>371</height>
      </rect>
@@ -76,7 +76,7 @@
      <widget class="QPushButton" name="multi_up_Button">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>180</x>
         <y>80</y>
         <width>51</width>
         <height>41</height>
@@ -89,7 +89,7 @@
      <widget class="QPushButton" name="multi_down_Button">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>300</x>
         <y>80</y>
         <width>51</width>
         <height>41</height>
@@ -102,7 +102,7 @@
      <widget class="QPushButton" name="stopButton">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>240</x>
         <y>80</y>
         <width>51</width>
         <height>101</height>
@@ -112,20 +112,17 @@
        <string>stop</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="multistep_numberBox">
+     <widget class="QDoubleSpinBox" name="multistep_numberBox">
       <property name="geometry">
        <rect>
-        <x>70</x>
+        <x>90</x>
         <y>90</y>
         <width>71</width>
         <height>26</height>
        </rect>
       </property>
-      <property name="maximum">
-       <number>360</number>
-      </property>
       <property name="value">
-       <number>90</number>
+       <double>5.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="label_2">
@@ -133,8 +130,8 @@
        <rect>
         <x>10</x>
         <y>90</y>
-        <width>71</width>
-        <height>16</height>
+        <width>81</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
@@ -144,7 +141,7 @@
      <widget class="QPushButton" name="perm_down_Button">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>300</x>
         <y>140</y>
         <width>51</width>
         <height>41</height>
@@ -157,7 +154,7 @@
      <widget class="QPushButton" name="perm_up_Button">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>180</x>
         <y>140</y>
         <width>51</width>
         <height>41</height>
@@ -172,7 +169,7 @@
        <rect>
         <x>20</x>
         <y>17</y>
-        <width>121</width>
+        <width>171</width>
         <height>21</height>
        </rect>
       </property>
@@ -235,27 +232,27 @@
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>140</x>
-        <y>40</y>
+        <x>180</x>
+        <y>30</y>
         <width>81</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>retract piston</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;retract &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>40</y>
-        <width>91</width>
+        <x>300</x>
+        <y>30</y>
+        <width>81</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>shorten sample</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;shorten &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -263,8 +260,8 @@
        <rect>
         <x>10</x>
         <y>110</y>
-        <width>71</width>
-        <height>16</height>
+        <width>81</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
@@ -282,6 +279,45 @@
       </property>
       <property name="text">
        <string>Update</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushB_close_valve">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>280</y>
+        <width>131</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>close oil valve</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>50</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>pistion</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>50</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>sample</string>
       </property>
      </widget>
     </widget>
@@ -348,14 +384,23 @@
        <string>Const Stress Mode</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="maxvel_spinBox">
+     <widget class="QDoubleSpinBox" name="maxvel_spinBox">
       <property name="geometry">
        <rect>
         <x>80</x>
         <y>240</y>
-        <width>61</width>
+        <width>71</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="decimals">
+       <number>4</number>
+      </property>
+      <property name="maximum">
+       <double>120.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>120.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="label_7">
@@ -371,7 +416,7 @@
        <string>max. velocity</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="sigma1_SP_spinBox">
+     <widget class="QDoubleSpinBox" name="sigma1_SP_spinBox">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -380,11 +425,17 @@
         <height>31</height>
        </rect>
       </property>
+      <property name="decimals">
+       <number>4</number>
+      </property>
+      <property name="maximum">
+       <double>15000.000000000000000</double>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>Qenching</string>
+      <string>Quenching</string>
      </attribute>
      <widget class="QPushButton" name="stopprofile_pushB_2">
       <property name="geometry">
@@ -404,7 +455,7 @@
        <rect>
         <x>20</x>
         <y>20</y>
-        <width>141</width>
+        <width>201</width>
         <height>21</height>
        </rect>
       </property>
@@ -422,8 +473,8 @@
      <widget class="QSpinBox" name="dsigma_SP_spinBox">
       <property name="geometry">
        <rect>
-        <x>95</x>
-        <y>250</y>
+        <x>110</x>
+        <y>260</y>
         <width>61</width>
         <height>31</height>
        </rect>
@@ -448,11 +499,63 @@
         <x>180</x>
         <y>260</y>
         <width>111</width>
-        <height>16</height>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
        <string>dsigma setpoint</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="rpmBox_prequench">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>170</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="rpmBox_quench">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>170</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="value">
+       <double>0.100000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="prequenchrpm">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>200</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>prequench rpm</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>200</y>
+        <width>121</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>quench rpm</string>
       </property>
      </widget>
     </widget>
@@ -470,11 +573,11 @@
      <string>invert direction: pos 2 / 4</string>
     </property>
    </widget>
-   <widget class="QLCDNumber" name="lcd_actvel">
+   <widget class="QLCDNumber" name="lcd_actvel_s1">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>390</y>
+      <x>640</x>
+      <y>120</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -483,9 +586,9 @@
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>390</y>
-      <width>91</width>
+      <x>630</x>
+      <y>90</y>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -519,13 +622,78 @@
      <string>read ADC: sigma3</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>190</y>
+      <width>421</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;For Quenching: &lt;/span&gt;&lt;/p&gt;&lt;p&gt;- prequench rpm: to open valve until &lt;/p&gt;&lt;p&gt;oilpressure changes (fast)&lt;/p&gt;&lt;p&gt;- quench rpm: to open the valve all the way open (slow)&lt;/p&gt;&lt;p&gt;(target position := valve all the way opened)&lt;/p&gt;&lt;p&gt;- dsigma setpoint is the const. diff. stress [Mpa] &lt;/p&gt;&lt;p&gt;s1 establishes via PID as a passive reaction on s3 action&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkB_motor_s1">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>120</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>motor s1</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkB_motor_s3">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>160</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>motor s3</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>0</y>
+      <width>181</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;close&lt;/span&gt; app&lt;span style=&quot; font-weight:600;&quot;&gt; only &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;via the &lt;span style=&quot; font-weight:600;&quot;&gt;QUIT-button!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcd_actvel_s3">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>160</y>
+      <width>64</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>696</width>
+     <width>835</width>
      <height>22</height>
     </rect>
    </property>

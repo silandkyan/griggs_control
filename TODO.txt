@@ -1,0 +1,8 @@
+### TODO ###:
+
+- adapt set valve positions dir for griggs pc 
+- check for situations: 
+		- s3 Motor is setting back position automatically? (after using set valve position before?!)
+- check over Iteration-portion of the code again
+- fully understand the directions: up down and so on (Maybe generalize for all?)
+- Invert direction for s3?!
