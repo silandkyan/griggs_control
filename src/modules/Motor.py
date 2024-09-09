@@ -67,18 +67,20 @@ class Motor(TMCM1260):
         motor.up_enabled = True
         motor.max_pos_up = None
         motor.max_pos_down = None       
-        motor.drive_settings.max_current = 200
-        motor.drive_settings.standby_current = 50
+        motor.drive_settings.max_current = 60
+        motor.drive_settings.standby_current = 40
+        motor.drive_settings.boost_current = 0
         motor.drive_settings.boost_current = 0
         # maximum velocity:
         self.maxvel = 120
         # Fullsteps/revolution:
         self.fsteps_per_rev = 200
         # direction and inversion modifier:
-        self.dir = -1 # up/down switch
+        self.dir = -1 # switch up(+1)/down(-1)
         self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
+        print(self.mstep_res_factor)
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
         # calculate msteps/revolution
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
@@ -96,7 +98,7 @@ class Motor(TMCM1260):
     def update_pps(self):
         # self.rpm = rpm_value
         self.pps = int(round(self.rpm * self.msteps_per_rev/60) * self.dir * self.dir_inv_mod)
-        print('update_pps', self.rpm, self.pps)
+        # print('update_pps', self.rpm, self.pps)
 
     def init_ramp_settings(self, motor):
         '''Set initial motor ramp settings. Values are in pps and are now scaled 
@@ -105,7 +107,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 50000 # this works and seems like a good value
+        motor.linear_ramp.max_acceleration = 30000 # TODO: good value? was 300 before but that was very slow...
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):

@@ -19,6 +19,36 @@ Collection of tools to control a Griggs-type apparatus via a computer.
 - what else?
 
 
+## Program structure
+
+The actual program is found within the folder /griggs_control/src. The entire program consists of several subroutines and additional files that are organized in the following way:
+
+```
+├── /griggs_control/src             (main program folder)
+│   ├── mocopa.py                   (main program; run this file with Python)
+│   ├── act_vel.txt                 (file for externally saving of the motor rotation velocity during an experiment)
+│   ├── time.txt                    (file for externally saving the timesteps of an experiment)
+│   ├── /modules                    (all subroutines and other necessary files are stored here)
+│   │   ├── Motor.py                (definition of Motor class, for motor management)
+│   │   ├── Controller.py           (definition of Controller class for PID-controlled operation)
+│   │   ├── GUI.py                  (definition of GUI behaviour)
+│   │   ├── /gui                    (contains other GUI-related files)
+│   │   │   ├── main_window_ui.py   (definition of GUI content and appearence)
+│   │   │   ├── main window.ui      (XML-file, contains all GUI elements)
+```
+
+Important: Do NOT delete __init__.py files od __pycache__ folders, these are reqired and directly managed by Python.
+
+
+## Functionality and GUI
+
+The GUI currently offers 3 modes of operation, which are organized in tabs:
+
+- Manual: Motor/piston movement and speed are controlled manually.
+- Const Stress: Automatic motor/piston movement is PID-controlled, using &sigma;1 from continuous sensor reading as setpoint. 
+- Quenching: Automatic piston retraction during experiment quenching is PID-controlled, using &Delta;&sigma; (from &sigma;1-&sigma;3 sensor reading) as setpoint.
+
+
 ## Setup of Raspberry Pi (probably not needed anymore...)
 
 1. write PI OS (via Pi Imager) onto microSD card and insert it into a RPI

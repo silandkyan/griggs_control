@@ -4,16 +4,13 @@
 Created on Fri Jun  2 10:39:55 2023
 
 @author: pgross
-"""
-# controller works in...
-# P-mode, negative output allowed
-# P-mode, negative output prevented
-# PI-mode, negative output allowed, but params need tuning
-# PI-mode, negative output prevented, but params need tuning
-# PID-mode, negative output allowed, but params need tuning
-# PID-mode, negative output prevented, but params need tuning
 
-# controller is sensitive of update interval, some real-world testing is needed here...
+Algorithm from https://en.wikipedia.org/wiki/PID_controller#Pseudocode
+
+Remember that the controller is sensitive to the update interval, so change 
+this interval with care.
+
+"""
 
 ##### Controller class definition #####
 
@@ -21,6 +18,11 @@ class Controller():
     # instances = []
     
     def __init__(self, dt, Kp, Ki, Kd, prevent_negative_output):
+        '''Class for managing PID controlled operation of a stepper motor.
+        Parameters:
+            dt: int/float; control loop updating timestep, in seconds
+            Kp, Ki, Kd: int/float; PID parameters, need manual tuning
+            prevent_negative_output: bool; specifies controller mode'''
         self.dt = dt
         self.Kp = Kp
         self.Ki = Ki
@@ -31,13 +33,21 @@ class Controller():
         self.controller_setup()
 
     def controller_setup(self):
-        '''Set initial controller values.'''
+        '''Compute initial controller values (timestep-dependent!).'''
         self.a0 = self.Kp + self.Ki * self.dt + self.Kd / self.dt
         self.a1 = -self.Kp - 2 * self.Kd / self.dt
         self.a2 = self.Kd / self.dt
-        # print('a-values:', self.a0, self.a1, self.a2)
+        print('a-values:', self.a0, self.a1, self.a2)
         
     def controller_update(self, setpoint, procvar, contvar, out_max):
+        '''This method calculates controller output based on monitored values 
+        of SP, PV, CV. For a continuous control loop, call this function from 
+        a loop of frequency dt (see above) with updated values of SP, PV, CV.
+        The method will then compute the controller output and update the 
+        instance variable (self.output) accordingly.
+        Parameters:
+            setpoint, procvar, contvar: int/float; 
+            out_max: int/float; max allowed output value to avoid hardware damage'''
         # update values:
         self.setpoint = setpoint
         self.procvar = procvar
@@ -68,5 +78,5 @@ class Controller():
         else:
             self.output = out_max
             
-        print('PID values:', self.setpoint, self.procvar, round(self.contvar, 1),
-              '--', self.error[-1], round(self.output, 1))
+        # print('PID values:', self.setpoint, round(self.procvar,2), round(self.contvar, 2),
+        #       '--', round(self.error[-1],3), round(self.output, 2))
