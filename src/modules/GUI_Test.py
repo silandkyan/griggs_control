@@ -13,7 +13,6 @@ Created on Tue Jan 17 10:08:43 2023
     - remember to adapt threshold values for oilp [Mpa?] and valve [steps?]
     - find suitable ranges for pre- and quench velocity 
     - rename position_quenched.csv 
-    - check for situations: , reset of current pos to 0?
     - for testrun if works: 
         - add test files in dirs of griggs pc: mocopa_Test (src), GUI_Test (modules), 
         main_window_Test (gui) and position_quenched (src)
@@ -32,7 +31,14 @@ Created on Tue Jan 17 10:08:43 2023
     - stop during multistep on 90 (default) has very very slow ramp!
     
     - test if position gets saved if app is closed right upper corner:
-    -> no, program finishes anyways and then closes after command train got handled"""
+    -> no, program finishes anyways and then closes after command train got handled
+    
+    - if usb connection gets killed and reestablished: some error with actual_velocity for s3 
+    appears
+    
+    - established crash protection for max range of motor
+    
+    - established stable position imports"""
     
 # import os 
 
@@ -140,9 +146,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.positions = pd.read_csv(
         'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv') 
         self.positions.columns = self.positions.columns.str.strip()
-        self.motor_s3.actual_position = int(self.positions['current'][0])
+        if self.motor_s3.actual_position != int(self.positions['current'][0]):
+            self.positions['opened'] = self.positions['opened']-self.positions['current']
+            self.positions['closed'] = self.positions['closed']-self.positions['current']
+            # self.positions.to_csv(
+            # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index=False)
+            self.positions.to_csv(
+            'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index=False) 
         self.motor_s3.max_pos_up = int(self.positions['opened'][0])
         self.motor_s3.max_pos_down = int(self.positions['closed'][0])
+        # print('current', int(self.positions['current'][0]),'actual',self.motor_s3.actual_position, 
+        #       'up',self.motor_s3.max_pos_up, 'down', self.motor_s3.max_pos_down)
         # print info if valve is not closed at experiment start 
         self.close_valve()
         
@@ -681,12 +695,12 @@ class Window(QMainWindow, Ui_MainWindow):
             self.old_oilp = self.current_oilp
             self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
             # see if oilp changed by the amout threshold [MPa?] 
-            if self.old_oilp - self.current_oilp < self.threshold_oilp:
+            if (self.old_oilp - self.current_oilp) < self.threshold_oilp:
                 # no: open valve fast (prequench velocity)
-                self.goto_s3(self.motor_s3.max_pos_down, self.rpmBox_prequench.value())
-            elif self.old_oilp - self.current_oilp >= self.threshold_oilp:
+                self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_prequench.value())
+            elif (self.old_oilp - self.current_oilp) >= self.threshold_oilp:
                 # yes: open valve slow (quench velocity)
-                self.goto_s3(self.motor_s3.max_pos_down, self.rpmBox_quench.value())
+                self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_quench.value())
 
             
             SP = self.dsigma_SP_spinBox.value()
