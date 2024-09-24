@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jan 17 10:08:43 2023
@@ -570,6 +569,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def permanent_down(self):
         self.module.dir = -1
         self.module.update_pps()
+        # check if with this velocity, motor will hit lower bound of motor within <= 3s 
+        # if so set enabled down to False to prevent crash
         self.crash_safety(self.module, self.module.pps*3)
         if self.module.motor.down_enabled:
             self.clear_button_colors()
@@ -583,6 +584,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def permanent_up(self):
         self.module.dir = 1
         self.module.update_pps()
+        # check if with this velocity, motor will hit upper bound of motor within <= 3s 
+        # if so set enabled up to False to prevent crash
         self.crash_safety(self.module, self.module.pps*3)
         if self.module.motor.up_enabled:
             self.clear_button_colors()
@@ -597,6 +600,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.dir = -1
         self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         self.module.update_pps()
+        # check if actual_pos + steps < lower bound  
+        # if so set enabled down to False to prevent crash
         self.crash_safety(self.module, self.msteps)
         if self.module.motor.down_enabled:
             self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
@@ -608,6 +613,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.dir = 1
         self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
         self.module.update_pps()
+        # check if actual_pos + steps > upper bound  
+        # if so set enabled up to False to prevent crash
         self.crash_safety(self.module, self.msteps)
         if self.module.motor.up_enabled:
             self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
@@ -624,8 +631,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
         self.positions.to_csv(
         'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
-        # go to position (pos arg): - opened valve: self.module_s3_quenched
-        #                           - closed valve: self.module_s3_unquenched
+        # go to position (pos arg): - opened valve: self.motor_s3.max_pos_up
+        #                           - closed valve: self.motor_s3.max_pos_down
         # with velocity (rpm arg):  - prequench v.: self.rpmBox_prequench.value()
         #                           - quench v.   : self.rpmBox_quench.value()
         pps = round(rpm * self.module_s3.msteps_per_rev/60)
@@ -647,9 +654,9 @@ class Window(QMainWindow, Ui_MainWindow):
             # when closed
             self.pushB_close_valve.setStyleSheet('color: green')
         else: 
-            # no: show position and how much is left [steps]
+            # no designated pos reached: show position and how much is left [steps]
             print('motor s3 is at:',self.motor_s3.actual_position, ',', 
-                  abs(self.motor_s3.actual_position- pos), 'steps are left')
+                  abs(self.motor_s3.actual_position - pos), 'steps are left')
             
             
     def drive_PID(self):
