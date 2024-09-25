@@ -136,24 +136,24 @@ class Window(QMainWindow, Ui_MainWindow):
         # show window 
         self.show()
         # error threshold for closed valve
-        self.threshold_valve = 100
+        self.threshold_valve = 0
         # error threshold for oilp-change
         self.threshold_oilp = 0
         # import positions for quenching 
-        # self.positions = pd.read_csv(
-        # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv')
         self.positions = pd.read_csv(
-        'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv') 
+        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv')
+        # self.positions = pd.read_csv(
+        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv') 
         self.positions.columns = self.positions.columns.str.strip()
-        if self.motor_s3.actual_position != int(self.positions['current'][0]):
+        if self.motor_s3.actual_position != int(self.positions.loc[0, 'current']):
             self.positions['opened'] = self.positions['opened']-self.positions['current']
             self.positions['closed'] = self.positions['closed']-self.positions['current']
-            # self.positions.to_csv(
-            # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index=False)
             self.positions.to_csv(
-            'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index=False) 
-        self.motor_s3.max_pos_up = int(self.positions['opened'][0])
-        self.motor_s3.max_pos_down = int(self.positions['closed'][0])
+            'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index=False)
+            # self.positions.to_csv(
+            # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index=False) 
+        self.motor_s3.max_pos_up = int(self.positions.loc[0, 'opened'])
+        self.motor_s3.max_pos_down = int(self.positions.loc[0, 'closed'])
         # print('current', int(self.positions['current'][0]),'actual',self.motor_s3.actual_position, 
         #       'up',self.motor_s3.max_pos_up, 'down', self.motor_s3.max_pos_down)
         # print info if valve is not closed at experiment start 
@@ -256,76 +256,76 @@ class Window(QMainWindow, Ui_MainWindow):
         self.time = [0] # time
         self.t0 = time.time()
         self.act_vel_s3 = [self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))]
-        # self.act_vel_s1 = [self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))]
-        # self.set_vel = [self.pps_rpm_converter(self.module_s1, self.module_s1.pps)]
-        # # self.SP = [self.setpointSlider.value()]
-        # self.sigma1_SP = [self.sigma1_SP_spinBox.value()]
-        # self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
-        # if self.initADC_s1.isChecked() == True:
-        #     self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
-        #     # self.PV = [self.procvarSlider.value()]
-        #     if self.initADC_s3.isChecked() == True:
-        #         self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
-        #         self.dsigma_PV = [self.sigma1_PV[0] - self.sigma3_PV[0]]
-        #     else:
-        #         self.sigma3_PV = [0]
-        #         self.dsigma_PV = [0]
-        # else:
-        #     self.sigma1_PV = [0]
-        #     self.sigma3_PV = [0]
-        #     self.dsigma_PV = [0]
-        #     # self.PV = [self.procvarSlider.value()]
-        # # self.CV = [0]
-        # # self.error = [0, 0, 0]
-        # self.error = [self.sigma1_SP[-1] - self.sigma1_PV[-1]]
-        # # print(self.time, self.act_vel, self.set_vel)
-        # self.init_save_files()
+        self.act_vel_s1 = [self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))]
+        self.set_vel = [self.pps_rpm_converter(self.module_s1, self.module_s1.pps)]
+        # self.SP = [self.setpointSlider.value()]
+        self.sigma1_SP = [self.sigma1_SP_spinBox.value()]
+        self.dsigma_SP = [self.dsigma_SP_spinBox.value()]
+        if self.initADC_s1.isChecked() == True:
+            self.sigma1_PV = [int(self.chan_s1.value/self.adc_sigma1_scaling)]
+            # self.PV = [self.procvarSlider.value()]
+            if self.initADC_s3.isChecked() == True:
+                self.sigma3_PV = [int(self.chan_s3.value/self.adc_sigma3_scaling)]
+                self.dsigma_PV = [self.sigma1_PV[0] - self.sigma3_PV[0]]
+            else:
+                self.sigma3_PV = [0]
+                self.dsigma_PV = [0]
+        else:
+            self.sigma1_PV = [0]
+            self.sigma3_PV = [0]
+            self.dsigma_PV = [0]
+            # self.PV = [self.procvarSlider.value()]
+        # self.CV = [0]
+        # self.error = [0, 0, 0]
+        self.error = [self.sigma1_SP[-1] - self.sigma1_PV[-1]]
+        # print(self.time, self.act_vel, self.set_vel)
+        self.init_save_files()
         
     def update_data(self):
         # add new values
         self.time.append(time.time()-self.t0)
         self.act_vel_s3.append(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)))
-        # self.act_vel_s1.append(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
-        # self.set_vel.append(self.pps_rpm_converter(self.module_s1, abs(self.module_s1.pps)))
-        # # self.SP.append(self.setpointSlider.value())
-        # self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
-        # self.dsigma_SP.append(self.dsigma_SP_spinBox.value())
-        # if self.initADC_s1.isChecked() == True:
-        #     self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
-        #     # self.PV.append(self.procvarSlider.value())
-        #     if self.initADC_s3.isChecked() == True:
-        #         self.dsigma_PV.append(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
-        # else:
-        #     self.sigma1_PV.append(0)
-        #     # self.PV.append(self.procvarSlider.value())
-        # # self.CV.append(self.CV[-1])
-        # self.error.append(self.sigma1_SP[-1] - self.sigma1_PV[-1])
-        # # print('times:', self.time[-1], time.time()-self.t0)
-        # # print('t:', round(self.time[-1], 2),
-        # #       '  CV:', self.set_vel[-1],
-        # #       '  SP:', self.SP[-1],
-        # #       '  PV:', self.PV[-1],
-        # #       '  e:', self.error[-1])
+        self.act_vel_s1.append(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
+        self.set_vel.append(self.pps_rpm_converter(self.module_s1, abs(self.module_s1.pps)))
+        # self.SP.append(self.setpointSlider.value())
+        self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
+        self.dsigma_SP.append(self.dsigma_SP_spinBox.value())
+        if self.initADC_s1.isChecked() == True:
+            self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
+            # self.PV.append(self.procvarSlider.value())
+            if self.initADC_s3.isChecked() == True:
+                self.dsigma_PV.append(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
+        else:
+            self.sigma1_PV.append(0)
+            # self.PV.append(self.procvarSlider.value())
+        # self.CV.append(self.CV[-1])
+        self.error.append(self.sigma1_SP[-1] - self.sigma1_PV[-1])
+        # print('times:', self.time[-1], time.time()-self.t0)
+        # print('t:', round(self.time[-1], 2),
+        #       '  CV:', self.set_vel[-1],
+        #       '  SP:', self.SP[-1],
+        #       '  PV:', self.PV[-1],
+        #       '  e:', self.error[-1])
         
-        # # check counter:
-        # # print('counter:', self.savecounter)
+        # check counter:
+        # print('counter:', self.savecounter)
         if self.savecounter == self.data_chunk_size:
             # self.save_values() # uncomment this function if you want to save values continuously to a file
             self.savecounter = 0
         else:
             self.savecounter += 1
-        # # print('counter:', self.savecounter)
+        # print('counter:', self.savecounter)
         
         # print('length:', len(self.time))
         if len(self.time) == self.data_chunk_size + 1:
             self.time.pop(0)       # remove the first elements
             self.act_vel_s3.pop(0)
-            # self.act_vel_s1.pop(0)
-            # self.set_vel.pop(0)
-            # self.sigma1_SP.pop(0)
-            # self.sigma1_PV.pop(0)
-            # self.error.pop(0)
-            # self.CV.pop(0)
+            self.act_vel_s1.pop(0)
+            self.set_vel.pop(0)
+            self.sigma1_SP.pop(0)
+            self.sigma1_PV.pop(0)
+            self.error.pop(0)
+            self.CV.pop(0)
         # print('length:', len(self.time))
             
     def init_save_files(self):
@@ -409,27 +409,27 @@ class Window(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('left', 'velocity (rpm)')
         self.graphWidget.setLabel('bottom', 'time (s)')
         # s1/PID
-        # self.line1 = self.plot(self.time, self.act_vel_s1, 'actual velocity s1', 'k')
-        # self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
-        # self.line3 = self.plot(self.time, self.sigma1_SP, 'SP', 'c')
-        # self.line4 = self.plot(self.time, self.sigma1_PV, 'PV', 'g')
-        # self.line5 = self.plot(self.time, self.error, 'error', 'r')
+        self.line1 = self.plot(self.time, self.act_vel_s1, 'actual velocity s1', 'k')
+        self.line2 = self.plot(self.time, self.set_vel, 'set velocity', 'b')
+        self.line3 = self.plot(self.time, self.sigma1_SP, 'SP', 'c')
+        self.line4 = self.plot(self.time, self.sigma1_PV, 'PV', 'g')
+        self.line5 = self.plot(self.time, self.error, 'error', 'r')
         # s3
         self.line6 = self.plot(self.time, self.act_vel_s3, 'actual velocity s3', 'y') 
         # LCDs:
-        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
+        self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
         self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
         
     def update_plot(self):
         # plot lines:
-        # self.line1.setData(self.time, self.act_vel_s1)
-        # self.line2.setData(self.time, self.set_vel)
-        # self.line3.setData(self.time, self.sigma1_SP)
-        # self.line4.setData(self.time, self.sigma1_PV)
-        # self.line5.setData(self.time, self.error)
+        self.line1.setData(self.time, self.act_vel_s1)
+        self.line2.setData(self.time, self.set_vel)
+        self.line3.setData(self.time, self.sigma1_SP)
+        self.line4.setData(self.time, self.sigma1_PV)
+        self.line5.setData(self.time, self.error)
         self.line6.setData(self.time, self.act_vel_s3)
         # LCDs:
-        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
+        self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
         self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
         
     ###   CALCULATORS (for unit conversion)   ###
@@ -524,11 +524,11 @@ class Window(QMainWindow, Ui_MainWindow):
                         self.pushB_close_valve.setStyleSheet('color: red')
                     else:
                         self.pushB_close_valve.setStyleSheet('color: green')
-                self.positions['current'][0] = module.motor.actual_position 
-                # self.positions.to_csv(
-                # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+                self.positions.loc[0, 'current'] = module.motor.actual_position 
                 self.positions.to_csv(
-                'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
+                'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+                # self.positions.to_csv(
+                # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
          
     
     ###   MOTOR CONTROL FUNCTIONS   ###
@@ -626,11 +626,11 @@ class Window(QMainWindow, Ui_MainWindow):
     
     def goto_s3(self, pos, rpm):
         # update current position to csv every on_timeout-cycle 
-        self.positions['current'][0] = self.motor_s3.actual_position
-        # self.positions.to_csv(
-        # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
         self.positions.to_csv(
-        'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
+        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        # self.positions.to_csv(
+        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
         # go to position (pos arg): - opened valve: self.motor_s3.max_pos_up
         #                           - closed valve: self.motor_s3.max_pos_down
         # with velocity (rpm arg):  - prequench v.: self.rpmBox_prequench.value()
@@ -761,11 +761,11 @@ class Window(QMainWindow, Ui_MainWindow):
         
     def close_app(self):
         # save current position of s3 module one last time 
-        self.positions['current'][0] = self.motor_s3.actual_position
-        # self.positions.to_csv(
-        # 'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
         self.positions.to_csv(
-        'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
+        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        # self.positions.to_csv(
+        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
         print('saved current position!')
         self.close()
         
