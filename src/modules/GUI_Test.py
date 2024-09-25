@@ -16,11 +16,12 @@ Created on Tue Jan 17 10:08:43 2023
         - add test files in dirs of griggs pc: mocopa_Test (src), GUI_Test (modules), 
         main_window_Test (gui) and position_quenched (src)
         - uncomment: s1 definitions, data container functions, plot functions,...?!
+    - how does save files work and why needed?
     
    NOTES: 
     - copied multimotor control for: stop_motors, permanent_down 
     permanent_up, multi_step_down, multi_step_up, rpm box changed, and rpm slider
-    from gui simple, rpm box changed, and rpm slider 
+    from gui simple 
     -> checkBoxes: motor s1 and motor s3 ONLY AFFECT THESE FUNCTIONS!!
     
     - if usb connection of s3 gets disconnected during permanent running, the steps done
@@ -75,8 +76,12 @@ for port in port_list:
 ID_list = [14, 23]
 module_list = Motor.sort_module_list(ID_list) 
 
-# s1 = module_list[0]
+s1 = module_list[0]
 s3 = module_list[0]
+
+# print out Id to find out if module instances got mapped to right ID
+print('motor_s1:',s1.moduleID)
+print('motor_s3:',s3.moduleID)
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -106,21 +111,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('motor_s1 Control Panel -- MoCoPa')
         # implement motors in correct syntax:
-        # self.module_s1 = s1
+        self.module_s1 = s1
         self.module_s3 = s3
-        # self.motor_s1 = self.module_s1.motor
+        self.motor_s1 = self.module_s1.motor
         self.motor_s3 = self.module_s3.motor  #TODO adapted to s3 compatibility!!
-        # choose motor s1 for starting:
-        # self.active_modules = [self.module_s1]
+        # choose active motor for initialisation:
+        self.active_modules = [self.module_s1]
         # self.active_modules = [self.module_s3]
-        self.active_modules = []
+        # self.active_modules = []
         # for motor s1:
         self.last_motor_command = None
         # PID
         self.PID_max_vel_scale = 1  # TODO: what is this?
         # setup functions:
-        # self.set_allowed_ranges()
-        # self.set_default_values()
+        self.set_allowed_ranges()
+        self.set_default_values()
         self.connectSignalsSlots()
         # ADC connection:
         self.chan_s1 = None
@@ -169,7 +174,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rpmSlider.setValue(int(round(self.rpmBox.value() * self.module_s1.msteps_per_rev/60)))
         # initial calculation of pps:
         self.module_s1.rpm = self.rpmBox.value()
+        self.module_s3.rpm = self.rpmBox.value()
         self.module_s1.update_pps()
+        self.module_s3.update_pps()
         # amount of single steps in multistep mode:
         self.multistep_numberBox.setValue(90)   # degrees
         # set ADC_box:
@@ -180,8 +187,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sigma1_SP_spinBox.setValue(0)
         self.dsigma_SP_spinBox.setValue(0)
         # set initial maxvel value:
-        self.maxvel_spinBox.setValue(120)
-        self.module_s1.maxvel = self.maxvel_spinBox.value()
+        # self.maxvel_spinBox.setValue(120)
+        # self.module_s1.maxvel = self.maxvel_spinBox.value()
+        # self.module_s3.maxvel = self.maxvel_spinBox.value()
         
     def set_timers(self):
         self.basetimer = 100 # in ms
@@ -220,7 +228,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # update rpm by slider movement:
         self.rpmSlider.valueChanged.connect(lambda: self.multi_module_control(self.rpmSlider_changed))
         # direction inversion:
-        self.invert_checkBox.stateChanged.connect(self.invert_direction)
+        self.invert_checkBox.stateChanged.connect(lambda: self.multi_module_control(self.invert_direction))
         # update velocity button:
         self.update_rpm_button.clicked.connect(self.update_rpm)
         ### PID:
@@ -546,11 +554,12 @@ class Window(QMainWindow, Ui_MainWindow):
             
     def invert_direction(self):
         if self.invert_checkBox.isChecked() == True:
-            self.module_s1.dir_inv_mod = -1
+            self.module.dir_inv_mod = -1
         if self.invert_checkBox.isChecked() == False:
-            self.module_s1.dir_inv_mod = 1
-        self.module_s1.rpm = self.rpmBox.value()
-        self.module_s1.update_pps()
+            self.module.dir_inv_mod = 1
+        self.module.rpm = self.rpmBox.value()
+        self.module.update_pps()
+        print('dir for module:', self.module.moduleID, 'inverted!')
         # print(self.module_s1.rpm, self.module_s1.pps)
     
     def stop_motor(self):
