@@ -16,8 +16,14 @@ import sys
 import time
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from pytrinamic.connections import ConnectionManager
-from gui.set_valve_positions_window import Ui_MainWindow
-from ..Motor import Motor
+# LAPTOP DIR
+from modules.gui.set_valve_positions_window import Ui_MainWindow
+# LAB PC DIR
+# from gui.set_valve_positions_window import Ui_MainWindow
+# LAPTOP DIR
+from modules.Motor import Motor
+# LAB PC DIR
+# from ..Motor import Motor
 
 import pandas as pd
 
