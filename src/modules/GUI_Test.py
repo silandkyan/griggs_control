@@ -13,6 +13,7 @@ Created on Tue Jan 17 10:08:43 2023
     - remember to adapt threshold values for oilp [Mpa?] and valve [steps?]
     - find suitable ranges for pre- and quench velocity 
     - rename position_quenched.csv 
+    - MULTISTEP SPINB DOESNT CONNECT WITH CHANGE MODULE PPS!!
     - for testrun if works: 
         - add test files in dirs of griggs pc: mocopa_Test (src), GUI_Test (modules), 
         main_window_Test (gui) and position_quenched (src)
@@ -155,8 +156,6 @@ class Window(QMainWindow, Ui_MainWindow):
             'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index=False) 
         self.motor_s3.max_pos_up = int(self.positions['opened'][0])
         self.motor_s3.max_pos_down = int(self.positions['closed'][0])
-        # print('current', int(self.positions['current'][0]),'actual',self.motor_s3.actual_position, 
-        #       'up',self.motor_s3.max_pos_up, 'down', self.motor_s3.max_pos_down)
         # print info if valve is not closed at experiment start 
         self.close_valve()
         
@@ -418,8 +417,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # s3
         self.line6 = self.plot(self.time, self.act_vel_s3, 'actual velocity s3', 'y') 
         # LCDs:
-        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
-        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)), 3))
+        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)), 3))
         
     def update_plot(self):
         # plot lines:
@@ -430,8 +429,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.line5.setData(self.time, self.error)
         self.line6.setData(self.time, self.act_vel_s3)
         # LCDs:
-        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
-        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+        # self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)), 3))
+        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)), 3))
         
     ###   CALCULATORS (for unit conversion)   ###
     
@@ -635,13 +634,13 @@ class Window(QMainWindow, Ui_MainWindow):
         if pos == self.motor_s3.max_pos_up:
             # check if quench succeeded: gets called repeatedly from drivetimer.timeout 
             # so if is fine. drivetimer.stop() ends the quench process
-            if self.motor_s3.get_position_reached():
+            if abs(self.motor_s3.actual_position - self.motor_s3.max_pos_up) <= self.threshold_valve:
                 print('oil valve opened, quench completed!')
                 self.pushB_close_valve.setStyleSheet('color:red')
                 self.drivetimer.stop()
         elif pos == self.motor_s3.max_pos_down:
             # as long as valve not closed 
-            while not self.motor_s3.get_position_reached():
+            while abs(self.motor_s3.actual_position - self.motor_s3.max_pos_down) > self.threshold_valve:
                 QApplication.processEvents()
                 self.pushB_close_valve.setStyleSheet('color: red')
             # when closed
