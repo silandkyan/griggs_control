@@ -151,6 +151,7 @@ class Ui_MainWindow(object):
         self.dsigma_SP_spinBox = QtWidgets.QSpinBox(self.tab_3)
         self.dsigma_SP_spinBox.setGeometry(QtCore.QRect(110, 260, 61, 31))
         self.dsigma_SP_spinBox.setObjectName("dsigma_SP_spinBox")
+        self.dsigma_SP_spinBox.setMaximum(600)
         self.quench_start_pushB = QtWidgets.QPushButton(self.tab_3)
         self.quench_start_pushB.setGeometry(QtCore.QRect(70, 80, 101, 41))
         self.quench_start_pushB.setObjectName("quench_start_pushB")
