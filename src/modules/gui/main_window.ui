@@ -47,8 +47,8 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>-10</y>
+      <x>10</x>
+      <y>0</y>
       <width>391</width>
       <height>371</height>
      </rect>
@@ -122,7 +122,7 @@
        </rect>
       </property>
       <property name="value">
-       <double>5.000000000000000</double>
+       <double>30.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="label_2">
@@ -354,7 +354,7 @@
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>140</x>
         <y>180</y>
         <width>111</width>
         <height>16</height>
@@ -387,7 +387,7 @@
      <widget class="QDoubleSpinBox" name="maxvel_spinBox">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>60</x>
         <y>240</y>
         <width>71</width>
         <height>31</height>
@@ -400,13 +400,13 @@
        <double>120.000000000000000</double>
       </property>
       <property name="value">
-       <double>120.000000000000000</double>
+       <double>60.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>140</x>
         <y>250</y>
         <width>81</width>
         <height>16</height>
@@ -419,7 +419,7 @@
      <widget class="QDoubleSpinBox" name="sigma1_SP_spinBox">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>70</x>
         <y>170</y>
         <width>61</width>
         <height>31</height>
@@ -430,6 +430,19 @@
       </property>
       <property name="maximum">
        <double>15000.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushB_update_const">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>200</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Update </string>
       </property>
      </widget>
     </widget>
@@ -473,11 +486,17 @@
      <widget class="QSpinBox" name="dsigma_SP_spinBox">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>40</x>
         <y>260</y>
         <width>61</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="maximum">
+       <number>600</number>
+      </property>
+      <property name="value">
+       <number>200</number>
       </property>
      </widget>
      <widget class="QPushButton" name="quench_start_pushB">
@@ -496,10 +515,10 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>110</x>
         <y>260</y>
         <width>111</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -515,8 +534,11 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
       <property name="value">
-       <double>1.000000000000000</double>
+       <double>0.500000000000000</double>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="rpmBox_quench">
@@ -528,8 +550,11 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
       <property name="value">
-       <double>0.100000000000000</double>
+       <double>0.005000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="prequenchrpm">
@@ -558,6 +583,19 @@
        <string>quench rpm</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushB_update_quench">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>260</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Update </string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QCheckBox" name="invert_checkBox">
@@ -582,11 +620,14 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="smallDecimalPoint">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>640</x>
       <y>90</y>
       <width>111</width>
       <height>21</height>
@@ -625,7 +666,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>420</x>
       <y>190</y>
       <width>421</width>
       <height>231</height>
