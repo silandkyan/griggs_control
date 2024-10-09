@@ -4,6 +4,7 @@ Created on Tue Jan 17 10:08:43 2023
 
 @author: pgross
 """
+
 import sys
 import time
 
@@ -190,17 +191,20 @@ class Window(QMainWindow, Ui_MainWindow):
         # direction inversion:
         self.invert_checkBox.stateChanged.connect(lambda: self.multi_module_control(self.invert_direction))
         # update velocity button:
-        self.update_rpm_button.clicked.connect(self.update_rpm)
+        self.update_rpm_button.clicked.connect(lambda: self.multi_module_control(self.update_rpm))
         ### PID:
         self.driveprofile_pushB.clicked.connect(self.drive_PID)
         self.stopprofile_pushB.clicked.connect(self.stop_profile)
+        self.pushB_update_const.clicked.connect(lambda: self.update_PID('const'))
+        
         self.quench_start_pushB.clicked.connect(self.quench_PID)
         self.stopprofile_pushB_2.clicked.connect(self.stop_profile)
+        self.pushB_update_quench.clicked.connect(lambda: self.update_PID('quench'))
         # start ADC connection:
         self.initADC_s1.stateChanged.connect(lambda: self.init_adc(self.initADC_s1, 's1'))
         self.initADC_s3.stateChanged.connect(lambda: self.init_adc(self.initADC_s3, 's3'))
         # refresh maxvel when value is changed:
-        self.maxvel_spinBox.valueChanged.connect(self.maxvel_changed)
+        # self.maxvel_spinBox.valueChanged.connect(self.maxvel_changed)
         # close oil-valve at beginning 
         self.pushB_close_valve.clicked.connect(lambda: self.goto_s3(self.motor_s3.max_pos_down, 
                                                                     self.rpmBox_prequench.value()))
@@ -387,6 +391,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # LCDs:
         self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
         self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+
         
     def update_plot(self):
         # plot lines:
@@ -399,6 +404,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # LCDs:
         self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
         self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+
         
     ###   CALCULATORS (for unit conversion)   ###
     
@@ -411,8 +417,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.update_pps()
         self.rpmSlider.setValue(abs(self.module.pps)) # - to get positiv slider values
         
-    def maxvel_changed(self):
-        self.module_s1.maxvel = self.maxvel_spinBox.value()
+    # def update_maxvel(self):
+    #     self.module_s1.maxvel = self.maxvel_spinBox.value()
     
     def pps_rpm_converter(self, module, pps):
         rpm = pps / module.msteps_per_rev * 60
@@ -436,17 +442,17 @@ class Window(QMainWindow, Ui_MainWindow):
             self.motor.up_enabled = True 
             self.motor.down_enabled = True
         # check if there is lower bound, no upper bound 
-        elif Window.first(self.motor.max_pos_up is not None, self.motor.max_pos_down is not None):
-            if (self.motor.actual_position + steps*self.module.dir) < self.motor.max_pos_up:
-                self.motor.up_enabled = True 
-            else: 
-                self.motor.up_enabled = False
-        # check if there is upper bound, no lower bound
-        elif Window.second(self.motor.max_pos_up is not None, self.motor.max_pos_down is not None):
-            if (self.motor.actual_position + steps*self.module.dir) > self.motor.max_pos_down:
-                self.motor.down_enabled = True 
-            else: 
-                self.motor.down_enabled = False
+        # elif Window.first(self.motor.max_pos_up is not None, self.motor.max_pos_down is not None):
+        #     if (self.motor.actual_position + steps*self.module.dir) < self.motor.max_pos_up:
+        #         self.motor.up_enabled = True 
+        #     else: 
+        #         self.motor.up_enabled = False
+        # # check if there is upper bound, no lower bound
+        # elif Window.second(self.motor.max_pos_up is not None, self.motor.max_pos_down is not None):
+        #     if (self.motor.actual_position + steps*self.module.dir) > self.motor.max_pos_down:
+        #         self.motor.down_enabled = True 
+        #     else: 
+        #         self.motor.down_enabled = False
         # check if there is upper and lower bound
         elif (self.motor.max_pos_up is not None and self.motor.max_pos_down is not None):
             if (self.motor.actual_position + steps*self.module.dir) < self.motor.max_pos_up:
@@ -505,12 +511,29 @@ class Window(QMainWindow, Ui_MainWindow):
         '''This function first updates the module_s1 pps value from the rpmBox value
         and then executes the last command send to the motor_s1, which is stored
         explicitly in a variable when the respective functions are called.'''
-        if not self.last_motor_command == None:
-            self.module_s1.rpm = self.rpmBox.value()
-            self.module_s1.update_pps()
-            self.last_motor_command()
-        else:
-            print('no command given yet...')
+        if self.module == self.module_s1:
+            if not self.last_motor_command == None:
+                self.module_s1.rpm = self.rpmBox.value()
+                self.module_s1.update_pps()
+                self.last_motor_command()
+            else:
+                print('no command given yet...')
+        elif self.module == self.module_s3:
+            self.module_s3.rpm = self.rpmBox.value()
+            self.module_s3.update_pps()
+            
+    def update_PID(self, params):
+        if params == 'const':
+            self.SP = self.sigma1_SP_spinBox.value()
+            self.module_s1.maxvel = self.maxvel_spinBox.value()
+            print('updated parameters for constant stress mode')
+        elif params == 'quench':
+            self.prequench_rpm = self.rpmBox_prequench.value()
+            self.quench_rpm = self.rpmBox_quench.value()
+            self.SP = self.dsigma_SP_spinBox.value()
+            self.SP_correction = 0
+            print('updated parameters for quenching mode')
+
             
     def invert_direction(self):
         if self.invert_checkBox.isChecked() == True:
@@ -611,13 +634,13 @@ class Window(QMainWindow, Ui_MainWindow):
         if pos == self.motor_s3.max_pos_up:
             # check if quench succeeded: gets called repeatedly from drivetimer.timeout 
             # so if is fine. drivetimer.stop() ends the quench process
-            if self.motor_s3.get_position_reached():
+            if abs(self.motor_s3.actual_position - self.motor_s3.max_pos_up) <= self.threshold_valve:
                 print('oil valve opened, quench completed!')
                 self.pushB_close_valve.setStyleSheet('color:red')
                 self.drivetimer.stop()
         elif pos == self.motor_s3.max_pos_down:
             # as long as valve not closed 
-            while not self.motor_s3.get_position_reached():
+            while abs(self.motor_s3.actual_position - self.motor_s3.max_pos_down) > self.threshold_valve:
                 QApplication.processEvents()
                 self.pushB_close_valve.setStyleSheet('color: red')
             # when closed
@@ -637,12 +660,13 @@ class Window(QMainWindow, Ui_MainWindow):
         # init controller instance:
         # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        self.SP = self.sigma1_SP_spinBox.value()
         
         def on_timeout():
-            c.controller_update(self.sigma1_SP_spinBox.value(),
-                                        self.chan_s1.value/self.adc_sigma1_scaling,
-                                        self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
-                                        self.module_s1.maxvel/self.PID_max_vel_scale)
+            c.controller_update(self.SP,
+                                self.chan_s1.value/self.adc_sigma1_scaling,
+                                self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
+                                self.module_s1.maxvel/self.PID_max_vel_scale)
             self.module_s1.rpm = c.output
             self.module_s1.update_pps()
             # self.CV.append(int(c.output))
@@ -666,6 +690,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
         self.old_oilp = self.current_oilp  
         self.enable_slow = False
+        
+        self.prequench_rpm = self.rpmBox_prequench.value()
+        self.quench_rpm = self.rpmBox_quench.value()
+        
+        self.SP = self.dsigma_SP_spinBox.value()
         self.SP_correction = 0
         
         def on_timeout():
@@ -675,23 +704,22 @@ class Window(QMainWindow, Ui_MainWindow):
             # see if oilp changed by the amout threshold [MPa?] 
             if (self.old_oilp - self.current_oilp) < self.threshold_oilp and self.enable_slow == False:
                 # no: open valve fast (prequench velocity)
-                self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_prequench.value())
+                self.goto_s3(self.motor_s3.max_pos_up, self.prequench_rpm)
             elif (self.old_oilp - self.current_oilp) >= self.threshold_oilp or self.enable_slow == True:
                 # yes: open valve slow (quench velocity)
                 self.enable_slow = True
-                self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_quench.value())
+                self.goto_s3(self.motor_s3.max_pos_up, self.quench_rpm)
             # compare old oilp with new measured value #TODO: test this!!
             self.old_oilp = self.current_oilp
-            SP = self.dsigma_SP_spinBox.value()
             
             # decreasing setpoint for s1 below 200 MPa -> s1 converges to 0
-            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (SP - self.SP_correction) > 0:
+            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (self.SP - self.SP_correction) > 0:
                 self.SP_correction += 1
-                SP -= self.SP_correction
+                self.SP -= self.SP_correction
 
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
-            print("diff stress ",PV, "setpoint", SP)
-            c.controller_update(SP, PV,
+            print("diff stress ",PV, "setpoint", self.SP)
+            c.controller_update(self.SP, PV,
                                 self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
                                 self.module_s1.maxvel/self.PID_max_vel_scale)
             print("pid output rpm", c.output)
@@ -709,11 +737,12 @@ class Window(QMainWindow, Ui_MainWindow):
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
             self.drivetimer.stop()
-        # self.multi_module_control(module.stop_motor)
-        self.multi_module_control(self.stop_motor)
+        for module in module_list:
+            self.stop_motor()
+            print(f"module: {self.module.moduleID} stopped at pos: ", self.module.motor.actual_position)
         self.driveprofile_pushB.setEnabled(True)
         self.stopprofile_pushB.setEnabled(False)
-        print(f"module pos of {self.module.moduleID}: ", self.module.motor.actual_position)
+
 
     
 
@@ -734,7 +763,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.multistep_numberBox.setMaximum(360)
         # set maxvel spinBox:
         self.maxvel_spinBox.setMinimum(0)
-        self.maxvel_spinBox.setMaximum(180)
+        self.maxvel_spinBox.setMaximum(120)
         
     def clear_button_colors(self):
         self.perm_down_Button.setStyleSheet("")
