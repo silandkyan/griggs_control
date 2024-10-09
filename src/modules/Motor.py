@@ -68,7 +68,11 @@ class Motor(TMCM1260):
         motor.max_pos_up = None
         motor.max_pos_down = None       
         motor.drive_settings.max_current = 150
+<<<<<<< HEAD
         motor.drive_settings.standby_current = 40
+=======
+        motor.drive_settings.standby_current = 10
+>>>>>>> e9d1b7c6923543e100d1abc91eaa0d182f2d503e
         motor.drive_settings.boost_current = 0
         motor.drive_settings.boost_current = 0
         # maximum velocity:
@@ -107,7 +111,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 30000 # TODO: good value? was 300 before but that was very slow...
+        motor.linear_ramp.max_acceleration = 3000 # TODO: good value? was 300 before but that was very slow...
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):

@@ -11,19 +11,35 @@ Created on Thu Feb 23 16:37:43 2023
 # improve module assignment by using a module_list?
 # add multi_module_control capability to goto and store_pos?
 # find good values for max_current parameter for both motor types...
+# import os
 
+# print(os.getcwd())
 import sys
+sys.path.append("C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/modules/gui/")
 import time
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from pytrinamic.connections import ConnectionManager
+
 # LAPTOP DIR
 from modules.gui.set_valve_positions_window import Ui_MainWindow
+
 # LAB PC DIR
 # from gui.set_valve_positions_window import Ui_MainWindow
+
+# GRIGGS LAB PC DIR
+# from set_valve_positions_window import Ui_MainWindow
+
+
 # LAPTOP DIR
 from modules.Motor import Motor
+
 # LAB PC DIR
 # from ..Motor import Motor
+
+# GRIGGS LAB PC DIR
+# from modules.Motor import Motor
+
+
 
 import pandas as pd
 
@@ -35,14 +51,16 @@ for port in port_list:
     Motor(port)
 
 # define list of all moduleIDs and sort connected modules accordingly:
-ID_list = [14, 28, 13, 11, 15, 21, 22, 23, 24]
+ID_list = [14, 23, 13, 11, 15, 21, 22, 23, 24]
 module_list = Motor.sort_module_list(ID_list)
 
 '''Choose names for the modules. Make sure to correctly match the correct 
 module with its descriptive variable name (e.g. motor_L) below; 
 adjust if needed.'''
 module_L = module_list[0]
-# module_R = module_list[1]
+print("module_L",module_L.moduleID)
+module_R = module_list[1]
+print("module_R",module_R.moduleID)
 # module_C = Motor.instances[2]
 # expand list as needed...
 
@@ -136,7 +154,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.m_stop.clicked.connect(lambda: self.multi_module_control(self.stop_motor))
         
         
-        
+        # LAPTOP DIR 
         ### overwrite opened and closed positions in positions file ###
         self.positions = pd.read_csv('C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv')
         self.positions.columns = self.positions.columns.str.strip()
@@ -144,11 +162,19 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_set_closed.clicked.connect(lambda: self.overwrite_pos('closed'))
         
         
-        # print(self.positions.loc[0, 'opened'], self.positions.loc[0, 'closed'])
-        self.store_lcds[0][0].display(self.positions.loc[0, 'opened'])
-        self.store_lcds[0][1].display(self.positions.loc[0, 'closed'])
+        # GRIGGS LAB PC DIR
+        ### overwrite opened and closed positions in positions file ###
+        # self.positions = pd.read_csv('C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv')
+        # self.positions.columns = self.positions.columns.str.strip()
+        # self.pushB_set_opened.clicked.connect(lambda: self.overwrite_pos('opened'))
+        # self.pushB_set_closed.clicked.connect(lambda: self.overwrite_pos('closed'))
         
         
+    # def overwrite_pos(self, pos):
+    #     self.positions.loc[0, pos] = self.motor.actual_position
+    #     self.positions.to_csv('C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        
+    # LAPTOP DIR 
     def overwrite_pos(self, pos):
         self.positions.loc[0, pos] = self.motor.actual_position
         self.positions.to_csv('C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False)
