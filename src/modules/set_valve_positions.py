@@ -11,13 +11,16 @@ Created on Thu Feb 23 16:37:43 2023
 # improve module assignment by using a module_list?
 # add multi_module_control capability to goto and store_pos?
 # find good values for max_current parameter for both motor types...
+# import os
 
+# print(os.getcwd())
 import sys
+sys.path.append("C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/modules/gui/")
 import time
 from PyQt5.QtWidgets import (QMainWindow, QApplication)
 from pytrinamic.connections import ConnectionManager
-from gui.set_valve_positions_window import Ui_MainWindow
-from ..Motor import Motor
+from set_valve_positions_window import Ui_MainWindow
+from modules.Motor import Motor
 
 import pandas as pd
 
@@ -29,14 +32,16 @@ for port in port_list:
     Motor(port)
 
 # define list of all moduleIDs and sort connected modules accordingly:
-ID_list = [14, 28, 13, 11, 15, 21, 22, 23, 24]
+ID_list = [14, 23, 13, 11, 15, 21, 22, 23, 24]
 module_list = Motor.sort_module_list(ID_list)
 
 '''Choose names for the modules. Make sure to correctly match the correct 
 module with its descriptive variable name (e.g. motor_L) below; 
 adjust if needed.'''
 module_L = module_list[0]
-# module_R = module_list[1]
+print("module_L",module_L.moduleID)
+module_R = module_list[1]
+print("module_R",module_R.moduleID)
 # module_C = Motor.instances[2]
 # expand list as needed...
 
@@ -139,7 +144,7 @@ class Window(QMainWindow, Ui_MainWindow):
         
         
     def overwrite_pos(self, pos):
-        self.positions.loc[0, pos] = self.moduleL.motor.actual_position
+        self.positions.loc[0, pos] = self.motor.actual_position
         self.positions.to_csv('C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
         
         
@@ -380,7 +385,7 @@ class Window(QMainWindow, Ui_MainWindow):
         
     def close_app(self):
         # save current position of s3 module one last time 
-        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
+        self.positions.loc[0, 'current'] = self.motor.actual_position
         self.positions.to_csv(
         'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
         # self.positions.to_csv(

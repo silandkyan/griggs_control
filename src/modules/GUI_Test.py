@@ -4,41 +4,6 @@ Created on Tue Jan 17 10:08:43 2023
 
 @author: pgross
 """
-
-"""TODO:
-    - find out scaling factor for s3 with printing ADC value while on known oil-P: 
-        -> we use scaling on [MPa] consistently 
-    - find out about opened and closed valve positions via valve_test_run.py
-    - remember to adapt threshold values for oilp [Mpa?] and valve [steps?]
-    - find suitable ranges for pre- and quench velocity 
-    - rename position_quenched.csv 
-    - for testrun if works: 
-        - add test files in dirs of griggs pc: mocopa_Test (src), GUI_Test (modules), 
-        main_window_Test (gui) and position_quenched (src)
-        - uncomment: s1 definitions, data container functions, plot functions,...?!
-    - how does save files work and why needed?
-    
-   NOTES: 
-    - copied multimotor control for: stop_motors, permanent_down 
-    permanent_up, multi_step_down, multi_step_up, rpm box changed, and rpm slider
-    from gui simple 
-    -> checkBoxes: motor s1 and motor s3 ONLY AFFECT THESE FUNCTIONS!!
-    
-    - if usb connection of s3 gets disconnected during permanent running, the steps done
-    until power is killed, are made automatically at next program start!! 
-    -> never kill usb connection at first
-    
-    - stop during multistep on 90 (default) has very very slow ramp!
-    
-    - test if position gets saved if app is closed right upper corner:
-    -> no, program finishes anyways and then closes after command train got handled
-    
-    - if usb connection gets killed and reestablished: some error with actual_velocity for s3 
-    appears
-    
-    - established crash protection for max range of motor
-    
-    - established stable position imports"""
     
 # import os 
 
@@ -73,11 +38,11 @@ port_list = ConnectionManager().list_connections()
 for port in port_list:
     Motor(port)
 
-ID_list = [14, 23]
+ID_list = [23, 14]
 module_list = Motor.sort_module_list(ID_list) 
 
 s1 = module_list[0]
-s3 = module_list[0]
+s3 = module_list[1]
 
 # print out Id to find out if module instances got mapped to right ID
 print('motor_s1:',s1.moduleID)
@@ -143,7 +108,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # error threshold for closed valve
         self.threshold_valve = 0
         # error threshold for oilp-change
-        self.threshold_oilp = 0
+        self.threshold_oilp = 0.5
         # import positions for quenching 
         self.positions = pd.read_csv(
         'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv')
@@ -187,9 +152,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sigma1_SP_spinBox.setValue(0)
         self.dsigma_SP_spinBox.setValue(0)
         # set initial maxvel value:
-        # self.maxvel_spinBox.setValue(120)
-        # self.module_s1.maxvel = self.maxvel_spinBox.value()
-        # self.module_s3.maxvel = self.maxvel_spinBox.value()
+        self.maxvel_spinBox.setValue(120)
+        self.module_s1.maxvel = self.maxvel_spinBox.value()
+        self.module_s3.maxvel = self.maxvel_spinBox.value()
         
     def set_timers(self):
         self.basetimer = 100 # in ms
@@ -333,7 +298,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.sigma1_SP.pop(0)
             self.sigma1_PV.pop(0)
             self.error.pop(0)
-            self.CV.pop(0)
+            # self.CV.pop(0)
         # print('length:', len(self.time))
             
     def init_save_files(self):
@@ -675,13 +640,13 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s1.dir = -1 # ensures correct motor_s1 rotation direction
                 
         # init controller instance:
-        c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 1, 0.1, 0.0, True)
         
         def on_timeout():
             c.controller_update(self.sigma1_SP_spinBox.value(),
                                         self.chan_s1.value/self.adc_sigma1_scaling,
-                                        self.pps_rpm_converter(self.motor_s1, abs(self.motor_s1.actual_velocity)),
+                                        self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
                                         self.module_s1.maxvel/self.PID_max_vel_scale)
             self.module_s1.rpm = c.output
             self.module_s1.update_pps()
@@ -701,35 +666,41 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s1.dir = 1 # ensures correct motor_s1 rotation direction
                 
         # init controller instance:
-        c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
-        # c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        # c = Controller(interval/500, 50, 10, 50, True) # /1000 for ms->s; good?
+        c = Controller(interval/1000, 1, 0.1, 0.0, False)
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
+        self.old_oilp = self.current_oilp  
+        self.enable_slow = False
         
         def on_timeout():
             
-            # compare old oilp with new measured value #TODO: test this!!
-            self.old_oilp = self.current_oilp
             self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
+            # print("current ",self.current_oilp, "diff", self.old_oilp - self.current_oilp)
             # see if oilp changed by the amout threshold [MPa?] 
-            if (self.old_oilp - self.current_oilp) < self.threshold_oilp:
+            if (self.old_oilp - self.current_oilp) < self.threshold_oilp and self.enable_slow == False:
                 # no: open valve fast (prequench velocity)
                 self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_prequench.value())
-            elif (self.old_oilp - self.current_oilp) >= self.threshold_oilp:
+            elif (self.old_oilp - self.current_oilp) >= self.threshold_oilp or self.enable_slow == True:
                 # yes: open valve slow (quench velocity)
+                self.enable_slow = True
                 self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_quench.value())
+            # compare old oilp with new measured value #TODO: test this!!
+            self.old_oilp = self.current_oilp
 
             
             SP = self.dsigma_SP_spinBox.value()
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
+            print("diff stress ",PV, "setpoint", SP)
             c.controller_update(SP, PV,
-                                self.pps_rpm_converter(self.motor_s1, abs(self.motor_s1.actual_velocity)),
+                                self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
                                 self.module_s1.maxvel/self.PID_max_vel_scale)
+            print("pid output rpm", c.output)
             self.module_s1.rpm = c.output
             self.module_s1.update_pps()
             # self.CV.append(int(c.output))
             self.motor_s1.rotate(- self.module_s1.pps) # TODO: correct to set this negative?
             
-        self.drivetimer.timeout.connect(on_timeout())
+        self.drivetimer.timeout.connect(on_timeout)
         
         self.drivetimer.start()
         self.driveprofile_pushB.setEnabled(False)
@@ -738,9 +709,11 @@ class Window(QMainWindow, Ui_MainWindow):
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
             self.drivetimer.stop()
+        # self.multi_module_control(module.stop_motor)
         self.multi_module_control(self.stop_motor)
         self.driveprofile_pushB.setEnabled(True)
         self.stopprofile_pushB.setEnabled(False)
+        print(f"module pos of {self.module.moduleID}: ", self.module.motor.actual_position)
 
     
 
