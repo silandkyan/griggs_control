@@ -67,7 +67,7 @@ class Motor(TMCM1260):
         motor.up_enabled = True
         motor.max_pos_up = None
         motor.max_pos_down = None       
-        motor.drive_settings.max_current = 60
+        motor.drive_settings.max_current = 150
         motor.drive_settings.standby_current = 40
         motor.drive_settings.boost_current = 0
         motor.drive_settings.boost_current = 0

@@ -138,16 +138,21 @@ class Window(QMainWindow, Ui_MainWindow):
         
         
         ### overwrite opened and closed positions in positions file ###
-        self.positions = pd.read_csv('C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv')
+        self.positions = pd.read_csv('C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv')
         self.positions.columns = self.positions.columns.str.strip()
         self.pushB_set_opened.clicked.connect(lambda: self.overwrite_pos('opened'))
         self.pushB_set_closed.clicked.connect(lambda: self.overwrite_pos('closed'))
         
         
-    def overwrite_pos(self, pos):
-        self.positions.loc[0, pos] = self.moduleL.motor.actual_position
-        self.positions.to_csv('C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        # print(self.positions.loc[0, 'opened'], self.positions.loc[0, 'closed'])
+        self.store_lcds[0][0].display(self.positions.loc[0, 'opened'])
+        self.store_lcds[0][1].display(self.positions.loc[0, 'closed'])
         
+        
+    def overwrite_pos(self, pos):
+        self.positions.loc[0, pos] = self.motor.actual_position
+        self.positions.to_csv('C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False)
+        print('overwritten pos', pos)
         
         
     def select_module(self, m):
@@ -386,9 +391,9 @@ class Window(QMainWindow, Ui_MainWindow):
         
     def close_app(self):
         # save current position of s3 module one last time 
-        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
+        self.positions.loc[0, 'current'] = self.motor.actual_position
         self.positions.to_csv(
-        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index = False)
+        'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False)
         # self.positions.to_csv(
         # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
         print('saved current position!')
