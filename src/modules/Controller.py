@@ -55,13 +55,17 @@ class Controller():
         # update error list:
         self.error.pop(0) # delete oldest element in error list
         self.error.append(self.setpoint - self.procvar) # append current error to list
-        
+        print("error array:", self.error)
         # check for prevent_negative_output:
         if self.prevent_negative_output == False:
             # calculate output for new control variable:
-            temp = (self.contvar + self.a0 * self.error[-1] 
-                           + self.a1 * self.error[-2] 
-                           + self.a2 * self.error[-3])
+            temp = (self.contvar + self.a0 * -self.error[-1] 
+                           + self.a1 * -self.error[-2] 
+                           + self.a2 * -self.error[-3])
+            temp = -temp
+            print("temp:",temp)
+            if temp >= 0: # TODO: chagned self.error[-1] to temp
+                temp = 0
             
         elif self.prevent_negative_output == True:
             # calculate output for new control variable:
@@ -69,7 +73,7 @@ class Controller():
                            + self.a1 * self.error[-2] 
                            + self.a2 * self.error[-3])
             # if temp >= 0: # this does not work!
-            if self.error[-1] <= 0:
+            if temp <= 0: # TODO: chagned self.error[-1] to temp
                 temp = 0
                 
         # prevent too large output values:

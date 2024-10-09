@@ -1,0 +1,34 @@
+"""TODO:
+    - find out scaling factor for s3 with printing ADC value while on known oil-P: 
+        -> we use scaling on [MPa] consistently 
+    - find out about opened and closed valve positions via valve_test_run.py
+    - remember to adapt threshold values for oilp [Mpa?] and valve [steps?]
+    - find suitable ranges for pre- and quench velocity 
+    - rename position_quenched.csv 
+    - for testrun if works: 
+        - add test files in dirs of griggs pc: mocopa_Test (src), GUI_Test (modules), 
+        main_window_Test (gui) and position_quenched (src)
+        - uncomment: s1 definitions, data container functions, plot functions,...?!
+    - how does save files work and why needed?
+    
+   NOTES: 
+    - copied multimotor control for: stop_motors, permanent_down 
+    permanent_up, multi_step_down, multi_step_up, rpm box changed, and rpm slider
+    from gui simple 
+    -> checkBoxes: motor s1 and motor s3 ONLY AFFECT THESE FUNCTIONS!!
+    
+    - if usb connection of s3 gets disconnected during permanent running, the steps done
+    until power is killed, are made automatically at next program start!! 
+    -> never kill usb connection at first
+    
+    - stop during multistep on 90 (default) has very very slow ramp!
+    
+    - test if position gets saved if app is closed right upper corner:
+    -> no, program finishes anyways and then closes after command train got handled
+    
+    - if usb connection gets killed and reestablished: some error with actual_velocity for s3 
+    appears
+    
+    - established crash protection for max range of motor
+    
+    - established stable position imports"""
