@@ -666,6 +666,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
         self.old_oilp = self.current_oilp  
         self.enable_slow = False
+        self.SP_correction = 0
         
         def on_timeout():
             
@@ -681,9 +682,13 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.goto_s3(self.motor_s3.max_pos_up, self.rpmBox_quench.value())
             # compare old oilp with new measured value #TODO: test this!!
             self.old_oilp = self.current_oilp
-
-            
             SP = self.dsigma_SP_spinBox.value()
+            
+            # decreasing setpoint for s1 below 200 MPa -> s1 converges to 0
+            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (SP - self.SP_correction) > 0:
+                self.SP_correction += 1
+                SP -= self.SP_correction
+
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
             print("diff stress ",PV, "setpoint", SP)
             c.controller_update(SP, PV,
