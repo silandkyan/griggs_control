@@ -59,10 +59,15 @@ class Controller():
         # check for prevent_negative_output:
         if self.prevent_negative_output == False:
             # calculate output for new control variable:
-            temp = (self.contvar + self.a0 * -self.error[-1] 
-                           + self.a1 * -self.error[-2] 
-                           + self.a2 * -self.error[-3])
-            temp = -temp
+            # temp = (self.contvar + self.a0 * -self.error[-1] 
+            #                + self.a1 * -self.error[-2] 
+            #                + self.a2 * -self.error[-3])
+            # temp = -temp
+            
+            # whith correct dir of contvar (here negative) this is the same as above
+            temp = (self.contvar + self.a0 * self.error[-1] 
+                            + self.a1 * self.error[-2] 
+                            + self.a2 * self.error[-3])
             print("temp:",temp)
             if temp >= 0: # TODO: chagned self.error[-1] to temp
                 temp = 0

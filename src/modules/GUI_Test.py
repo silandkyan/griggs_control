@@ -421,7 +421,7 @@ class Window(QMainWindow, Ui_MainWindow):
     #     self.module_s1.maxvel = self.maxvel_spinBox.value()
     
     def pps_rpm_converter(self, module, pps):
-        rpm = pps / module.msteps_per_rev * 60
+        rpm = pps / module.msteps_per_rev * 60 * module.dir
         return round(rpm, 4)
         
     # def pps_calculator(self, rpm_value):
@@ -685,7 +685,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s1.dir = 1 # ensures correct motor_s1 rotation direction
                 
         # init controller instance:
-        # c = Controller(interval/500, 50, 10, 50, True) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 1, 0.1, 0.0, False)
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
         self.old_oilp = self.current_oilp  
