@@ -80,7 +80,7 @@ class Motor(TMCM1260):
         self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
-        print(self.mstep_res_factor)
+        # print(self.mstep_res_factor)
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
         # calculate msteps/revolution
         self.msteps_per_fstep = 2 ** self.mstep_res_factor

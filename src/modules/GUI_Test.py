@@ -419,7 +419,7 @@ class Window(QMainWindow, Ui_MainWindow):
     #     self.module_s1.maxvel = self.maxvel_spinBox.value()
     
     def pps_rpm_converter(self, module, pps):
-        rpm = pps / module.msteps_per_rev * 60
+        rpm = pps / module.msteps_per_rev * 60 
         return round(rpm, 4)
         
     # def pps_calculator(self, rpm_value):
@@ -520,7 +520,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.module_s3.rpm = self.rpmBox.value()
             self.module_s3.update_pps()
             
-    def update_PID(self, params):
+    def update_PID(self, params):  ###TODO: update for PID arguments 
         if params == 'const':
             self.SP = self.sigma1_SP_spinBox.value()
             self.module_s1.maxvel = self.maxvel_spinBox.value()
@@ -666,7 +666,7 @@ class Window(QMainWindow, Ui_MainWindow):
                                 self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
                                 self.module_s1.maxvel/self.PID_max_vel_scale)
             self.module_s1.rpm = c.output
-            self.module_s1.update_pps()
+            self.module_s1.update_pps()   ###TODO: dir inversion factor gets used here
             # self.CV.append(int(c.output))
             self.motor_s1.rotate(self.module_s1.pps)
             
@@ -683,13 +683,13 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s1.dir = 1 # ensures correct motor_s1 rotation direction
                 
         # init controller instance:
-        # c = Controller(interval/500, 50, 10, 50, True) # /1000 for ms->s; good?
+        # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 1, 0.1, 0.0, False)
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
         self.old_oilp = self.current_oilp  
         self.enable_slow = False
         
-        self.prequench_rpm = self.rpmBox_prequench.value()
+        self.prequench_rpm = self.rpmBox_prequench.value() ###TODO: initial param update (only refreshed if update button pressed)
         self.quench_rpm = self.rpmBox_quench.value()
         
         self.SP = self.dsigma_SP_spinBox.value()
@@ -711,7 +711,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.old_oilp = self.current_oilp
             
             # decreasing setpoint for s1 below 200 MPa -> s1 converges to 0
-            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (self.SP - self.SP_correction) > 0:
+            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (self.SP - self.SP_correction) > 0: ###TODO: below 200 MPa let s1 converge to 0
                 self.SP_correction += 1
                 self.SP -= self.SP_correction
 
@@ -735,7 +735,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
             self.drivetimer.stop()
-        for module in module_list:
+        for module in module_list:   ###TODO: all modules stop not only active ones (independant from checkboxes)
             self.stop_motor()
             print(f"module: {self.module.moduleID} stopped at pos: ", self.module.motor.actual_position)
         self.driveprofile_pushB.setEnabled(True)
