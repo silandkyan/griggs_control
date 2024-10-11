@@ -138,8 +138,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s3.rpm = self.rpmBox.value()
         self.module_s1.update_pps()
         self.module_s3.update_pps()
-        # amount of single steps in multistep mode:
-        self.multistep_numberBox.setValue(90)   # degrees
         # set ADC_box:
         self.initADC_s1.setChecked(False)
         self.initADC_s3.setChecked(False)
