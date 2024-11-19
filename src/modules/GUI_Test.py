@@ -529,7 +529,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.prequench_rpm = self.rpmBox_prequench.value()
             self.quench_rpm = self.rpmBox_quench.value()
             self.SP = self.dsigma_SP_spinBox.value()
-            self.SP_correction = 0
+            # self.SP_correction = 0
             print('updated parameters for quenching mode')
 
             
@@ -657,7 +657,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 
         # init controller instance:
         # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.0, True)
+        c = Controller(interval/1000, 10, 2, 1, True)
         self.SP = self.sigma1_SP_spinBox.value()
         
         def on_timeout():
@@ -682,9 +682,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer.setInterval(interval)
         self.module_s1.dir = 1 # ensures correct motor_s1 rotation direction
                 
+        print("sig3:",self.chan_s3.value/self.adc_sigma3_scaling)
+        print("sig1:",self.chan_s1.value/self.adc_sigma1_scaling)
         # init controller instance:
         # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
-        c = Controller(interval/1000, 1, 0.1, 0.0, False)
+        c = Controller(interval/1000, 1, 0.1, 0, False)
         self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
         self.old_oilp = self.current_oilp  
         self.enable_slow = False
@@ -693,7 +695,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.quench_rpm = self.rpmBox_quench.value()
         
         self.SP = self.dsigma_SP_spinBox.value()
-        self.SP_correction = 0
+        # self.SP_correction = 0
         
         def on_timeout():
             
@@ -711,14 +713,13 @@ class Window(QMainWindow, Ui_MainWindow):
             self.old_oilp = self.current_oilp
             
             # decreasing setpoint for s1 below 200 MPa -> s1 converges to 0
-            if self.chan_s1.value/self.adc_sigma1_scaling <= 200 and (self.SP - self.SP_correction) > 0: ###TODO: below 200 MPa let s1 converge to 0
-                self.SP_correction += 1
-                self.SP -= self.SP_correction
+            if self.chan_s3.value/self.adc_sigma3_scaling <= 200 and self.SP > 0: ###TODO: below 200 MPa let s1 converge to 0
+                self.SP -= self.quench_rpm * 7#TODO: check
 
             PV = self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling
             print("diff stress ",PV, "setpoint", self.SP)
             c.controller_update(self.SP, PV,
-                                self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
+                                self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),#TODO: removed abs : abs(self.motor_s1.actual_velocity)
                                 self.module_s1.maxvel/self.PID_max_vel_scale)
             print("pid output rpm", c.output)
             self.module_s1.rpm = c.output
@@ -735,7 +736,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
             self.drivetimer.stop()
-        for module in module_list:   ###TODO: all modules stop not only active ones (independant from checkboxes)
+        for module in module_list:   ###TODO: all modules stop not only active ones (independant from checkboxes)\
+            self.module = module
             self.stop_motor()
             print(f"module: {self.module.moduleID} stopped at pos: ", self.module.motor.actual_position)
         self.driveprofile_pushB.setEnabled(True)
@@ -771,6 +773,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def close_app(self):
         # stop motors and set actpos to targetpos to prevent motors from diving to targetpos instantly when reconnected?
         for module in module_list:
+            self.module = module
             self.stop_motor()
         # save current position of s3 module one last time 
         self.positions.loc[0, 'current'] = self.motor_s3.actual_position
