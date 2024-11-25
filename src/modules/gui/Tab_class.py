@@ -10,6 +10,11 @@ from PyQt5.QtCore import QEvent
 
 class MyTabWidget(QTabWidget):
     oneshot = True
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        print(MyTabWidget.oneshot)  # Wird nun beim Instanziieren der Klasse ausgegeben
+
     def event(self, event):
         if event.type() == QEvent.MouseButtonPress:
             if MyTabWidget.oneshot == True:

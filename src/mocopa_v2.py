@@ -11,7 +11,7 @@ Created on Fri Nov 22 12:48:38 2024
 #####   Importing Packages   #####
 import os
 os.chdir('C:/Users/wq271/AAA_programming/Projects/griggs_control/src')
-from modules.Rewired_connect_22_11 import run_app
+from modules.GUI_v2 import run_app
 # from modules.Motor import disconnect_motors
 
 

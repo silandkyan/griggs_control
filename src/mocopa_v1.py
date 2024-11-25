@@ -12,7 +12,7 @@ cleared before execution in the settings.
 # TODO: 
     # up / down (based on motor pos.)
 #####   Importing Packages   #####
-from modules.GUI_Test import run_app
+from modules.GUI_v1 import run_app
 from modules.Motor import disconnect_motors
 
 
