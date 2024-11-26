@@ -30,7 +30,11 @@ def init_gui(win):
     # set initial maxvel value:
     win.maxvel_spinBox.setValue(120)
     win.module_s1.maxvel = win.maxvel_spinBox.value()
-    win.module_s3.maxvel = win.maxvel_spinBox.value()
+    win.module_s3.maxvel = 60
+    # disable usability for manual s3 functions 
+    win.pushB_multi_up_s3.setEnabled(False)
+    win.pushB_perm_up_s3.setEnabled(False)
+    
     
     '''init graph window'''
     win.graphWidget.setBackground('w')

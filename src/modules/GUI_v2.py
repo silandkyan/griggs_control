@@ -71,6 +71,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_close_valve.setStyleSheet(f'color:{QColor(100, 200, 0)}')
         self.pushB_close_valve.pressed.connect(lambda: print(1))
         self.pushB_close_valve.released.connect(lambda: print(2))
+        self.pushB_multi_up_s3.clicked.connect(lambda:print('yeeesssir'))
+        self.pushB_perm_up_s3.clicked.connect(lambda: print('noosir'))
+        self.pushB_multi_up_s3.setEnabled(False)
+        self.pushB_perm_up_s3.setEnabled(False)
         # print((lambda module: 'function 1 for module:' + module)(self.module_s1))
         
 

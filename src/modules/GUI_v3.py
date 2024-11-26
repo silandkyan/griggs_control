@@ -26,16 +26,19 @@ from .Controller import Controller
 
 '''TODO:
         - close valve function: get posititons and colors right #DONE (probably)
-        - check if init_gui functions works
         - go over new names for widgets #DONE
-        - connect signal slots: prequench velocity pushB is missing
         - care about goto s3 function #DONE
-        - scaling for multistep for s3 (to Mpa)
-        
+        - scaling for multistep for s3 (to Mpa) #DONE
+        - current position update in multistep up for s3 (not given w.o. multimodulecontrol) #DONE
+        - connect signal slots: prequench velocity pushB is missing
+        - check if init_gui functions works
+        - check position imports and operations 
+        - implement clickwarning for dir inversion when starting program 
     NOTE:
-        - manual stopbuttons only affect single motors, PID-mode stopbuttons stop both motors as well as quit app'''
-
-
+        - manual stopbuttons only affect single motors, PID-mode stopbuttons stop both motors as well as quit app
+        - maxvel for s3 hardcoded to 60RPM
+        - close oil valve button takes rpm from prequench spinB on tab3
+        - permanent mode for s3 works as long as button is pressed down'''
 
 
 '''
@@ -65,22 +68,7 @@ class Window(QMainWindow, Ui_MainWindow):
     Ui_MainWindow class from main_window_ui.py file. That file is created 
     from main_window.ui using the pyuic5 command line program, e.g.:
     pyuic5 -x main_window.ui -o main_window_ui.py
-    '''
-    
-    @staticmethod
-    def first(bool1, bool2):
-        if bool1 and not bool2:
-            return True 
-        else: 
-            return False 
-        
-    @staticmethod
-    def second(bool1, bool2):
-        if bool2 and not bool1:
-            return True 
-        else:
-            return False 
-        
+    '''    
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -95,7 +83,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module = self.module_s3
         self.motor = self.motor_s3
         # for motor s1:
-        self.last_motor_command = None
+        self.last_motor_command_s1 = None
         # PID
         self.PID_max_vel_scale = 1  # TODO: what is this?
         # setup functions:
@@ -124,11 +112,16 @@ class Window(QMainWindow, Ui_MainWindow):
         'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt')
         # self.positions = pd.read_csv(
         # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/positions_valve.txt') 
-        self.valve_closed = self.positions.iloc[0, 'closed']
-        self.valve_distance = self.positions.iloc[0, 'distance']
-        self.valve_current = self.positions.iloc[0, 'current']
+        if self.motor_s3.actual_position != int(self.positions.loc[0, 'current']):
+            self.positions['opened'] = self.positions['opened']-self.positions['current']
+            self.positions['closed'] = self.positions['closed']-self.positions['current']
+            self.positions.to_csv(
+            'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index=False)
+        self.valve_closed = self.positions.loc[0, 'closed']
+        self.valve_distance = self.positions.loc[0, 'distance']
+        self.valve_current = self.positions.loc[0, 'current']
         self.valve_opened = self.valve_closed - self.valve_distance
-        self.close_valve()
+        self.is_valve_closed()
         
         
     def set_timers(self):
@@ -166,14 +159,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_multi_down_s1.clicked.connect(self.multi_step_down)
             #s3
         self.multi_up_s3.clicked.connect(self.multi_step_up)
-        self.pushB_multi_down_s3.clicked.connect(self.multi_step_down)
         # Continuous rotation:
             #s1
         self.pushB_perm_down_s1.clicked.connect(self.permanent_down)
         self.pushB_perm_up_s1.clicked.connect(self.permanent_up)
             #s3
-        self.pushB_perm_down_s3.clicked.connect(self.permanent_down)
         self.pushB_perm_up_s3.clicked.connect(self.permanent_up)
+        self.pushB_perm_down_s3.pressed.connect(self.permanent_down)
+        self.pushB_perm_down_s3.released.connect(self.stop_motor)
         # Stop buttons:
             #s1
         self.pushB_stop_s1.clicked.connect(self.stop_motor)
@@ -212,13 +205,15 @@ class Window(QMainWindow, Ui_MainWindow):
         # set closed position of valve 
         self.pushB_set_closed.clicked.connect(self.set_closed)
         
-    def close_valve(self):
+    def is_valve_closed(self):
         if abs(self.valve_closed - self.valve_current) > self.threshold_valve:
             self.pushB_close_valve.setStyleSheet('color: rgb(100, 200, 0)')
             print('Warning: oil valve is not closed all the way!',
                   f'Motor is off by = {abs(self.valve_closed - self.valve_current)} steps',  
                   ' press "close oil valve"-button to close it!')
         else: 
+            self.pushB_multi_up_s3.setEnabled(True)
+            self.pushB_perm_up_s3.setEnabled(True)
             self.pushB_close_valve.setStyleSheet('color: rgb(0, 200, 100)')
             print('s3 motor valve closed. Motor is off by',
                   f' = {abs(self.valve_closed - self.valve_current)} steps')
@@ -369,13 +364,20 @@ class Window(QMainWindow, Ui_MainWindow):
     ###   CALCULATORS (for unit conversion)   ###
     
     def rpmSlider_changed(self):
-        self.module.rpm = self.rpmSlider.value()
-        self.rpmBox.setValue(self.module.pps / self.module.msteps_per_rev * 60)
+        if self.module == self.module_s1:
+            self.module.rpm = self.rpmSlider_s1.value()
+            self.rpmBox_s1.setValue(self.module.pps / self.module.msteps_per_rev * 60)
+        else:
+            self.module.rpm = self.rpmSlider_s3.value()
+            self.rpm_box_s3.setValue(self.module.pps / self.module.msteps_per_rev * 60)
         
     def rpmBox_changed(self):
-        self.module.rpm = self.rpmBox.value()
-        self.rpmSlider.setValue(abs(self.module.rpm)) # - to get positiv slider values
-        
+        if self.module == self.module_s1:
+            self.module.rpm = self.rpmBox_s1.value()
+            self.rpmSlider_s1.setValue(self.module.pps / self.module.msteps_per_rev * 60)
+        else:
+            self.module.rpm = self.rpmBox_s3.value()
+            self.rpmSlider_s3.setValue(self.module.pps / self.module.msteps_per_rev * 60)
     # def update_maxvel(self):
     #     self.module_s1.maxvel = self.maxvel_spinBox.value()
     
@@ -405,14 +407,14 @@ class Window(QMainWindow, Ui_MainWindow):
         and then executes the last command send to the motor_s1, which is stored
         explicitly in a variable when the respective functions are called.'''
         if self.module == self.module_s1:
-            if not self.last_motor_command == None:
-                self.module_s1.rpm = self.rpmBox.value()
+            if not self.last_motor_command_s1 == None:
+                self.module_s1.rpm = self.rpmBox_s1.value()
                 self.module_s1.update_pps()
-                self.last_motor_command()
+                self.last_motor_command_s1()
             else:
                 print('no command given yet...')
         elif self.module == self.module_s3:
-            self.module_s3.rpm = self.rpmBox.value()
+            self.module_s3.rpm = self.rpmBox_s3.value()
             self.module_s3.update_pps()
             
     def update_PID(self, params):  ###TODO: update for PID arguments 
@@ -427,12 +429,17 @@ class Window(QMainWindow, Ui_MainWindow):
             # self.SP_correction = 0
             print('updated parameters for quenching mode')
             
+    def update_position(self):
+        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
+        self.positions.to_csv(
+        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index = False)
+            
     def invert_direction(self):
         if self.invert_checkBox.isChecked() == True:
             self.module_s1.dir_inv_mod = -1
         if self.invert_checkBox.isChecked() == False:
             self.module_s1.dir_inv_mod = 1
-        self.module_s1.rpm = self.rpmBox.value()
+        self.module_s1.rpm = self.rpmBox_s1.value()
         self.module_s1.update_pps()
         print('dir for module s1 inverted!')
         # print(self.module_s1.rpm, self.module_s1.pps)
@@ -447,54 +454,71 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.motor.set_axis_parameter(self.module.motor.AP.TargetPosition, act_pos)
         # # targ_pos = self.module.motor.get_axis_parameter(self.module.motor.AP.TargetPosition)
         # # print('debug: stop', self.module.moduleID, act_pos, targ_pos) # debug message
+        self.clear_button_colors()
         print('Motor', self.module.moduleID, 'stopped!')
 
     
     def permanent_down(self):
         self.module.dir = -1
         self.module.update_pps()
-        self.clear_button_colors()
-        self.perm_down_Button.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
         self.motor.rotate(self.module.pps) # positive pps -> clockwise
-        self.last_motor_command = self.permanent_down
-        print('Rotating down with', str(self.rpmBox.value()), 'rpm')
+        if self.module == self.module_s1:
+            self.last_motor_command_s1 = self.permanent_down()
+            self.pushB_perm_down_s1.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
+            print('Rotating down with', str(self.rpmBox_s1.value()), 'rpm')
+        else:
+            self.pushB_perm_down_s3.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
+            print('Rotating down with', str(self.rpmBox_s3.value()), 'rpm')
     
     def permanent_up(self):
         self.module.dir = 1
         self.module.update_pps()
-        self.clear_button_colors()
-        self.perm_up_Button.setStyleSheet("QPushButton {background-color: rgb(0, 255, 0);}")
         self.motor.rotate(self.module.pps)
-        self.last_motor_s1_command = self.permanent_up
-        print('Rotating up with', str(self.rpmBox.value()), 'rpm')
+        if self.module == self.module_s1:
+            self.last_motor_command_s1 = self.permanent_down()
+            self.pushB_perm_up_s1.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
+            print('Rotating up with', str(self.rpmBox_s1.value()), 'rpm')
+        else:
+            self.pushB_perm_up_s3.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
+            print('Rotating up with', str(self.rpmBox_s3.value()), 'rpm')
 
      
     def multi_step_down(self):
         self.module.dir = -1
-        self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
+        self.msteps = int(round(self.module.msteps_per_rev * self.spinB_multistep_s1.value()/360))
         self.module.update_pps()
         self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
-        print('Coarse step down with module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+        print('Coarse step down with module:', str(self.module.moduleID), 'at', str(self.rpmBox_s1.value()), 'RPM')
    
     def multi_step_up(self):
         self.module.dir = 1
-        self.msteps = int(round(self.module.msteps_per_rev * self.multistep_numberBox.value()/360))
-        self.module.update_pps()
-        self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
-        print('Coarse step up with module:', str(self.module.moduleID), 'at', str(self.rpmBox.value()), 'RPM')
+        if self.module == self.module_s1:
+            # degrees to msteps 
+            self.msteps = int(round(self.module_s1.msteps_per_rev * self.spinB_multistep_s1.value()/360))
+            self.module.update_pps()
+            self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
+            print('Coarse step up with module:', str(self.module.moduleID), 'at', str(self.rpmBox_s1.value()), 'RPM')
+        elif self.module == self.module_s3:
+            # MPa to msteps 
+            self.msteps = int(round(self.module_s3.msteps_per_rev * self.spinB_multistep_s3.value()/320))
+            self.module.update_pps()
+            self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
+            print('Coarse step up with module:', str(self.module.moduleID), 'at', str(self.rpmBox_s3.value()), 'RPM')
+        self.update_position()
+        
 
 
     
     def goto_s3(self, pos, rpm):
         # update current position to csv every on_timeout-cycle 
-        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
-        self.positions.to_csv(
-        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index = False)
+        self.update_position()
         # self.positions.to_csv(
         # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
         pps = round(rpm * self.module_s3.msteps_per_rev/60)
         self.motor_s3.move_to(pos, pps)
         # keep record of position with get_position_reached
+        self.pushB_multi_up_s3.setEnabled(False)
+        self.pushB_perm_up_s3.setEnabled(False)
         while not self.motor_s3.get_position_reached() == 1:
             QApplication.processEvents()
             print('s3 is at:',self.motor_s3.actual_position, ',', 
@@ -502,15 +526,22 @@ class Window(QMainWindow, Ui_MainWindow):
             self.pushB_close_valve.setStyleSheet('color: color: rgb(200, 100, 0)')
         # when closed
         if abs(self.motor_s3.actual_position - pos) <= self.threshold_valve:
+            self.update_position()
+            self.pushB_multi_up_s3.setEnabled(True)
+            self.pushB_perm_up_s3.setEnabled(True)
             self.pushB_close_valve.setStyleSheet('color: color: rgb(0, 200, 100)')
 
             
     def set_closed(self):
-        self.positions.iloc[0, 'closed'] = self.module_s3.motor.actual_position
+        self.valve_closed = self.module_s3.motor.actual_position
+        self.valve_opened = self.valve_closed - self.valve_distance #TODO: does this work
+        self.positions.loc[0, 'closed'] = self.valve_closed
+        self.positions.loc[0, 'opened'] = self.valve_opened
         self.positions.to_csv(
         'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index = False)
-        self.valve_closed = self.module_s3.motor.actual_position
-        self.valve_opened = self.valve_closed - self.valve_distance
+        self.pushB_multi_up_s3.setEnabled(True)
+        self.pushB_perm_up_s3.setEnabled(True)
+        self.pushB_close_valve.setStyleSheet('color: color: rgb(0, 200, 100)')
         
         
     def drive_PID(self):
@@ -539,6 +570,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer.start()
         self.driveprofile_pushB.setEnabled(False)
         self.stopprofile_pushB.setEnabled(True)
+    
     
     def quench_PID(self):
         interval = 1000
@@ -597,6 +629,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.driveprofile_pushB.setEnabled(False)
         self.stopprofile_pushB.setEnabled(True)
         
+        
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
             self.drivetimer.stop()
@@ -604,15 +637,17 @@ class Window(QMainWindow, Ui_MainWindow):
             self.module = module
             self.stop_motor()
             print(f"module: {self.module.moduleID} stopped at pos: ", self.module.motor.actual_position)
+        self.update_position()
         self.driveprofile_pushB.setEnabled(True)
         self.stopprofile_pushB.setEnabled(False)
     
 
     ###   GENERAL GUI SETTINGS   ###
     def clear_button_colors(self):
-        self.perm_down_Button.setStyleSheet("")
-        self.perm_up_Button.setStyleSheet("")
-        
+        self.pushB_perm_up_s1.setStyleSheet("")
+        self.pushB_perm_down_s1.setStyleSheet("")
+        self.pushB_perm_up_s3.setStyleSheet("")
+        self.pushB_perm_down_s3.setStyleSheet("")
         
     def close_app(self):
         # stop motors and set actpos to targetpos to prevent motors from diving to targetpos instantly when reconnected?
@@ -620,9 +655,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.module = module
             self.stop_motor()
         # save current position of s3 module one last time 
-        self.positions.loc[0, 'current'] = self.motor_s3.actual_position
-        self.positions.to_csv(
-        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index = False)
+        self.update_position()
         # self.positions.to_csv(
         # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
         print('saved current position!')

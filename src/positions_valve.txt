@@ -1,3 +1,3 @@
 closed	distance	current
 
-0	140000		0
+-17188	140000		-105988
