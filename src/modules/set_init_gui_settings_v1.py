@@ -11,6 +11,8 @@ def init_gui(win):
     
     '''User input: Specify default values here.'''
     ### User input values (with allowed min-max ranges)
+    # set initial Tab
+    win.tabWidget.setCurrentIndex(2)
     # rpm for all constant speed modes (single, multi, constant):
     win.rpmBox.setValue(10)    # default rpm
     # adjust slider position to match rpmBox value:
@@ -23,6 +25,7 @@ def init_gui(win):
     # set ADC_box:
     win.initADC_s1.setChecked(False)
     win.initADC_s3.setChecked(False)
+    win.enable_display_stress = False 
     win.invert_checkBox.setChecked(False)
     # set initial stress setpoint value:
     win.sigma1_SP_spinBox.setValue(0)
@@ -31,7 +34,7 @@ def init_gui(win):
     win.maxvel_spinBox.setValue(120)
     win.module_s1.maxvel = win.maxvel_spinBox.value()
     win.module_s3.maxvel = 60
-    # disable usability for manual s3 functions 
+    # disable usability for opening valve functions in manual s3 mode
     win.pushB_multi_up_s3.setEnabled(False)
     win.pushB_perm_up_s3.setEnabled(False)
     

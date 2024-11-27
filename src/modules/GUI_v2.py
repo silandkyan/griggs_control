@@ -8,9 +8,9 @@ Created on Fri Nov 22 12:29:45 2024
 import sys
 import time
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QLabel, QVBoxLayout
-from PyQt5.QtCore import  QEvent
-from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QLabel, QVBoxLayout, QDialog
+from PyQt5.QtCore import  QEvent, Qt
+from PyQt5.QtGui import QColor, QMouseEvent
 
 
 from modules.gui.Tab_class import MyTabWidget
@@ -33,12 +33,9 @@ os.chdir('C:/Users/wq271/AAA_programming/Projects/griggs_control/src')
 sys.path.append(r'C:\Users\wq271\AAA_programming\Projects\griggs_control\src\modules\gui')
 # print(sys.modules)
 
-# # Delete module from sys.modules to ensure it is re-imported
-# if 'main_window_Test' in sys.modules:
-#     print('this bitch in here')
-#     del sys.modules['main_window_Test']
-
 from main_window_v1 import Ui_MainWindow #TODO
+
+from modules.popup_warning_v0 import CustomDialog
 
 # print(sys.modules)
 
@@ -46,20 +43,6 @@ from main_window_v1 import Ui_MainWindow #TODO
 class Window(QMainWindow, Ui_MainWindow):
     
     valve_counter = 0
-    
-    @staticmethod
-    def first(bool1, bool2):
-        if bool1 and not bool2:
-            return True 
-        else: 
-            return False 
-        
-    @staticmethod
-    def second(bool1, bool2):
-        if bool2 and not bool1:
-            return True 
-        else:
-            return False 
         
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -75,6 +58,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_perm_up_s3.clicked.connect(lambda: print('noosir'))
         self.pushB_multi_up_s3.setEnabled(False)
         self.pushB_perm_up_s3.setEnabled(False)
+        self.oneshot = True
+        # self.installEventFilter(self)
         # print((lambda module: 'function 1 for module:' + module)(self.module_s1))
         
 
@@ -82,14 +67,33 @@ class Window(QMainWindow, Ui_MainWindow):
         pass
    
     def connectSignalsSlots(self):
-        self.tabWidget.setCurrentIndex(2)
+        # self.tabWidget.setCurrentIndex(2)
         self.tabWidget.currentChanged.connect(lambda: self.refresh_module_list(
             (lambda i, arg: arg if i % 2 == 0 else None)(
                 self.tabWidget.currentIndex(), 
                 (lambda arg1, arg2: arg1 if self.tabWidget.currentIndex() < 2 else arg2)(self.module_s1, self.module_s3)
             )
         ))
+        self.quitButton.clicked.connect(self.close)
+        
+    def eventFilter(self, obj, event):
+        print(f"Event type: {event.type()}, Object: {obj}")
+        if isinstance(event, QMouseEvent):
+            # Check if obj is in Tab2_widget_set and if it's a MouseButtonPress event
+            if obj in self.Tab2_widget_set:  # Check if the clicked widget is in the set
+                if event.type() == QEvent.MouseButtonPress:
+                    self.oneshot = False
+                    if (event.button() == Qt.LeftButton) or (event.button() == Qt.RightButton):
+                        dialog = CustomDialog()
+                        if dialog.exec_():  # Open as a modal dialog and check the return value
+                            print("Dialog accepted!")
+                    
+            # Return True to stop the event from being propagated further, or False to allow default behavior
+            return True  # We return True if we've handled the event (so it doesn't propagate)
 
+        return False  # Otherwise, allow the event to be handled normally
+        
+        
     def refresh_module_list(self, module):
         if module is not None:
             self.active_modules =  [module]

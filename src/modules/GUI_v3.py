@@ -20,6 +20,7 @@ import pandas as pd
 # import time
 
 from modules.gui.main_window_v1 import Ui_MainWindow #TODO
+from modules.set_init_gui_settings_v1 import init_gui
 from .Motor import Motor
 from .Controller import Controller
 
@@ -30,16 +31,22 @@ from .Controller import Controller
         - care about goto s3 function #DONE
         - scaling for multistep for s3 (to Mpa) #DONE
         - current position update in multistep up for s3 (not given w.o. multimodulecontrol) #DONE
-        - connect signal slots: prequench velocity pushB is missing
+        - connect signal slots: prequench velocity pushB is missing #DONE
+        - check position imports and operations #DONE
         - check if init_gui functions works
-        - check position imports and operations 
-        - implement clickwarning for dir inversion when starting program 
+        - implement clickwarning for dir inversion when starting program !!!
+        - check if get_position_reached flag works
+        - test prequench hold  
+        - add in readme: use %reload_ext autoreload and %autoreload 0 to disable reloading from cache mem
     NOTE:
         - manual stopbuttons only affect single motors, PID-mode stopbuttons stop both motors as well as quit app
         - maxvel for s3 hardcoded to 60RPM
         - close oil valve button takes rpm from prequench spinB on tab3
-        - permanent mode for s3 works as long as button is pressed down'''
-
+        - permanent mode for s3 works as long as button is pressed down
+        - position of s3 in permanent mode only gets updated when pressing stop button not while driving
+        - stress lcd's are only enabled if both ADC checkboxes are checked
+        - hold prequench function works with press and release: adjust oilp threshold to get either in prequench 
+        or quench velocitys for s3 in callback function of quench pid'''
 
 '''
 The following must be installed! 
@@ -79,26 +86,20 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module_s3 = s3
         self.motor_s1 = self.module_s1.motor
         self.motor_s3 = self.module_s3.motor  #TODO adapted to s3 compatibility!!
-        # choose s3 motor for initialisation:
+        # choose s3 motor for starting tab:
         self.module = self.module_s3
         self.motor = self.motor_s3
         # for motor s1:
         self.last_motor_command_s1 = None
         # PID
         self.PID_max_vel_scale = 1  # TODO: what is this?
-        # setup functions:
-        # self.set_allowed_ranges()
-        # self.set_default_values()
-        self.connectSignalsSlots()
         # ADC connection:
         self.chan_s1 = None
         self.chan_s3 = None
         self.adc_sigma1_scaling = 3.578 # TODO: note: scaling-factor to MPa!
         self.adc_sigma3_scaling = 12.364 
-        # data containers:
-        self.init_data_containers()
-        # graphing window:
-        self.init_graphwindow()
+        # connect signals with actions: 
+        self.connectSignalsSlots()
         # timers:
         self.set_timers()
         # show window 
@@ -109,18 +110,18 @@ class Window(QMainWindow, Ui_MainWindow):
         self.threshold_oilp = 0.5
         # import positions for quenching 
         self.positions = pd.read_csv(
-        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt')
+        'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', sep='\t')
         # self.positions = pd.read_csv(
-        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/positions_valve.txt') 
+        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/positions_valve.txt', sep='\t') 
         if self.motor_s3.actual_position != int(self.positions.loc[0, 'current']):
             self.positions['opened'] = self.positions['opened']-self.positions['current']
             self.positions['closed'] = self.positions['closed']-self.positions['current']
             self.positions.to_csv(
-            'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/position_quenched.csv', index=False)
+            'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index=False)
         self.valve_closed = self.positions.loc[0, 'closed']
         self.valve_distance = self.positions.loc[0, 'distance']
         self.valve_current = self.positions.loc[0, 'current']
-        self.valve_opened = self.valve_closed - self.valve_distance
+        self.valve_opened = self.valve_closed + self.valve_distance
         self.is_valve_closed()
         
         
@@ -146,7 +147,6 @@ class Window(QMainWindow, Ui_MainWindow):
         # Close window and end program:
         self.quitButton.clicked.connect(self.close_app)
         # if tab0 active chosen module is s1, if tab2 is active, chosen module is s3
-        self.tabWidget.setCurrentIndex(2)
         self.tabWidget.currentChanged.connect(lambda: self.refresh_module_list(
             (lambda i, arg: arg if i % 2 == 0 else None)(
                 self.tabWidget.currentIndex(), 
@@ -194,6 +194,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # Quenching 
         self.pushB_quench_start.clicked.connect(self.quench_PID)
         self.pushB_quench_stop.clicked.connect(self.stop_profile)
+        self.pushB_goto_prequench.pressed.connect(lambda: self.prequench_hold(self.old_oilp))
+        self.pushB_goto_prequench.released.connect(lambda: self.prequench_hold(0.5))
         self.pushB_update_quench.clicked.connect(lambda: self.update_PID('quench'))
         # start ADC connection:
         self.initADC_s1.stateChanged.connect(lambda: self.init_adc(self.initADC_s1, 's1'))
@@ -331,6 +333,9 @@ class Window(QMainWindow, Ui_MainWindow):
             # print first line of data:
             print("{:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
             
+        if (self.initADC_s1.isChecked == True) and (self.initADC_s3.isChecked == True):
+            self.enable_display_stress = True 
+            
             # return self.chan_s1, self.chan_s3
 
 
@@ -353,11 +358,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # LCDs:
         self.lcd_actvel_s1.display(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
         self.lcd_actvel_s3.display(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)))
-        if self.initADC_s1.isChecked == True:
+        if self.enable_display_stress == True:
             self.lcd_stress_s1.display(self.chan_s1.value/self.adc_sigma1_scaling)
-        if self.initADC_s3.isChecked == True:
             self.lcd_stress_s3.display(self.chan_s3.value/self.adc_sigma3_scaling)
-        if (self.initADC_s1.isChecked == True) and (self.initADC_s3.isChecked == True):
             self.lcd_dstress.display(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
 
         
@@ -378,6 +381,7 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.module.rpm = self.rpmBox_s3.value()
             self.rpmSlider_s3.setValue(self.module.pps / self.module.msteps_per_rev * 60)
+            
     # def update_maxvel(self):
     #     self.module_s1.maxvel = self.maxvel_spinBox.value()
     
@@ -397,6 +401,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         
     def refresh_module_list(self, module):
+        # set instance var to selected motor (works for manual modes)
         self.module = module
         self.motor = module.motor
     
@@ -454,10 +459,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.module.motor.set_axis_parameter(self.module.motor.AP.TargetPosition, act_pos)
         # # targ_pos = self.module.motor.get_axis_parameter(self.module.motor.AP.TargetPosition)
         # # print('debug: stop', self.module.moduleID, act_pos, targ_pos) # debug message
+        if self.module == self.module_s3:
+            self.update_position()
         self.clear_button_colors()
         print('Motor', self.module.moduleID, 'stopped!')
 
-    
     def permanent_down(self):
         self.module.dir = -1
         self.module.update_pps()
@@ -482,7 +488,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.pushB_perm_up_s3.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
             print('Rotating up with', str(self.rpmBox_s3.value()), 'rpm')
 
-     
     def multi_step_down(self):
         self.module.dir = -1
         self.msteps = int(round(self.module.msteps_per_rev * self.spinB_multistep_s1.value()/360))
@@ -504,10 +509,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.module.update_pps()
             self.motor.move_by(self.module.dir * self.msteps * self.module.dir_inv_mod, self.module.pps)
             print('Coarse step up with module:', str(self.module.moduleID), 'at', str(self.rpmBox_s3.value()), 'RPM')
+        # at this hirarchy, update_pos makes sure motor updates position when reached, not while driving there?
         self.update_position()
-        
-
-
+    
     
     def goto_s3(self, pos, rpm):
         # update current position to csv every on_timeout-cycle 
@@ -519,24 +523,28 @@ class Window(QMainWindow, Ui_MainWindow):
         # keep record of position with get_position_reached
         self.pushB_multi_up_s3.setEnabled(False)
         self.pushB_perm_up_s3.setEnabled(False)
+        self.pushB_close_valve.setStyleSheet('color: color: rgb(200, 100, 0)')
         while not self.motor_s3.get_position_reached() == 1:
             QApplication.processEvents()
             print('s3 is at:',self.motor_s3.actual_position, ',', 
                   abs(self.motor_s3.actual_position - pos), 'steps to go')
-            self.pushB_close_valve.setStyleSheet('color: color: rgb(200, 100, 0)')
         # when closed
         if abs(self.motor_s3.actual_position - pos) <= self.threshold_valve:
             self.update_position()
             self.pushB_multi_up_s3.setEnabled(True)
             self.pushB_perm_up_s3.setEnabled(True)
             self.pushB_close_valve.setStyleSheet('color: color: rgb(0, 200, 100)')
-
+            
+    def prequench_hold(self, threshold):
+        if self.drivetimer.isActive():
+            self.threshold_oilp = threshold
+        else:
+            print('this function is only enabled if quench PID is operating!')
             
     def set_closed(self):
         self.valve_closed = self.module_s3.motor.actual_position
-        self.valve_opened = self.valve_closed - self.valve_distance #TODO: does this work
+        self.valve_opened = self.valve_closed + self.valve_distance #TODO: does this work?
         self.positions.loc[0, 'closed'] = self.valve_closed
-        self.positions.loc[0, 'opened'] = self.valve_opened
         self.positions.to_csv(
         'C:/Users/GriggsLab_Y/Documents/software/griggs_control/src/positions_valve.txt', index = False)
         self.pushB_multi_up_s3.setEnabled(True)
@@ -624,11 +632,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.motor_s1.rotate(- self.module_s1.pps) # TODO: correct to set this negative?
             
         self.drivetimer.timeout.connect(on_timeout)
-        
         self.drivetimer.start()
         self.driveprofile_pushB.setEnabled(False)
         self.stopprofile_pushB.setEnabled(True)
-        
         
     def stop_profile(self):
         if hasattr(self, 'drivetimer'):
@@ -650,14 +656,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_perm_down_s3.setStyleSheet("")
         
     def close_app(self):
-        # stop motors and set actpos to targetpos to prevent motors from diving to targetpos instantly when reconnected?
+        # all motors stop before closing app and update position of s3
         for module in module_list:
             self.module = module
             self.stop_motor()
-        # save current position of s3 module one last time 
-        self.update_position()
-        # self.positions.to_csv(
-        # 'C:/Daten/Peter/Studium/A_Programme_Hiwi/Projekte/griggs_control/src/position_quenched.csv', index = False) 
+        # update positon of s3 one last time 
+        # self.update_position()
         print('saved current position!')
         self.close()
         
@@ -675,6 +679,8 @@ def run_app():
         app = QApplication.instance()
     # Create main window (= instance of custom Window Class):
     main_win = Window()
+    # init standart settings for gui:
+    init_gui(main_win)
     # Open GUI window on screen:
     main_win.show()
     # Return an instance of a running QApplication = starts event handling

@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.quitButton = QtWidgets.QPushButton(self.centralwidget)
-        self.quitButton.setGeometry(QtCore.QRect(20, 390, 101, 41))
+        self.quitButton.setGeometry(QtCore.QRect(20, 380, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
@@ -337,7 +337,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
