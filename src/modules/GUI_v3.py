@@ -21,6 +21,7 @@ import pandas as pd
 
 from modules.gui.main_window_v1 import Ui_MainWindow #TODO
 from modules.set_init_gui_settings_v1 import init_gui
+from modules.popup_warning_v0 import CustomDialog
 from .Motor import Motor
 from .Controller import Controller
 
@@ -33,11 +34,10 @@ from .Controller import Controller
         - current position update in multistep up for s3 (not given w.o. multimodulecontrol) #DONE
         - connect signal slots: prequench velocity pushB is missing #DONE
         - check position imports and operations #DONE
+        - implement clickwarning for dir inversion when starting program #DONE
         - check if init_gui functions works
-        - implement clickwarning for dir inversion when starting program !!!
         - check if get_position_reached flag works
         - test prequench hold  
-        - add in readme: use %reload_ext autoreload and %autoreload 0 to disable reloading from cache mem
     NOTE:
         - manual stopbuttons only affect single motors, PID-mode stopbuttons stop both motors as well as quit app
         - maxvel for s3 hardcoded to 60RPM
@@ -683,5 +683,9 @@ def run_app():
     init_gui(main_win)
     # Open GUI window on screen:
     main_win.show()
+    # show dialog pop up:
+    dialog = CustomDialog()
+    if dialog.exec_():  # Open as a modal dialog and check the return value
+        print("functions enabled!")   
     # Return an instance of a running QApplication = starts event handling
     return app.exec()

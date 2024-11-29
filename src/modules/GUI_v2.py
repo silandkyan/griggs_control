@@ -58,7 +58,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_perm_up_s3.clicked.connect(lambda: print('noosir'))
         self.pushB_multi_up_s3.setEnabled(False)
         self.pushB_perm_up_s3.setEnabled(False)
-        self.oneshot = True
+        # self.oneshot = True
         # self.installEventFilter(self)
         # print((lambda module: 'function 1 for module:' + module)(self.module_s1))
         
@@ -76,22 +76,22 @@ class Window(QMainWindow, Ui_MainWindow):
         ))
         self.quitButton.clicked.connect(self.close)
         
-    def eventFilter(self, obj, event):
-        print(f"Event type: {event.type()}, Object: {obj}")
-        if isinstance(event, QMouseEvent):
-            # Check if obj is in Tab2_widget_set and if it's a MouseButtonPress event
-            if obj in self.Tab2_widget_set:  # Check if the clicked widget is in the set
-                if event.type() == QEvent.MouseButtonPress:
-                    self.oneshot = False
-                    if (event.button() == Qt.LeftButton) or (event.button() == Qt.RightButton):
-                        dialog = CustomDialog()
-                        if dialog.exec_():  # Open as a modal dialog and check the return value
-                            print("Dialog accepted!")
+    # def eventFilter(self, obj, event):
+    #     print(f"Event type: {event.type()}, Object: {obj}")
+    #     if isinstance(event, QMouseEvent):
+    #         # Check if obj is in Tab2_widget_set and if it's a MouseButtonPress event
+    #         if obj in self.Tab2_widget_set:  # Check if the clicked widget is in the set
+    #             if event.type() == QEvent.MouseButtonPress:
+    #                 self.oneshot = False
+    #                 if (event.button() == Qt.LeftButton) or (event.button() == Qt.RightButton):
+    #                     dialog = CustomDialog()
+    #                     if dialog.exec_():  # Open as a modal dialog and check the return value
+    #                         print("Dialog accepted!")
                     
-            # Return True to stop the event from being propagated further, or False to allow default behavior
-            return True  # We return True if we've handled the event (so it doesn't propagate)
+    #         # Return True to stop the event from being propagated further, or False to allow default behavior
+    #         return True  # We return True if we've handled the event (so it doesn't propagate)
 
-        return False  # Otherwise, allow the event to be handled normally
+    #     return False  # Otherwise, allow the event to be handled normally
         
         
     def refresh_module_list(self, module):
@@ -119,10 +119,13 @@ def run_app():
     init_gui(main_win)
     # Open GUI window on screen:
     main_win.show()
+    dialog = CustomDialog()
+    if dialog.exec_():  # Open as a modal dialog and check the return value
+        print("functions enabled!")   
     # Return an instance of a running QApplication = starts event handling
     return app.exec()
     
-    
+
     
     
     
