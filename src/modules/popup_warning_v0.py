@@ -26,7 +26,7 @@ class CustomDialog(QDialog):
         self.setLayout(layout)
 
         # Add a label
-        label = QLabel("Are you sure, the direction settings for s1 are correct?! \n please check invert direction checkbox before continuing")
+        label = QLabel("WARNING \n please make sure invert direction checkbox setting is correct before continuing!")
         font = QFont('Arial', 10)
         label.setFont(font)
         layout.addWidget(label)
@@ -44,6 +44,6 @@ if __name__ == "__main__":
     # Create and show the dialog
     dialog = CustomDialog()
     if dialog.exec_():  # Open as a modal dialog and check the return value
-        print("Dialog accepted!")
+        print("Dialog accSWepted!")
 
     app.exec_()

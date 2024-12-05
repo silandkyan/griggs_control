@@ -22,9 +22,7 @@ def init_gui(win):
     win.module_s3.rpm = win.rpmBox.value()
     win.module_s1.update_pps()
     win.module_s3.update_pps()
-    # set ADC_box:
-    win.initADC_s1.setChecked(False)
-    win.initADC_s3.setChecked(False)
+    win.write_stress = False
     win.enable_display_stress = False 
     win.invert_checkBox.setChecked(False)
     # set initial stress setpoint value:

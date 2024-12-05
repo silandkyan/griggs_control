@@ -27,7 +27,7 @@ from .Controller import Controller
 
 
 '''TODO:
-        - close valve function: get posititons and colors right #DONE (probably)
+        - close valve function: get posititons and colors right #DONEish
         - go over new names for widgets #DONE
         - care about goto s3 function #DONE
         - scaling for multistep for s3 (to Mpa) #DONE
@@ -35,9 +35,13 @@ from .Controller import Controller
         - connect signal slots: prequench velocity pushB is missing #DONE
         - check position imports and operations #DONE
         - implement clickwarning for dir inversion when starting program #DONE
+        - finish init_adc and print statements of the vals #DONEish
+        - make x / 1000 bar label work with updates #DONEish 
         - check if init_gui functions works
         - check if get_position_reached flag works
-        - test prequench hold  
+        - test prequench hold
+        - check if drivetimer.isActive() flag works
+        - current implementation: are s3 and s1 operable in parallel in manual?
     NOTE:
         - manual stopbuttons only affect single motors, PID-mode stopbuttons stop both motors as well as quit app
         - maxvel for s3 hardcoded to 60RPM
@@ -97,7 +101,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.chan_s1 = None
         self.chan_s3 = None
         self.adc_sigma1_scaling = 3.578 # TODO: note: scaling-factor to MPa!
-        self.adc_sigma3_scaling = 12.364 
+        self.adc_sigma3_scaling = 12.364
+        # init adc sensors:
+        self.init_adc()
         # connect signals with actions: 
         self.connectSignalsSlots()
         # timers:
@@ -197,15 +203,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_goto_prequench.pressed.connect(lambda: self.prequench_hold(self.old_oilp))
         self.pushB_goto_prequench.released.connect(lambda: self.prequench_hold(0.5))
         self.pushB_update_quench.clicked.connect(lambda: self.update_PID('quench'))
-        # start ADC connection:
-        self.initADC_s1.stateChanged.connect(lambda: self.init_adc(self.initADC_s1, 's1'))
-        self.initADC_s3.stateChanged.connect(lambda: self.init_adc(self.initADC_s3, 's3'))
         # close oilvalve as long as button pressed in gui
         self.pushB_close_valve.pressed.connect(lambda: self.goto_s3(self.valve_closed, 
                                                                     self.rpmBox_prequench.value()))
         self.pushB_close_valve.released.connect(self.stop_motor)
         # set closed position of valve 
         self.pushB_set_closed.clicked.connect(self.set_closed)
+        # get adc value
+        self.pushB_get_adc.clicked.connect(lambda: print(f'channel sig1(value / voltage){self.chan_s1.value} / {self.chan_s1.voltage} \n'
+                                                        'channel sig3(value / voltage){self.chan_s3.value} / {self.chan_s3.voltage}'))
         
     def is_valve_closed(self):
         if abs(self.valve_closed - self.valve_current) > self.threshold_valve:
@@ -231,13 +237,13 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.SP.append(self.setpointSlider.value())
         self.sigma1_SP.append(self.sigma1_SP_spinBox.value())
         self.dsigma_SP.append(self.dsigma_SP_spinBox.value())
-        if self.initADC_s1.isChecked() == True:
-            self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
-            # self.PV.append(self.procvarSlider.value())
-            if self.initADC_s3.isChecked() == True:
-                self.dsigma_PV.append(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
-        else:
-            self.sigma1_PV.append(0)
+        # if self.initADC_s1.isChecked() == True:
+        #     self.sigma1_PV.append(int(self.chan_s1.voltage/self.adc_sigma1_scaling))
+        #     # self.PV.append(self.procvarSlider.value())
+        #     if self.initADC_s3.isChecked() == True:
+        #         self.dsigma_PV.append(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
+        # else:
+        #     self.sigma1_PV.append(0)
             # self.PV.append(self.procvarSlider.value())
         # self.CV.append(self.CV[-1])
         self.error.append(self.sigma1_SP[-1] - self.sigma1_PV[-1])
@@ -301,42 +307,34 @@ class Window(QMainWindow, Ui_MainWindow):
         4. re-plug the device and re-login to a new session!
     """
     
-    def init_adc(self, checkbox, sigma):
-        if checkbox.isChecked() == True: # TODO: this method might not work to remove the connection...
-            import board
-            import busio
-            import adafruit_ads1x15.ads1115 as ADS
-            from adafruit_ads1x15.analog_in import AnalogIn
-            # Create the I2C bus:
-            i2c = busio.I2C(board.SCL, board.SDA)
-            
-            # Create the ADC object using the I2C bus:
-            ads = ADS.ADS1115(i2c)
-            print(ads)
-            
-            # Create single-ended input on channel:
-            if sigma == 's1':
-                self.chan_s1 = AnalogIn(ads, ADS.P0)
-                channel = self.chan_s1
-                
-            elif sigma == 's3':
-                self.chan_s3 = AnalogIn(ads, ADS.P1)
-                channel = self.chan_s3
-            
-            # Create differential input between channel 0 and 1:
-            # currently not working since only one pin is connected
-            # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
-            
-            # print header:
-            # print("{:>5}\t{:>5}".format('raw', 'v'))
-            
-            # print first line of data:
-            print("{:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
-            
-        if (self.initADC_s1.isChecked == True) and (self.initADC_s3.isChecked == True):
-            self.enable_display_stress = True 
-            
-            # return self.chan_s1, self.chan_s3
+    def init_adc(self):
+        import board
+        import busio
+        import adafruit_ads1x15.ads1115 as ADS
+        from adafruit_ads1x15.analog_in import AnalogIn
+        # Create the I2C bus:
+        i2c = busio.I2C(board.SCL, board.SDA)
+        
+        # Create the ADC object using the I2C bus:
+        ads = ADS.ADS1115(i2c)
+        print(ads)
+        
+        # Create single-ended input on channel:
+        self.chan_s1 = AnalogIn(ads, ADS.P0)
+        self.chan_s3 = AnalogIn(ads, ADS.P1)
+    
+        # Create differential input between channel 0 and 1:
+        # currently not working since only one pin is connected
+        # chan0 = AnalogIn(ads, ADS.P0, ADS.P1)
+        
+        # print header:
+        # print("{:>5}\t{:>5}".format('raw', 'v'))
+        
+        # print first line of data:
+        print(f'channel sig1(value / voltage): {self.chan_s1.value} / {self.chan_s1.voltage} \n'
+              'channel sig3(value / voltage): {self.chan_s3.value} / {self.chan_s3.voltage}')
+        
+        # return self.chan_s1, self.chan_s3
 
 
     ###   GRAPH WINDOW   ###
@@ -358,10 +356,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # LCDs:
         self.lcd_actvel_s1.display(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
         self.lcd_actvel_s3.display(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)))
-        if self.enable_display_stress == True:
-            self.lcd_stress_s1.display(self.chan_s1.value/self.adc_sigma1_scaling)
-            self.lcd_stress_s3.display(self.chan_s3.value/self.adc_sigma3_scaling)
-            self.lcd_dstress.display(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
+        self.lcd_stress_s1.display(self.chan_s1.value/self.adc_sigma1_scaling)
+        self.lcd_stress_s3.display(self.chan_s3.value/self.adc_sigma3_scaling)
+        self.lcd_dstress.display(self.chan_s1.value/self.adc_sigma1_scaling - self.chan_s3.value/self.adc_sigma3_scaling)
 
         
     ###   CALCULATORS (for unit conversion)   ###
@@ -475,6 +472,9 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.pushB_perm_down_s3.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
             print('Rotating down with', str(self.rpmBox_s3.value()), 'rpm')
+            while self.moter_s3.actual_velocity != 0:
+                QApplication.processEvents()
+                self.label_s3.text(f'{1000 - round((self.motor_s3.actual_positon - self.valve_closed)/self.valve_distance*1000)} / 1000 bar')
     
     def permanent_up(self):
         self.module.dir = 1
@@ -487,6 +487,9 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.pushB_perm_up_s3.setStyleSheet("QPushButton {background-color: rgb(0, 200, 100);}")
             print('Rotating up with', str(self.rpmBox_s3.value()), 'rpm')
+            while self.moter_s3.actual_velocity != 0:
+                QApplication.processEvents()
+                self.label_s3.text(f'{1000 - round((self.motor_s3.actual_positon - self.valve_closed)/self.valve_distance*1000)} / 1000 bar')
 
     def multi_step_down(self):
         self.module.dir = -1
@@ -511,6 +514,7 @@ class Window(QMainWindow, Ui_MainWindow):
             print('Coarse step up with module:', str(self.module.moduleID), 'at', str(self.rpmBox_s3.value()), 'RPM')
         # at this hirarchy, update_pos makes sure motor updates position when reached, not while driving there?
         self.update_position()
+        self.label_s3.text(f'{1000 - round((self.motor_s3.actual_positon - self.valve_closed)/self.valve_distance*1000)} / 1000 bar')
     
     
     def goto_s3(self, pos, rpm):
@@ -523,17 +527,17 @@ class Window(QMainWindow, Ui_MainWindow):
         # keep record of position with get_position_reached
         self.pushB_multi_up_s3.setEnabled(False)
         self.pushB_perm_up_s3.setEnabled(False)
-        self.pushB_close_valve.setStyleSheet('color: color: rgb(200, 100, 0)')
+        self.pushB_close_valve.setStyleSheet('color: color: rgb(200, 50, 0)')
         while not self.motor_s3.get_position_reached() == 1:
             QApplication.processEvents()
-            print('s3 is at:',self.motor_s3.actual_position, ',', 
-                  abs(self.motor_s3.actual_position - pos), 'steps to go')
+            self.label_s3.text(f'{1000 - round((self.motor_s3.actual_positon - self.valve_closed)/self.valve_distance*1000)} / 1000 bar')
         # when closed
         if abs(self.motor_s3.actual_position - pos) <= self.threshold_valve:
             self.update_position()
             self.pushB_multi_up_s3.setEnabled(True)
             self.pushB_perm_up_s3.setEnabled(True)
             self.pushB_close_valve.setStyleSheet('color: color: rgb(0, 200, 100)')
+            self.label_s3.text(f'{1000 - round((self.motor_s3.actual_positon - self.valve_closed)/self.valve_distance*1000)} / 1000 bar')
             
     def prequench_hold(self, threshold):
         if self.drivetimer.isActive():
@@ -557,13 +561,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
         self.module_s1.dir = -1 # ensures correct motor_s1 rotation direction
-                
+        
         # init controller instance:
         # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 10, 2, 1, True)
         self.SP = self.sigma1_SP_spinBox.value()
         
         def on_timeout():
+            print(f'channel sig1(value / voltage): {self.chan_s1.value} / {self.chan_s1.voltage} \n'
+                 'channel sig3(value / voltage): {self.chan_s3.value} / {self.chan_s3.voltage}')
             c.controller_update(self.SP,
                                 self.chan_s1.value/self.adc_sigma1_scaling,
                                 self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)),
@@ -585,9 +591,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.drivetimer = QTimer()
         self.drivetimer.setInterval(interval)
         self.module_s1.dir = 1 # ensures correct motor_s1 rotation direction
-                
-        print("sig3:",self.chan_s3.value/self.adc_sigma3_scaling)
-        print("sig1:",self.chan_s1.value/self.adc_sigma1_scaling)
+        
         # init controller instance:
         # c = Controller(interval/1000, 50, 10, 50, True) # /1000 for ms->s; good?
         c = Controller(interval/1000, 1, 0.1, 0, False)
@@ -602,7 +606,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.SP_correction = 0
         
         def on_timeout():
-            
+            print(f'channel sig1(value / voltage): {self.chan_s1.value} / {self.chan_s1.voltage} \n'
+              'channel sig3(value / voltage): {self.chan_s3.value} / {self.chan_s3.voltage}')
             self.current_oilp = self.chan_s3.value/self.adc_sigma3_scaling
             # print("current ",self.current_oilp, "diff", self.old_oilp - self.current_oilp)
             # see if oilp changed by the amout threshold [MPa?] 

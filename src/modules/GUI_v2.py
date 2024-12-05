@@ -39,10 +39,15 @@ from modules.popup_warning_v0 import CustomDialog
 
 # print(sys.modules)
 
+'''TODO:
+        - test 1000 bar label
+        - test test get_adc (if print statement works use this also for gui_v3)'''
+
 
 class Window(QMainWindow, Ui_MainWindow):
     
     valve_counter = 0
+    booly = True
         
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -58,9 +63,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushB_perm_up_s3.clicked.connect(lambda: print('noosir'))
         self.pushB_multi_up_s3.setEnabled(False)
         self.pushB_perm_up_s3.setEnabled(False)
-        # self.oneshot = True
-        # self.installEventFilter(self)
-        # print((lambda module: 'function 1 for module:' + module)(self.module_s1))
+        self.pushB_perm_down_s3.pressed.connect(self.counter)
+        self.pushB_perm_down_s3.released.connect(self.set_booly)
+        self.pushB_get_adc.clicked.connect(lambda: print('channel sig1(value / voltage): 69 / 420 \n'
+                                                      'channel sig3(value / voltage): 187 / 1312'))
+        self.positions = pd.read_csv(
+        r'C:\Users\wq271\AAA_programming\Projects\griggs_control\src\positions_valve.txt', sep='\t')
+        self.valve_closed = self.positions.loc[0, 'closed']
+        self.valve_distance = self.positions.loc[0, 'distance']
+        self.valve_current = self.positions.loc[0, 'current']
+        self.valve_opened = self.valve_closed + self.valve_distance
+        self.label_s3.setText(f'{1000 - round(((self.valve_current - self.valve_closed)/self.valve_distance)*1000)} / 1000 bar')
         
 
     def set_default_values(self):
@@ -92,8 +105,17 @@ class Window(QMainWindow, Ui_MainWindow):
     #         return True  # We return True if we've handled the event (so it doesn't propagate)
 
     #     return False  # Otherwise, allow the event to be handled normally
-        
-        
+
+
+    def counter(self):
+        while Window.booly == True:
+            QApplication.processEvents()
+            Window.valve_counter += 1
+            self.label_s3.setText(f'{Window.valve_counter} / 1000 bar')
+            
+    def set_booly(self):
+        Window.booly = False
+            
     def refresh_module_list(self, module):
         if module is not None:
             self.active_modules =  [module]
@@ -119,9 +141,9 @@ def run_app():
     init_gui(main_win)
     # Open GUI window on screen:
     main_win.show()
-    dialog = CustomDialog()
-    if dialog.exec_():  # Open as a modal dialog and check the return value
-        print("functions enabled!")   
+#     dialog = CustomDialog()
+#     if dialog.exec_():  # Open as a modal dialog and check the return value
+#         print("functions enabled!")   
     # Return an instance of a running QApplication = starts event handling
     return app.exec()
     
