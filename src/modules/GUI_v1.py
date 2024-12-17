@@ -18,7 +18,7 @@ import pandas as pd
 
 # import time
 
-from modules.gui.main_window_Test import Ui_MainWindow #TODO
+from modules.gui.main_window_v1 import Ui_MainWindow #TODO
 from .Motor import Motor
 from .Controller import Controller 
 
@@ -387,8 +387,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # s3
         self.line6 = self.plot(self.time, self.act_vel_s3, 'actual velocity s3', 'y') 
         # LCDs:
-        self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
-        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+        self.lcd_actvel_s1.display(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
+        self.lcd_actvel_s3.display(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)))
 
         
     def update_plot(self):
@@ -400,8 +400,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.line5.setData(self.time, self.error)
         self.line6.setData(self.time, self.act_vel_s3)
         # LCDs:
-        self.lcd_actvel_s1.display(round(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity))))
-        self.lcd_actvel_s3.display(round(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity))))
+        self.lcd_actvel_s1.display(self.pps_rpm_converter(self.module_s1, abs(self.motor_s1.actual_velocity)))
+        self.lcd_actvel_s3.display(self.pps_rpm_converter(self.module_s3, abs(self.motor_s3.actual_velocity)))
 
         
     ###   CALCULATORS (for unit conversion)   ###
