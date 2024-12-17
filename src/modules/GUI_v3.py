@@ -48,9 +48,9 @@ from .Controller import Controller
         - close oil valve button takes rpm from prequench spinB on tab3
         - permanent mode for s3 works as long as button is pressed down
         - position of s3 in permanent mode only gets updated when pressing stop button not while driving
-        - stress lcd's are only enabled if both ADC checkboxes are checked
-        - hold prequench function works with press and release: adjust oilp threshold to get either in prequench 
-        or quench velocitys for s3 in callback function of quench pid'''
+        - hold prequench function works with press and release: adjust oilp threshold to get in prequench /
+        or quench velocitys for s3 in callback function of quench pid
+        - when goto_s3 is activated, the manual opening functions for s3 are disabled'''
 
 '''
 The following must be installed! 
@@ -98,8 +98,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # PID
         self.PID_max_vel_scale = 1  # TODO: what is this?
         # ADC connection:
-        self.chan_s1 = None
-        self.chan_s3 = None
+        # self.chan_s1 = None
+        # self.chan_s3 = None
         self.adc_sigma1_scaling = 3.578 # TODO: note: scaling-factor to MPa!
         self.adc_sigma3_scaling = 12.364
         # init adc sensors:
@@ -200,7 +200,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # Quenching 
         self.pushB_quench_start.clicked.connect(self.quench_PID)
         self.pushB_quench_stop.clicked.connect(self.stop_profile)
-        self.pushB_goto_prequench.pressed.connect(lambda: self.prequench_hold(self.old_oilp))
+        self.pushB_goto_prequench.pressed.connect(lambda: self.prequench_hold(-1))
         self.pushB_goto_prequench.released.connect(lambda: self.prequench_hold(0.5))
         self.pushB_update_quench.clicked.connect(lambda: self.update_PID('quench'))
         # close oilvalve as long as button pressed in gui
@@ -221,7 +221,7 @@ class Window(QMainWindow, Ui_MainWindow):
                   ' press "close oil valve"-button to close it!')
         else: 
             self.pushB_multi_up_s3.setEnabled(True)
-            self.pushB_perm_up_s3.setEnabled(True)
+            self.pushB_perm_up_s3.setEnabled(True) #TODO: enable also for permanent??
             self.pushB_close_valve.setStyleSheet('color: rgb(0, 200, 100)')
             print('s3 motor valve closed. Motor is off by',
                   f' = {abs(self.valve_closed - self.valve_current)} steps')
@@ -541,6 +541,8 @@ class Window(QMainWindow, Ui_MainWindow):
             
     def prequench_hold(self, threshold):
         if self.drivetimer.isActive():
+            # this should make sure that (self.old_oilp - self.current_oilp) always >> self.threshold 
+            # so prequench velocity for s3 gets chosen
             self.threshold_oilp = threshold
         else:
             print('this function is only enabled if quench PID is operating!')

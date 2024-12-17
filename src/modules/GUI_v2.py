@@ -141,9 +141,9 @@ def run_app():
     init_gui(main_win)
     # Open GUI window on screen:
     main_win.show()
-#     dialog = CustomDialog()
-#     if dialog.exec_():  # Open as a modal dialog and check the return value
-#         print("functions enabled!")   
+    dialog = CustomDialog()
+    if dialog.exec_():  # Open as a modal dialog and check the return value
+        print("functions enabled!")   
     # Return an instance of a running QApplication = starts event handling
     return app.exec()
     
