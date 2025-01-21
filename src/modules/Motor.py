@@ -29,6 +29,27 @@ def disconnect_motors():
 class Motor(TMCM1260):
     instances = []
     
+    @classmethod
+    def sort_module_list(cls, moduleID_list):
+        '''This function handles the assignment of the physical motors to a
+        list of active modules (given as argument), so that the connected
+        modules are sorted by increasing moduleID. The moduleIDs must be 
+        permanently stored on the Trinamic motor driver module (using 
+        TMCL-IDE), currently in the Global Parameter "Serial Address", 
+        (Number 66, Bank 0).'''
+        module_list = []
+        i = 0
+        # iterate over moduleIDs:
+        for ID in moduleID_list:
+            # iterate over all active modules:
+            for inst in cls.instances:
+                # match IDs of active modules with the given ID_list:
+                if inst.moduleID == ID:
+                    module_list.append(inst)
+                    print('Module', inst.moduleID, 'assigned to module_list[', i, ']')
+                    i += 1
+        return module_list
+    
     def __init__(self, port):
         self.port = port
         self.interface, self.module, self.motor = self.setup_motor(self.port)
@@ -42,8 +63,13 @@ class Motor(TMCM1260):
     def init_drive_settings(self, motor):
         '''Set initial motor drive settings. Speed values are in pps and are
         now scaled to microstep resolution.'''
-        motor.drive_settings.max_current = 60
-        motor.drive_settings.standby_current = 40
+        motor.down_enabled = True
+        motor.up_enabled = True
+        motor.max_pos_up = None
+        motor.max_pos_down = None       
+        motor.drive_settings.max_current = 150
+        motor.drive_settings.standby_current = 10
+        motor.drive_settings.boost_current = 0
         motor.drive_settings.boost_current = 0
         # maximum velocity:
         self.maxvel = 120
@@ -54,7 +80,7 @@ class Motor(TMCM1260):
         self.dir_inv_mod = 1 # pytrinamics built-in axis parameter is not working...
         # set mstep resolution:
         self.mstep_res_factor = motor.ENUM.MicrostepResolution128Microsteps
-        print(self.mstep_res_factor)
+        # print(self.mstep_res_factor)
         motor.drive_settings.microstep_resolution = self.mstep_res_factor
         # calculate msteps/revolution
         self.msteps_per_fstep = 2 ** self.mstep_res_factor
@@ -81,7 +107,7 @@ class Motor(TMCM1260):
         # motor.linear_ramp.max_velocity =  int(round(self.msteps_per_rev * 10))
         # motor.linear_ramp.max_acceleration = int(round(self.msteps_per_rev * 5))
         motor.linear_ramp.max_velocity =  50000 # TODO: seems to have no effect...
-        motor.linear_ramp.max_acceleration = 30000 # TODO: good value? was 300 before but that was very slow...
+        motor.linear_ramp.max_acceleration = 3000 # TODO: good value? was 300 before but that was very slow...
         #print(motor, motor.linear_ramp)
             
     def setup_motor(self, port):

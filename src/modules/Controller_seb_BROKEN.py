@@ -28,14 +28,14 @@ class Controller():
         self.Ki = Ki
         self.Kd = Kd
         self.prevent_negative_output = prevent_negative_output
-        self.error = [0, 0, 0, 0, 0, 0] # with errors at [t-2, t-1, t0]
+        self.error = [0, 0, 0] # with errors at [t-2, t-1, t0]
         self.output = 0
         self.controller_setup()
 
     def controller_setup(self):
         '''Compute initial controller values (timestep-dependent!).'''
-        self.a0 = self.Kp + self.Ki * self.dt + self.Kd / self.dt
-        self.a1 = -self.Kp - 2 * self.Kd / self.dt
+        self.a0 = -self.Kp
+        self.a1 = -self.Ki / self.dt
         self.a2 = self.Kd / self.dt
         print('a-values:', self.a0, self.a1, self.a2)
         
@@ -52,28 +52,17 @@ class Controller():
         self.setpoint = setpoint
         self.procvar = procvar
         self.contvar = contvar
-        # TODO
-        #update PID valus not clean
-        if self.contvar < 15: #if motor speed is below 15 rpm, reduce impact of PID
-            self.b0 = self.a0/10
-            self.b1 = self.a1/10
-            self.b2 = self.a2/10
-        else:
-            self.b0 = self.a0
-            self.b1 = self.a1
-            self.b2 = self.a2
-        
         # update error list:
         self.error.pop(0) # delete oldest element in error list
         self.error.append(self.setpoint - self.procvar) # append current error to list
         print("error array:", self.error)
-        print("scale array:", self.contvar, self.b2 * self.error[-6], self.b1 * self.error[-3], self.b0 * self.error[-1])
+        print("scale array:", self.contvar, self.a0 * self.error[-1], self.a1 * (self.error[-1] + self.error[-2]), self.a2 * (self.error[-1] - self.error[-3]))
         # check for prevent_negative_output:
         if self.prevent_negative_output == False:
             # calculate output for new control variable:
-            temp = (-self.contvar + self.b0 * self.error[-1] 
-                           + self.b1 * self.error[-3] 
-                           + self.b2 * self.error[-6])
+            temp = (self.contvar + self.a0 * self.error[-1] 
+                            + self.a1 * (self.error[-1] + self.error[-2]) 
+                            + self.a2 * (self.error[-1] - self.error[-3]))
             temp = temp
             
             # whith correct dir of contvar (here negative) this is the same as above
@@ -81,28 +70,23 @@ class Controller():
             #                 + self.a1 * self.error[-2] 
             #                 + self.a2 * self.error[-3])
             print("temp:",temp)
-            if temp >= 0: # TODO: changed self.error[-1] to temp
+            if temp >= 0: # TODO: chagned self.error[-1] to temp
                 temp = 0
             
         elif self.prevent_negative_output == True:
             # calculate output for new control variable:
-            temp = (self.contvar + self.b0 * self.error[-1] 
-                           + self.b1 * self.error[-3] 
-                           + self.b2 * self.error[-6])
+            temp = (self.contvar + self.a0 * self.error[-1] 
+                           + self.a1 * (self.error[-1] + self.error[-2]) 
+                           + self.a2 * (self.error[-1] - self.error[-3]))
             # if temp >= 0: # this does not work!
-            if temp <= 0: # TODO: changed self.error[-1] to temp
+            if temp <= 0: # TODO: chagned self.error[-1] to temp
                 temp = 0
                 
         # prevent too large output values:
-        if temp <= out_max and temp >= -out_max: # TODO: must also work for negative directions
+        if temp <= out_max: # TODO: must also work for negative directions
             self.output = temp
         else:
-            if temp > out_max:    
-                self.output = out_max
-            elif temp < -out_max:
-                self.output = -out_max
-            
-     
+            self.output = out_max
             
         # print('PID values:', self.setpoint, round(self.procvar,2), round(self.contvar, 2),
         #       '--', round(self.error[-1],3), round(self.output, 2))
